@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (head) {
             const np = u.collectibles && u.collectibles.nameplate;
             const plate = document.getElementById('now-plate');
+            const wrap = document.getElementById('now-wrap');
             if (np && np.asset) {
                 const base = 'https://cdn.discordapp.com/assets/collectibles/' + np.asset;
                 // 動かない環境のために 静止画も敷いておく
@@ -152,16 +153,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (plate.dataset.base !== base) {
                         plate.dataset.base = base;
                         plate.src = base + 'asset.webm';
-                        const p = plate.play();
-                        if (p && p.catch) p.catch(() => {});
+                        const go = () => { const p = plate.play(); if (p && p.catch) p.catch(() => {}); };
+                        go();
+                        plate.addEventListener('loadeddata', go, { once: true });
                     }
                     plate.hidden = false;
                 }
                 head.classList.add('has-plate');
+                if (wrap) wrap.classList.add('has-plate');
                 const nm = document.getElementById('now-name');
                 if (nm) nm.textContent = u.display_name || u.global_name || u.username || '';
             } else {
                 head.classList.remove('has-plate');
+                if (wrap) wrap.classList.remove('has-plate');
                 head.style.backgroundImage = '';
                 if (plate) { plate.hidden = true; plate.removeAttribute('src'); delete plate.dataset.base; }
             }

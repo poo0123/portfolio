@@ -1,6 +1,6 @@
 # Pooのくそさいと
 
-https://portfolio.poo123.com/
+https://poo123.com/
 
 うんちさんの無駄に買ったドメインで遊んでいるサイト。なにもない。
 
