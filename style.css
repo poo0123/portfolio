@@ -191,26 +191,6 @@ body.dark-mode .status-dot { border-color: #e9e2d4; }
 .status-line .dot.idle { background: #d8a13c; }
 .status-line .dot.dnd { background: var(--red); }
 
-/* 付箋の中の いまのようす */
-.now-state {
-    display: flex; align-items: center; gap: 9px;
-    margin: 16px 0 0 4px;
-    font-size: 0.86rem; color: var(--ink);
-}
-.now-state-label {
-    font-family: 'Yomogi', cursive; font-size: 0.74rem; color: var(--ink-2);
-    letter-spacing: 0.04em;
-}
-.now-state .dot {
-    width: 10px; height: 10px; border-radius: 50%; flex: none;
-    background: #9aa0a6; box-shadow: 0 0 0 2px rgba(255,255,255,0.45);
-}
-.now-state .dot.online  { background: #4f9d69; }
-.now-state .dot.idle    { background: #d8a13c; }
-.now-state .dot.dnd     { background: var(--red); }
-.now-state .dot.offline { background: #9aa0a6; }
-.now-state-text { font-weight: 700; }
-
 .acts { margin-top: 14px; display: flex; flex-direction: column; gap: 14px; }
 .act { display: flex; gap: 13px; align-items: flex-start; }
 .act-img {
@@ -1025,7 +1005,14 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
 .now-head.has-plate .name-row .now-name { min-width: 0; }
 .now-head.has-plate .guild-tag {
     transform: none; flex: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    /* 暗いプレートの上なので しっかり明るい札に 濃い文字 */
+    background: #fbf7ec;
+    border-color: rgba(60,45,30,0.22);
+    color: #241f1a;
+    font-weight: 700;
+    font-size: 0.74rem;
+    padding: 4px 11px 4px 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.35);
 }
 @media (max-width: 400px) {
     .now-wrap.has-plate { margin-left: 0; }

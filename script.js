@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusDot   = document.getElementById('status-dot');
     const pillDot     = document.getElementById('pill-dot');
     const pillText    = document.getElementById('pill-text');
-    const stateText   = document.getElementById('state-text');
     const actsBox     = document.getElementById('bubble-list');
 
     let socket = null;
@@ -195,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (statusDot) statusDot.className = 'status-dot ' + status;
         if (pillDot) pillDot.className = 'dot ' + status;
         if (pillText) pillText.textContent = STATUS_LABEL[status] || status;
-        if (stateText) stateText.textContent = STATUS_LABEL[status] || status;
 
         if (!actsBox) return;
 
