@@ -1,0 +1,7 @@
+# Cloudflare Workers の静的アセットに含めないもの
+# (リポジトリ全体がそのまま公開されるため)
+.git
+.git/**
+.gitignore
+.assetsignore
+README.md
