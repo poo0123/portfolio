@@ -5,3 +5,5 @@
 .gitignore
 .assetsignore
 README.md
+wrangler.jsonc
+node_modules
