@@ -214,7 +214,7 @@
 
         <section id="now" class="sticky reveal">
             <span class="pin" aria-hidden="true"></span>
-            <h3 class="sticky-title"><i class="fa-brands fa-discord dc" aria-hidden="true"></i> いま <span class="sticky-sub">Discord のようす</span><span class="guild-tag" id="guild-tag" hidden><img id="guild-badge" alt="" hidden><span id="guild-name"></span></span></h3>
+            <h3 class="sticky-title"><i class="fa-brands fa-discord dc" aria-hidden="true"></i> いま <span class="sticky-sub">Discord のようす</span></h3>
             <div class="now-wrap" id="now-wrap">
                 <div class="now-head" id="now-head">
                     <video class="now-plate" id="now-plate" muted playsinline loop autoplay preload="none" hidden></video>
@@ -224,7 +224,10 @@
                         <span id="status-dot" class="status-dot offline" title="Discord"></span>
                     </span>
                     <div class="now-text">
-                        <p class="now-name" id="now-name"></p>
+                        <div class="name-row">
+                            <p class="now-name" id="now-name"></p>
+                            <span class="guild-tag" id="guild-tag" hidden><img id="guild-badge" alt="" hidden><span id="guild-name"></span></span>
+                        </div>
                         <p class="status-line"><span id="pill-text">つないでる…</span></p>
                     </div>
                 </div>
