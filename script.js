@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let socket = null;
     let heartbeat = null;
     let lastActs = "";
-    let spotifyTimer = null;
+    let barTimer = null;
 
     // Discord が くれる activity の種類
     const ACT_LABEL = {
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         1: 'はいしん中',
         2: 'きいてる',
         3: 'みてる',
-        5: 'きそってる'
+        5: '参戦してる'
     };
     const ACTS_VISIBLE = 3;   // ここまでは いつも出す
     let actsOpen = false;
@@ -114,23 +114,31 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     setTimeout(hideLoader, 3500);
 
-    /* ---------- Spotify のえんぴつ線 ---------- */
+    /* ---------- 終わりの時刻が わかるものの えんぴつ線 ---------- */
 
-    const runBar = (act) => {
-        if (spotifyTimer) clearInterval(spotifyTimer);
+    const runBars = () => {
+        if (barTimer) clearInterval(barTimer);
+        if (!actsBox) return;
         const tick = () => {
-            const total = act.end - act.start;
-            const done = Date.now() - act.start;
-            const fill = document.getElementById('spotify-fill');
-            const now = document.getElementById('spotify-current');
-            if (fill && now && total > 0) {
-                fill.style.width = Math.min((done / total) * 100, 100) + '%';
-                now.textContent = mmss(Math.max(Math.min(done, total), 0));
-            }
-            if (done >= total) clearInterval(spotifyTimer);
+            const bars = actsBox.querySelectorAll('.bar[data-start][data-end]');
+            let live = false;
+            bars.forEach(b => {
+                const start = Number(b.dataset.start);
+                const end   = Number(b.dataset.end);
+                const total = end - start;
+                const done  = Date.now() - start;
+                const fill  = b.querySelector('.bar-fill');
+                const now   = b.querySelector('.bar-now');
+                if (total > 0 && fill && now) {
+                    fill.style.width = Math.min(Math.max(done / total, 0) * 100, 100) + '%';
+                    now.textContent = mmss(Math.max(Math.min(done, total), 0));
+                }
+                if (done < total) live = true;
+            });
+            if (!live) clearInterval(barTimer);
         };
         tick();
-        spotifyTimer = setInterval(tick, 1000);
+        barTimer = setInterval(tick, 1000);
     };
 
     /* ---------- Discord のいま ---------- */
@@ -277,7 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: a.name,
                 detail: [a.details, a.state].filter(Boolean).join(' / '),
                 img: img,
-                start: (a.timestamps && a.timestamps.start) ? a.timestamps.start : null
+                start: (a.timestamps && a.timestamps.start) ? a.timestamps.start : null,
+                end:   (a.timestamps && a.timestamps.end)   ? a.timestamps.end   : null
             });
         });
 
@@ -296,23 +305,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!acts.length) {
             actsBox.innerHTML = '<p class="act-none">とくに なにもしてない。</p>';
-            if (spotifyTimer) clearInterval(spotifyTimer);
+            if (barTimer) clearInterval(barTimer);
             return;
         }
 
         const cards = acts.map(a => {
             let bar = '';
-            if (a.kind === 'spotify') {
-                bar = '<div class="bar">' +
-                        '<div class="bar-bg"><div id="spotify-fill" class="bar-fill"></div></div>' +
-                        '<div class="bar-time"><span id="spotify-current">0:00</span><span>' + mmss(a.end - a.start) + '</span></div>' +
+            // 終わりの時刻が わかるものは どこまで進んだか 出す
+            if (a.start && a.end && a.end > a.start) {
+                bar = '<div class="bar" data-start="' + a.start + '" data-end="' + a.end + '">' +
+                        '<div class="bar-bg"><div class="bar-fill"></div></div>' +
+                        '<div class="bar-time">' +
+                            '<span class="bar-now">0:00</span>' +
+                            '<span>' + mmss(a.end - a.start) + '</span>' +
+                        '</div>' +
                       '</div>';
             }
             return '<div class="act' + (a.img ? '' : ' act-noimg') + '">' +
                 (a.img ? '<img class="act-img" src="' + esc(a.img) + '" alt="">' : '') +
                 '<div class="act-body">' +
                     '<div class="act-label">' + esc(a.label) +
-                        ((a.start && since(a.start)) ? ' <span class="act-time" data-start="' + a.start + '">' + esc(since(a.start)) + '</span>' : '') +
+                        ((a.start && !bar && since(a.start)) ? ' <span class="act-time" data-start="' + a.start + '">' + esc(since(a.start)) + '</span>' : '') +
                     '</div>' +
                     '<p class="act-name">' +
                         (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.name) + '</a>' : esc(a.name)) +
@@ -341,9 +354,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         actsBox.innerHTML = html;
 
-        const sp = acts.find(a => a.kind === 'spotify');
-        if (sp) runBar(sp);
-        else if (spotifyTimer) clearInterval(spotifyTimer);
+        if (acts.some(a => a.start && a.end && a.end > a.start)) runBars();
+        else if (barTimer) clearInterval(barTimer);
     };
 
     const connect = () => {
