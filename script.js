@@ -475,8 +475,9 @@ document.addEventListener('DOMContentLoaded', () => {
         rdate.textContent = n2.getFullYear() + '-' + p(n2.getMonth() + 1) + '-' + p(n2.getDate()) + '  ' + p(n2.getHours()) + ':' + p(n2.getMinutes());
     }
 
-    /* ---------- あしあと（この端末で来た回数） ---------- */
+    /* ---------- あしあと ---------- */
 
+    // この端末で 何回目か
     const footprint = document.getElementById('footprint');
     if (footprint) {
         let n = 1;
@@ -485,9 +486,43 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!n || n < 1) n = 1;
             localStorage.setItem('poo-visits', String(n));
         } catch (e) { n = 1; }
-        footprint.textContent = n === 1
-            ? 'あなたが ここに来たのは はじめて です'
-            : 'あなたが ここに来たのは ' + n + ' かいめ です';
+        footprint.textContent = n === 1 ? 'あなたは はじめて' : 'あなたは ' + n + ' かいめ';
+    }
+
+    // みんなで 何人きたか
+    const ashiBox   = document.getElementById('ashiato');
+    const ashiTotal = document.getElementById('ashiato-total');
+    const ashiToday = document.getElementById('ashiato-today');
+
+    if (ashiBox && ashiTotal) {
+        const BASE = 'https://abacus.jasoncameron.dev/';
+        const NS   = 'poo123-com';
+        const two  = (x) => String(x).padStart(2, '0');
+        const nd   = new Date();
+        const dayKey = 'd' + nd.getFullYear() + two(nd.getMonth() + 1) + two(nd.getDate());
+
+        // 数えるのは ひらいた ひとまわりにつき 一回だけ
+        let firstTime = true;
+        try {
+            firstTime = !sessionStorage.getItem('poo-counted');
+            if (firstTime) sessionStorage.setItem('poo-counted', '1');
+        } catch (e) { firstTime = true; }
+        const verb = firstTime ? 'hit' : 'get';
+
+        const ask = (key) => fetch(BASE + verb + '/' + NS + '/' + key)
+            .then(r => r.ok ? r.json() : null)
+            .then(d => (d && typeof d.value === 'number') ? d.value : null)
+            .catch(() => null);
+
+        Promise.all([ask('all'), ask(dayKey)]).then(([all, today]) => {
+            if (all === null) return;   // もらえなかったら 出さない
+            ashiTotal.innerHTML = String(all).padStart(5, '0')
+                .split('').map(ch => '<span>' + ch + '</span>').join('');
+            if (ashiToday) ashiToday.textContent = (today === null) ? '‥' : String(today);
+            ashiBox.hidden = false;
+            // うしろのタブでも かならず出るように（rAF は 止まることがある）
+            setTimeout(() => ashiBox.classList.add('on'), 30);
+        });
     }
 
     /* ---------- やっている時間を ときどき 更新 ---------- */
