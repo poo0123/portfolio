@@ -932,7 +932,7 @@ body.dark-mode .receipt { background: #e9e3d6; color: #33302b; }
 
 /* ネームプレートは 焼き増しした写真を 一枚 貼った ということにする */
 .now-wrap.has-plate {
-    display: block; width: 462px; max-width: 100%;
+    display: block; width: min(100%, 400px);
     margin: 12px 0 2px 6px;
     padding: 7px 7px 9px;
     box-sizing: border-box;
@@ -958,8 +958,13 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
 }
 .now-head.has-plate {
     position: relative; overflow: hidden;
-    width: 100%; height: 84px;
-    padding: 0 15px; gap: 13px; margin-top: 0;
+    container-type: inline-size;
+    width: 100%; height: auto; aspect-ratio: 448 / 84;
+    /* 狭い画面で 中身が つぶれないように 高さの下限 */
+    min-height: 62px;
+    padding: 0 clamp(9px, 3.63cqw, 15px);
+    gap: clamp(8px, 3.07cqw, 13px);
+    margin-top: 0;
     border-radius: 4px;
     /* Discord の寒い黒ではなく 焼けた紙に近い こげ茶 */
     background-color: #2c231c;
@@ -971,18 +976,26 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
     box-shadow: inset 0 0 0 1px rgba(255,244,222,0.07),
                 inset 0 -20px 28px -22px rgba(0,0,0,0.5);
 }
-.now-head.has-plate .now-avatar { width: 66px; height: 66px; }
-.now-head.has-plate .now-avatar .status-dot {
-    width: 19px; height: 19px; border-width: 3px; border-color: #2c231c; right: 1px; bottom: 1px;
+.now-head.has-plate .now-avatar {
+    width: clamp(38px, 15.6cqw, 62px);
+    height: clamp(38px, 15.6cqw, 62px);
 }
-.now-head.has-plate .now-avatar .status-dot::after { color: #2c231c; font-size: 10px; }
+.now-head.has-plate .now-avatar .status-dot {
+    width: clamp(10px, 4.75cqw, 19px); height: clamp(10px, 4.75cqw, 19px);
+    border-width: clamp(2px, 0.75cqw, 3px); border-color: #2c231c;
+    right: 1px; bottom: 1px;
+}
+.now-head.has-plate .now-avatar .status-dot::after {
+    color: #2c231c; font-size: clamp(5px, 2.5cqw, 10px);
+}
 /* デコレーションの中の顔は 少し大きめに見せる */
 .now-head.has-plate .now-avatar.has-deco .deco-face { width: 79%; height: 79%; }
 
 /* 動くネームプレート（読めないときは 静止画が下に残る） */
 .now-plate {
-    position: absolute; top: 0; right: 0; z-index: 0;
-    height: 100%; width: auto; max-width: none;
+    position: absolute; inset: 0; z-index: 0;
+    width: 100%; height: 100%; max-width: none;
+    object-fit: cover; object-position: right center;
     pointer-events: none;
 }
 .now-plate[hidden] { display: none; }
@@ -999,16 +1012,18 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
 .now-head.has-plate > .now-avatar,
 .now-head.has-plate > .now-text { position: relative; z-index: 2; }
 .now-head.has-plate .now-name {
-    display: block; font-size: 1rem; font-weight: 700; line-height: 1.25;
+    display: block; font-size: clamp(0.72rem, 4.05cqw, 1rem); font-weight: 700; line-height: 1.25;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     text-shadow: 0 1px 2px rgba(0,0,0,0.45);
 }
 .now-head.has-plate .status-line {
-    font-size: 0.8rem; color: #cfc2af;
+    font-size: clamp(0.6rem, 3.2cqw, 0.8rem); color: #cfc2af;
     text-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 /* 名前の右に サーバータグ（Discord と同じならび） */
-.now-head.has-plate .name-row { gap: 8px; flex-wrap: nowrap; min-width: 0; }
+.now-head.has-plate .name-row {
+    gap: clamp(5px, 2.23cqw, 8px); flex-wrap: nowrap; min-width: 0;
+}
 .now-head.has-plate .name-row .now-name { min-width: 0; }
 .now-head.has-plate .guild-tag {
     transform: none; flex: none;
@@ -1017,10 +1032,14 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
     border-color: rgba(60,45,30,0.22);
     color: #241f1a;
     font-weight: 700;
-    font-size: 0.74rem;
-    padding: 4px 11px 4px 8px;
+    /* 札まわりは すべて 文字の大きさ基準にして まとめて伸び縮みさせる */
+    font-size: clamp(0.56rem, 3.07cqw, 0.74rem);
+    padding: 0.34em 0.94em 0.34em 0.68em;
+    gap: 0.5em;
+    border-radius: 0.55em;
     box-shadow: 0 1px 4px rgba(0,0,0,0.35);
 }
+.now-head.has-plate .guild-tag img { width: 1.4em; height: 1.4em; }
 @media (max-width: 400px) {
     .now-wrap.has-plate { margin-left: 0; }
 }
