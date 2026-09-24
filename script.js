@@ -273,10 +273,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const big = a.assets && a.assets.large_image;
             if (big) {
                 if (big.indexOf('mp:') === 0) {
-                    const url = big.replace(/^mp:.*?\/https?\//, 'https://');
-                    if (url.indexOf('http') === 0) img = url;
+                    // よそのサイトの画像は 直に取りにいくと 断られるので Discord 経由でもらう
+                    img = 'https://media.discordapp.net/' + big.slice(3) + '?width=96&height=96';
                 } else if (a.application_id) {
-                    img = 'https://cdn.discordapp.com/app-assets/' + a.application_id + '/' + big + '.png';
+                    img = 'https://cdn.discordapp.com/app-assets/' + a.application_id + '/' + big + '.png?size=96';
                 }
             }
             acts.push({
@@ -322,7 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
                       '</div>';
             }
             return '<div class="act' + (a.img ? '' : ' act-noimg') + '">' +
-                (a.img ? '<img class="act-img" src="' + esc(a.img) + '" alt="">' : '') +
+                (a.img ? '<img class="act-img" src="' + esc(a.img) + '" alt="" loading="lazy" ' +
+                         'onerror="this.onerror=null;this.src=&quot;https://cdn.discordapp.com/embed/avatars/0.png&quot;">' : '') +
                 '<div class="act-body">' +
                     '<div class="act-label">' + esc(a.label) +
                         ((a.start && !bar && since(a.start)) ? ' <span class="act-time" data-start="' + a.start + '">' + esc(since(a.start)) + '</span>' : '') +
