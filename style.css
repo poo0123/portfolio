@@ -209,6 +209,28 @@ body.dark-mode .status-dot { border-color: #e9e2d4; }
 .act-label { font-family: 'Yomogi', cursive; font-size: 0.76rem; color: var(--ink-2); }
 .act-name { font-size: 0.92rem; font-weight: 700; line-height: 1.45; word-break: break-word; }
 .act-detail { font-size: 0.8rem; color: var(--ink-2); line-height: 1.45; }
+.act-noimg { padding-left: 2px; }
+
+/* たたんである ぶん */
+.acts-rest { display: flex; flex-direction: column; gap: 14px; }
+.acts-rest[hidden] { display: none; }
+
+/* ほかに ◯ こ */
+.acts-toggle {
+    align-self: flex-start;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 14px;
+    background: var(--card); border: 1px dashed var(--rule); border-radius: 999px;
+    font-family: 'Yomogi', cursive; font-size: 0.76rem; color: var(--ink-2);
+    cursor: pointer; transform: rotate(-0.9deg);
+    box-shadow: 0 2px 5px rgba(70,55,35,0.12);
+    transition: transform 0.25s, background 0.25s, color 0.25s;
+}
+.acts-toggle:hover {
+    transform: rotate(0deg); background: var(--paper-2); color: var(--ink);
+}
+.acts-toggle i { font-size: 0.64rem; transition: transform 0.3s; }
+.acts-toggle[aria-expanded="true"] i { transform: rotate(180deg); }
 .act-none { font-family: 'Yomogi', cursive; font-size: 0.9rem; color: var(--ink-2); }
 
 .bar { margin-top: 8px; }

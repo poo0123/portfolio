@@ -10,10 +10,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const pillText    = document.getElementById('pill-text');
     const actsBox     = document.getElementById('bubble-list');
 
+    // 「ほかに ◯ こ」を押したとき
+    if (actsBox) {
+        actsBox.addEventListener('click', (e) => {
+            const btn = e.target.closest('.acts-toggle');
+            if (!btn) return;
+            actsOpen = !actsOpen;
+            const rest = actsBox.querySelector('.acts-rest');
+            if (rest) rest.hidden = !actsOpen;
+            btn.setAttribute('aria-expanded', actsOpen ? 'true' : 'false');
+            const t = btn.querySelector('.acts-toggle-text');
+            if (t) t.textContent = actsOpen ? 'とじる' : 'ほかに ' + btn.dataset.rest + ' こ';
+        });
+    }
+
     let socket = null;
     let heartbeat = null;
     let lastActs = "";
     let spotifyTimer = null;
+
+    // Discord が くれる activity の種類
+    const ACT_LABEL = {
+        0: 'やってる',
+        1: 'はいしん中',
+        2: 'きいてる',
+        3: 'みてる',
+        5: 'きそってる'
+    };
+    const ACTS_VISIBLE = 3;   // ここまでは いつも出す
+    let actsOpen = false;
 
     const STATUS_LABEL = {
         online:  'オンライン',
@@ -213,16 +238,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         (data.activities || []).forEach(a => {
-            if (a.type !== 0 || a.name === 'Spotify') return;
+            if (a.name === 'Spotify' && a.type === 2) return;
+
+            // ひとこと（カスタムステータス）は 絵文字と文だけ
+            if (a.type === 4) {
+                const e = a.emoji;
+                const txt = [(e && !e.id) ? e.name : '', a.state].filter(Boolean).join(' ');
+                if (!txt) return;
+                acts.push({
+                    kind: 'custom',
+                    label: 'ひとこと',
+                    name: txt,
+                    detail: '',
+                    img: (e && e.id)
+                        ? 'https://cdn.discordapp.com/emojis/' + e.id + (e.animated ? '.gif' : '.png') + '?size=96'
+                        : null,
+                    start: null
+                });
+                return;
+            }
+
+            const label = ACT_LABEL[a.type];
+            if (!label) return;
+
             let img = 'https://cdn.discordapp.com/embed/avatars/0.png';
-            if (a.assets && a.assets.large_image) {
-                img = a.assets.large_image.indexOf('mp:external') === 0
-                    ? a.assets.large_image.replace(/mp:external\/.*?\/https\//, 'https://')
-                    : 'https://cdn.discordapp.com/app-assets/' + a.application_id + '/' + a.assets.large_image + '.png';
+            const big = a.assets && a.assets.large_image;
+            if (big) {
+                if (big.indexOf('mp:') === 0) {
+                    const url = big.replace(/^mp:.*?\/https?\//, 'https://');
+                    if (url.indexOf('http') === 0) img = url;
+                } else if (a.application_id) {
+                    img = 'https://cdn.discordapp.com/app-assets/' + a.application_id + '/' + big + '.png';
+                }
             }
             acts.push({
                 kind: 'game',
-                label: 'やってる',
+                label: label,
                 name: a.name,
                 detail: [a.details, a.state].filter(Boolean).join(' / '),
                 img: img,
@@ -233,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 同じ内容が重複して届くことがあるので ひとつにまとめる
         const seen = new Set();
         acts = acts.filter(a => {
-            const id = a.kind + '|' + a.name + '|' + a.detail;
+            const id = a.label + '|' + a.name + '|' + a.detail;
             if (seen.has(id)) return false;
             seen.add(id);
             return true;
@@ -249,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        actsBox.innerHTML = acts.map(a => {
+        const cards = acts.map(a => {
             let bar = '';
             if (a.kind === 'spotify') {
                 bar = '<div class="bar">' +
@@ -257,8 +308,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         '<div class="bar-time"><span id="spotify-current">0:00</span><span>' + mmss(a.end - a.start) + '</span></div>' +
                       '</div>';
             }
-            return '<div class="act">' +
-                '<img class="act-img" src="' + esc(a.img) + '" alt="">' +
+            return '<div class="act' + (a.img ? '' : ' act-noimg') + '">' +
+                (a.img ? '<img class="act-img" src="' + esc(a.img) + '" alt="">' : '') +
                 '<div class="act-body">' +
                     '<div class="act-label">' + esc(a.label) +
                         ((a.start && since(a.start)) ? ' <span class="act-time" data-start="' + a.start + '">' + esc(since(a.start)) + '</span>' : '') +
@@ -270,7 +321,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     bar +
                 '</div>' +
             '</div>';
-        }).join('');
+        });
+
+        const rest = cards.length - ACTS_VISIBLE;
+        let html = cards.slice(0, ACTS_VISIBLE).join('');
+        if (rest > 0) {
+            html += '<div class="acts-rest"' + (actsOpen ? '' : ' hidden') + '>' +
+                        cards.slice(ACTS_VISIBLE).join('') +
+                    '</div>' +
+                    '<button type="button" class="acts-toggle" data-rest="' + rest + '"' +
+                        ' aria-expanded="' + (actsOpen ? 'true' : 'false') + '">' +
+                        '<span class="acts-toggle-text">' +
+                            (actsOpen ? 'とじる' : 'ほかに ' + rest + ' こ') +
+                        '</span>' +
+                        '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>' +
+                    '</button>';
+        } else {
+            actsOpen = false;
+        }
+        actsBox.innerHTML = html;
 
         const sp = acts.find(a => a.kind === 'spotify');
         if (sp) runBar(sp);
