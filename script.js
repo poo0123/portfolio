@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         3: 'みてる',
         5: '参戦してる'
     };
-    const ACTS_VISIBLE = 3;   // ここまでは いつも出す
+    const ACTS_VISIBLE = 2;   // ここまでは いつも出す
     let actsOpen = false;
 
     const STATUS_LABEL = {
