@@ -475,38 +475,6 @@ document.addEventListener('DOMContentLoaded', () => {
         rdate.textContent = n2.getFullYear() + '-' + p(n2.getMonth() + 1) + '-' + p(n2.getDate()) + '  ' + p(n2.getHours()) + ':' + p(n2.getMinutes());
     }
 
-    /* ---------- さいきんの つぶやき ---------- */
-
-    const twBox  = document.getElementById('tweets');
-    const twList = document.getElementById('tw-list');
-
-    if (twBox && twList) {
-        fetch('tweets.json', { cache: 'no-cache' })
-            .then(r => r.ok ? r.json() : null)
-            .then(d => {
-                const items = (d && d.items) ? d.items.slice(0, 3) : [];
-                if (!items.length) return;
-                const who = (d && d.user) ? d.user : '_poo_main';
-
-                twList.innerHTML = items.map(t => {
-                    const dt = new Date(t.at);
-                    const md = isNaN(dt) ? '' : (dt.getMonth() + 1) + ' / ' + dt.getDate();
-                    return '<li class="tw-item">' +
-                        '<a class="tw-card" href="https://x.com/' + esc(who) + '/status/' + esc(t.id) + '"' +
-                          ' target="_blank" rel="noopener">' +
-                            '<span class="tw-date">' + esc(md) + '</span>' +
-                            '<p class="tw-text">' + esc(t.text) + '</p>' +
-                            '<span class="tw-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>' +
-                        '</a>' +
-                    '</li>';
-                }).join('');
-
-                twBox.hidden = false;
-                setTimeout(() => twBox.classList.add('active'), 40);
-            })
-            .catch(() => {});
-    }
-
     /* ---------- あしあと ---------- */
 
     // この端末で 何回目か
@@ -522,11 +490,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // みんなで 何人きたか
-    const ashiBox   = document.getElementById('ashiato');
-    const ashiTotal = document.getElementById('ashiato-total');
-    const ashiToday = document.getElementById('ashiato-today');
+    const tally      = document.getElementById('tally');
+    const tallyAll   = document.getElementById('tally-all');
+    const tallyToday = document.getElementById('tally-today');
 
-    if (ashiBox && ashiTotal) {
+    if (tally && tallyAll) {
         const BASE = 'https://abacus.jasoncameron.dev/';
         const NS   = 'poo123-com';
         const two  = (x) => String(x).padStart(2, '0');
@@ -546,14 +514,15 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(d => (d && typeof d.value === 'number') ? d.value : null)
             .catch(() => null);
 
+        const nf = (n) => n.toLocaleString('ja-JP');
+
         Promise.all([ask('all'), ask(dayKey)]).then(([all, today]) => {
             if (all === null) return;   // もらえなかったら 出さない
-            ashiTotal.innerHTML = String(all).padStart(5, '0')
-                .split('').map(ch => '<span>' + ch + '</span>').join('');
-            if (ashiToday) ashiToday.textContent = (today === null) ? '‥' : String(today);
-            ashiBox.hidden = false;
+            tallyAll.textContent = nf(all);
+            if (tallyToday) tallyToday.textContent = (today === null) ? '‥' : nf(today);
+            tally.hidden = false;
             // うしろのタブでも かならず出るように（rAF は 止まることがある）
-            setTimeout(() => ashiBox.classList.add('on'), 30);
+            setTimeout(() => tally.classList.add('on'), 30);
         });
     }
 

@@ -61,6 +61,19 @@ body.dark-mode .grain { mix-blend-mode: overlay; opacity: 0.22; }
 }
 .loader.loaded { opacity: 0; visibility: hidden; transition: opacity 0.6s, visibility 0.6s; }
 .loader-text { font-family: 'Yomogi', cursive; font-size: 1rem; color: var(--ink-2); letter-spacing: 0.12em; }
+.loader-text i { display: inline-block; font-style: normal; animation: load-bob 1.7s infinite ease-in-out; }
+.loader-text i:nth-child(1) { animation-delay: 0.00s; }
+.loader-text i:nth-child(2) { animation-delay: 0.08s; }
+.loader-text i:nth-child(3) { animation-delay: 0.16s; }
+.loader-text i:nth-child(4) { animation-delay: 0.24s; }
+.loader-text i:nth-child(5) { animation-delay: 0.32s; }
+.loader-text i:nth-child(6) { animation-delay: 0.40s; }
+.loader-text i:nth-child(7) { animation-delay: 0.48s; }
+@keyframes load-bob {
+    0%, 55%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.5; }
+    16%           { transform: translateY(-8px) rotate(-7deg); opacity: 1; }
+    32%           { transform: translateY(0) rotate(2deg); opacity: 0.85; }
+}
 .loader-dots { display: flex; gap: 7px; }
 .loader-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: hop 1.1s infinite ease-in-out; }
 .loader-dots i:nth-child(2) { animation-delay: 0.15s; }
@@ -265,53 +278,6 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
 .cuts b { font-family: 'Yomogi', cursive; font-weight: 400; font-size: 0.95rem; }
 .cuts em { font-family: 'Caveat', cursive; font-style: normal; font-size: 0.95rem; color: var(--ink-2); margin-left: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* =========================================================
-   さいきんの つぶやき
-   ========================================================= */
-.tw-list { list-style: none; display: flex; flex-direction: column; gap: 13px; margin-top: 18px; }
-.tw-item { animation: tw-in 0.55s backwards cubic-bezier(0.22,1,0.36,1); }
-.tw-item:nth-child(1) { animation-delay: 0.08s; }
-.tw-item:nth-child(2) { animation-delay: 0.19s; }
-.tw-item:nth-child(3) { animation-delay: 0.30s; }
-@keyframes tw-in { from { opacity: 0; transform: translateY(14px) rotate(-1.4deg); } }
-
-.tw-card {
-    display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: start;
-    padding: 13px 16px 14px;
-    background: var(--paper-2); border: 1px dashed var(--rule); border-radius: 2px;
-    text-decoration: none; color: var(--ink);
-    transform: rotate(-0.55deg);
-    transition: transform 0.26s, box-shadow 0.26s, border-color 0.26s, background 0.26s;
-}
-.tw-item:nth-child(even) .tw-card { transform: rotate(0.6deg); }
-.tw-card:hover {
-    transform: rotate(0deg) translateY(-3px);
-    box-shadow: var(--shadow);
-    border-color: var(--red); border-style: solid;
-    background: var(--card);
-}
-.tw-date {
-    font-family: 'Caveat', cursive; font-size: 1.1rem; line-height: 1.5;
-    color: var(--red); white-space: nowrap;
-}
-.tw-text {
-    font-size: 0.92rem; line-height: 1.85;
-    white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;
-}
-.tw-go { color: var(--ink-2); font-size: 0.72rem; opacity: 0.35; padding-top: 5px; transition: opacity 0.26s, transform 0.26s; }
-.tw-card:hover .tw-go { opacity: 0.9; transform: translateX(4px); }
-
-.tw-foot { margin-top: 18px; text-align: right; font-family: 'Yomogi', cursive; font-size: 0.8rem; }
-.tw-foot a { color: var(--ink-2); text-decoration: none; transition: color 0.25s; }
-.tw-foot a:hover { color: var(--red); }
-.tw-foot .go { transition: transform 0.25s; display: inline-block; }
-.tw-foot a:hover .go { transform: translateX(4px); }
-
-@media (max-width: 460px) {
-    .tw-card { grid-template-columns: auto 1fr; gap: 11px; }
-    .tw-go { display: none; }
-}
-
 /* 奥付 */
 .colophon { text-align: center; margin-top: 60px; padding-top: 26px; border-top: 1px dashed var(--rule); color: var(--ink-2); font-size: 0.82rem; }
 .sign { font-family: 'Caveat', cursive; font-size: 2rem; color: var(--red); transform: rotate(-5deg); display: inline-block; margin-bottom: 6px; }
@@ -369,21 +335,6 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
     0%, 100% { transform: translateY(0) rotate(0deg); }
     40%      { transform: translateY(-6px) rotate(-10deg); }
 }
-
-/* あしあとの けたが めくれて出る */
-.ashiato-digits { perspective: 340px; }
-.ashiato.on .ashiato-digits span {
-    animation: digit-in 0.5s backwards cubic-bezier(0.22,1,0.36,1);
-}
-.ashiato.on .ashiato-digits span:nth-child(1) { animation-delay: 0.06s; }
-.ashiato.on .ashiato-digits span:nth-child(2) { animation-delay: 0.13s; }
-.ashiato.on .ashiato-digits span:nth-child(3) { animation-delay: 0.20s; }
-.ashiato.on .ashiato-digits span:nth-child(4) { animation-delay: 0.27s; }
-.ashiato.on .ashiato-digits span:nth-child(5) { animation-delay: 0.34s; }
-@keyframes digit-in { from { opacity: 0; transform: translateY(-15px) rotateX(72deg); } }
-
-/* シールを 置いたときの もちあがり */
-.sticker { transition: transform 0.25s, box-shadow 0.25s; }
 
 /* うえへ */
 .totop {
@@ -520,44 +471,17 @@ body.dark-mode .clip { border-color: #6c6456; }
 /* あしあと */
 .footprint { font-family: 'Yomogi', cursive; color: var(--ink-2); }
 
-/* =========================================================
-   あしあと — 検針票みたいな 小さい紙
-   ========================================================= */
-.ashiato {
-    max-width: 316px; margin: 66px auto 0;
-    padding: 15px 20px 13px;
-    background: var(--card); border: 1px solid var(--rule);
-    box-shadow: var(--shadow);
-    text-align: center;
-    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Courier New', monospace;
-    opacity: 0; transform: translateY(12px) rotate(0.8deg);
-    transition: opacity 0.6s, transform 0.6s;
+/* 奥付の おわりに、来た人の数を 一行だけ */
+.tally {
+    display: flex; justify-content: center; flex-wrap: wrap;
+    margin-top: 16px;
+    font-family: 'Yomogi', cursive; font-size: 0.72rem; color: var(--ink-2);
+    opacity: 0; transition: opacity 0.9s;
 }
-.ashiato.on { opacity: 1; transform: translateY(0) rotate(0.8deg); }
-.ashiato[hidden] { display: none; }
-
-.ashiato-head {
-    font-family: 'Yomogi', cursive; font-size: 0.86rem; letter-spacing: 0.2em;
-    display: flex; align-items: baseline; justify-content: center; gap: 9px;
-}
-.ashiato-head em {
-    font-style: normal; font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
-    font-size: 0.58rem; opacity: 0.45; letter-spacing: 0.1em;
-}
-
-/* けたごとに ますへ */
-.ashiato-digits { display: flex; justify-content: center; gap: 5px; margin: 12px 0 9px; }
-.ashiato-digits span {
-    width: 27px; height: 37px; line-height: 37px;
-    background: var(--paper-2); border: 1px solid var(--rule); border-radius: 2px;
-    font-size: 1.16rem; color: var(--ink);
-    box-shadow: inset 0 -7px 11px -9px rgba(0,0,0,0.5);
-}
-.ashiato-sub {
-    display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 18px;
-    font-size: 0.68rem; color: var(--ink-2); opacity: 0.85;
-}
-.ashiato-sub b { font-weight: 400; color: var(--ink); }
+.tally.on { opacity: 0.78; }
+.tally[hidden] { display: none; }
+.tally span + span::before { content: '・'; margin: 0 8px; opacity: 0.45; }
+.tally b { font-weight: 400; color: var(--ink); font-size: 0.82rem; }
 
 /* =========================================================
    ページが ないとき

@@ -157,7 +157,7 @@
 <body class="light-mode">
 
     <div id="loader" class="loader">
-        <span class="loader-text">よみこみちゅう</span>
+        <span class="loader-text" aria-label="よみこみちゅう"><i aria-hidden="true">よ</i><i aria-hidden="true">み</i><i aria-hidden="true">こ</i><i aria-hidden="true">み</i><i aria-hidden="true">ち</i><i aria-hidden="true">ゅ</i><i aria-hidden="true">う</i></span>
         <span class="loader-dots"><i></i><i></i><i></i></span>
     </div>
 
@@ -175,7 +175,6 @@
             <nav class="paper-nav">
                 <a href="#me">じぶん</a>
                 <a href="#now">いま</a>
-                <a href="#tweets">つぶやき</a>
                 <a href="#likes">さわったやつ</a>
                 <a href="#gohan">ごはん</a>
                 <a href="#faq">しつもん</a>
@@ -251,16 +250,6 @@
             <p class="slip-text" id="hitokoto-text"></p>
         </section>
 
-        <section id="tweets" class="sheet reveal" hidden>
-            <span class="tape tape-tl" aria-hidden="true"></span>
-            <h3 class="hand-title small">さいきんの つぶやき</h3>
-            <ul class="tw-list" id="tw-list"></ul>
-            <p class="tw-foot">
-                <a href="https://x.com/_poo_main" target="_blank" rel="noopener">
-                    <i class="fa-brands fa-x-twitter" aria-hidden="true"></i> ほかのも みる <i class="fa-solid fa-arrow-right go" aria-hidden="true"></i>
-                </a>
-            </p>
-        </section>
 
         <section id="likes" class="sheet reveal">
             <span class="tape tape-tc" aria-hidden="true"></span>
@@ -362,18 +351,14 @@
             </ul>
         </section>
 
-        <section class="ashiato" id="ashiato" hidden>
-            <p class="ashiato-head">あしあと <em>VISITORS</em></p>
-            <div class="ashiato-digits" id="ashiato-total"></div>
-            <p class="ashiato-sub">
-                <span>きょう <b id="ashiato-today">‥</b></span>
-                <span class="footprint" id="footprint"></span>
-            </p>
-        </section>
-
         <footer class="colophon">
             <p class="sign">poo.pptx</p>
             <p>2026</p>
+            <p class="tally" id="tally" hidden>
+                <span>ここに来た人 <b id="tally-all">‥</b></span>
+                <span>きょう <b id="tally-today">‥</b></span>
+                <span class="footprint" id="footprint"></span>
+            </p>
         </footer>
     </div>
 
