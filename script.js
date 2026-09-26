@@ -475,6 +475,38 @@ document.addEventListener('DOMContentLoaded', () => {
         rdate.textContent = n2.getFullYear() + '-' + p(n2.getMonth() + 1) + '-' + p(n2.getDate()) + '  ' + p(n2.getHours()) + ':' + p(n2.getMinutes());
     }
 
+    /* ---------- さいきんの つぶやき ---------- */
+
+    const twBox  = document.getElementById('tweets');
+    const twList = document.getElementById('tw-list');
+
+    if (twBox && twList) {
+        fetch('tweets.json', { cache: 'no-cache' })
+            .then(r => r.ok ? r.json() : null)
+            .then(d => {
+                const items = (d && d.items) ? d.items.slice(0, 3) : [];
+                if (!items.length) return;
+                const who = (d && d.user) ? d.user : '_poo_main';
+
+                twList.innerHTML = items.map(t => {
+                    const dt = new Date(t.at);
+                    const md = isNaN(dt) ? '' : (dt.getMonth() + 1) + ' / ' + dt.getDate();
+                    return '<li class="tw-item">' +
+                        '<a class="tw-card" href="https://x.com/' + esc(who) + '/status/' + esc(t.id) + '"' +
+                          ' target="_blank" rel="noopener">' +
+                            '<span class="tw-date">' + esc(md) + '</span>' +
+                            '<p class="tw-text">' + esc(t.text) + '</p>' +
+                            '<span class="tw-go" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>' +
+                        '</a>' +
+                    '</li>';
+                }).join('');
+
+                twBox.hidden = false;
+                setTimeout(() => twBox.classList.add('active'), 40);
+            })
+            .catch(() => {});
+    }
+
     /* ---------- あしあと ---------- */
 
     // この端末で 何回目か

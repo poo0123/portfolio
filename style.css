@@ -265,9 +265,125 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
 .cuts b { font-family: 'Yomogi', cursive; font-weight: 400; font-size: 0.95rem; }
 .cuts em { font-family: 'Caveat', cursive; font-style: normal; font-size: 0.95rem; color: var(--ink-2); margin-left: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+/* =========================================================
+   さいきんの つぶやき
+   ========================================================= */
+.tw-list { list-style: none; display: flex; flex-direction: column; gap: 13px; margin-top: 18px; }
+.tw-item { animation: tw-in 0.55s backwards cubic-bezier(0.22,1,0.36,1); }
+.tw-item:nth-child(1) { animation-delay: 0.08s; }
+.tw-item:nth-child(2) { animation-delay: 0.19s; }
+.tw-item:nth-child(3) { animation-delay: 0.30s; }
+@keyframes tw-in { from { opacity: 0; transform: translateY(14px) rotate(-1.4deg); } }
+
+.tw-card {
+    display: grid; grid-template-columns: auto 1fr auto; gap: 15px; align-items: start;
+    padding: 13px 16px 14px;
+    background: var(--paper-2); border: 1px dashed var(--rule); border-radius: 2px;
+    text-decoration: none; color: var(--ink);
+    transform: rotate(-0.55deg);
+    transition: transform 0.26s, box-shadow 0.26s, border-color 0.26s, background 0.26s;
+}
+.tw-item:nth-child(even) .tw-card { transform: rotate(0.6deg); }
+.tw-card:hover {
+    transform: rotate(0deg) translateY(-3px);
+    box-shadow: var(--shadow);
+    border-color: var(--red); border-style: solid;
+    background: var(--card);
+}
+.tw-date {
+    font-family: 'Caveat', cursive; font-size: 1.1rem; line-height: 1.5;
+    color: var(--red); white-space: nowrap;
+}
+.tw-text {
+    font-size: 0.92rem; line-height: 1.85;
+    white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere;
+}
+.tw-go { color: var(--ink-2); font-size: 0.72rem; opacity: 0.35; padding-top: 5px; transition: opacity 0.26s, transform 0.26s; }
+.tw-card:hover .tw-go { opacity: 0.9; transform: translateX(4px); }
+
+.tw-foot { margin-top: 18px; text-align: right; font-family: 'Yomogi', cursive; font-size: 0.8rem; }
+.tw-foot a { color: var(--ink-2); text-decoration: none; transition: color 0.25s; }
+.tw-foot a:hover { color: var(--red); }
+.tw-foot .go { transition: transform 0.25s; display: inline-block; }
+.tw-foot a:hover .go { transform: translateX(4px); }
+
+@media (max-width: 460px) {
+    .tw-card { grid-template-columns: auto 1fr; gap: 11px; }
+    .tw-go { display: none; }
+}
+
 /* 奥付 */
 .colophon { text-align: center; margin-top: 60px; padding-top: 26px; border-top: 1px dashed var(--rule); color: var(--ink-2); font-size: 0.82rem; }
 .sign { font-family: 'Caveat', cursive; font-size: 2rem; color: var(--red); transform: rotate(-5deg); display: inline-block; margin-bottom: 6px; }
+
+/* =========================================================
+   こまかい うごき
+   ========================================================= */
+
+/* 付箋のピンが たまに ゆれる */
+.sticky.reveal.active .pin { animation: pin-wobble 15s 4s ease-in-out infinite; }
+@keyframes pin-wobble {
+    0%, 87%, 100% { transform: rotate(0deg); }
+    89% { transform: rotate(-10deg); }
+    92% { transform: rotate(7deg); }
+    95% { transform: rotate(-3deg); }
+}
+
+/* クリップも たまに ゆれる */
+.slip.reveal.active .clip { animation: clip-wobble 19s 8s ease-in-out infinite; }
+@keyframes clip-wobble {
+    0%, 90%, 100% { transform: rotate(-9deg); }
+    92% { transform: rotate(-18deg); }
+    95% { transform: rotate(-3deg); }
+    97% { transform: rotate(-12deg); }
+}
+
+/* レシートのハンコが ポンと押される */
+.receipt.reveal.active .r-stamp {
+    animation: stamp-in 0.5s 0.6s backwards cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes stamp-in {
+    0%   { opacity: 0;    transform: rotate(-34deg) scale(2.2); }
+    55%  { opacity: 0.9;  }
+    100% { opacity: 0.65; transform: rotate(-16deg) scale(1); }
+}
+
+/* バーコードが 左から 読み取られる */
+.spec.reveal.active .barcode {
+    animation: barcode-in 0.95s 0.4s backwards cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes barcode-in { from { clip-path: inset(0 100% 0 0); } }
+
+/* しつもんの ＋ が ひらくとき はねる */
+.faq summary::after { transition: color 0.25s, transform 0.25s; }
+.faq summary:hover::after { color: var(--red); transform: scale(1.25); }
+.faq details[open] summary::after {
+    color: var(--red);
+    animation: faq-pop 0.36s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes faq-pop { from { transform: scale(0.25) rotate(-100deg); } }
+
+/* りんくの しるしが ホバーで はねる */
+.cuts a:hover i { animation: icon-hop 0.46s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes icon-hop {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    40%      { transform: translateY(-6px) rotate(-10deg); }
+}
+
+/* あしあとの けたが めくれて出る */
+.ashiato-digits { perspective: 340px; }
+.ashiato.on .ashiato-digits span {
+    animation: digit-in 0.5s backwards cubic-bezier(0.22,1,0.36,1);
+}
+.ashiato.on .ashiato-digits span:nth-child(1) { animation-delay: 0.06s; }
+.ashiato.on .ashiato-digits span:nth-child(2) { animation-delay: 0.13s; }
+.ashiato.on .ashiato-digits span:nth-child(3) { animation-delay: 0.20s; }
+.ashiato.on .ashiato-digits span:nth-child(4) { animation-delay: 0.27s; }
+.ashiato.on .ashiato-digits span:nth-child(5) { animation-delay: 0.34s; }
+@keyframes digit-in { from { opacity: 0; transform: translateY(-15px) rotateX(72deg); } }
+
+/* シールを 置いたときの もちあがり */
+.sticker { transition: transform 0.25s, box-shadow 0.25s; }
 
 /* うえへ */
 .totop {
