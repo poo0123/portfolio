@@ -10,17 +10,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const pillText    = document.getElementById('pill-text');
     const actsBox     = document.getElementById('bubble-list');
 
+    // 中身を いじるあいだ、高さを なめらかに つなぐ
+    let actsHeightTimer = null;
+    const smoothActs = (change) => {
+        if (!actsBox) { change(); return; }
+        const oldH = actsBox.offsetHeight;
+        change();
+        actsBox.style.height = '';
+        const newH = actsBox.offsetHeight;
+        if (oldH === newH) return;
+        actsBox.style.height = oldH + 'px';
+        actsBox.classList.add('acts-moving');
+        void actsBox.offsetHeight;          // いったん 確定させる
+        actsBox.style.height = newH + 'px';
+        clearTimeout(actsHeightTimer);
+        actsHeightTimer = setTimeout(() => {
+            actsBox.style.height = '';
+            actsBox.classList.remove('acts-moving');
+        }, 460);
+    };
+
+    // 消えるものは 浮かせてから 消す（まわりが すぐ詰まるように）
+    const leaveAct = (el) => {
+        el.style.top = el.offsetTop + 'px';
+        el.style.height = el.offsetHeight + 'px';
+        el.removeAttribute('data-key');
+        el.classList.add('act-out');
+        setTimeout(() => el.remove(), 420);
+    };
+
     // 「ほかに ◯ こ」を押したとき
     if (actsBox) {
         actsBox.addEventListener('click', (e) => {
             const btn = e.target.closest('.acts-toggle');
             if (!btn) return;
             actsOpen = !actsOpen;
-            const rest = actsBox.querySelector('.acts-rest');
-            if (rest) rest.hidden = !actsOpen;
-            btn.setAttribute('aria-expanded', actsOpen ? 'true' : 'false');
-            const t = btn.querySelector('.acts-toggle-text');
-            if (t) t.textContent = actsOpen ? 'とじる' : 'ほかに ' + btn.dataset.rest + ' こ';
+            smoothActs(() => {
+                actsBox.classList.toggle('open', actsOpen);
+                btn.setAttribute('aria-expanded', actsOpen ? 'true' : 'false');
+                const t = btn.querySelector('.acts-toggle-text');
+                if (t) t.textContent = actsOpen ? 'とじる' : 'ほかに ' + btn.dataset.rest + ' こ';
+            });
         });
     }
 
@@ -315,13 +345,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (key === lastActs) return;
         lastActs = key;
 
-        if (!acts.length) {
-            actsBox.innerHTML = '<p class="act-none">とくに なにもしてない。</p>';
-            if (barTimer) clearInterval(barTimer);
-            return;
-        }
-
-        const cards = acts.map(a => {
+        // 一枚ぶんの 中身
+        const buildAct = (a) => {
             let bar = '';
             // 終わりの時刻が わかるものは どこまで進んだか 出す
             if (a.start && a.end && a.end > a.start) {
@@ -333,39 +358,106 @@ document.addEventListener('DOMContentLoaded', () => {
                         '</div>' +
                       '</div>';
             }
-            return '<div class="act' + (a.img ? '' : ' act-noimg') + '">' +
-                (a.img ? '<img class="act-img" src="' + esc(a.img) + '" alt="" loading="lazy" ' +
-                         'onerror="this.onerror=null;this.src=&quot;https://cdn.discordapp.com/embed/avatars/0.png&quot;">' : '') +
-                '<div class="act-body">' +
-                    '<div class="act-label">' + esc(a.label) +
-                        ((a.start && !bar && since(a.start)) ? ' <span class="act-time" data-start="' + a.start + '">' + esc(since(a.start)) + '</span>' : '') +
-                    '</div>' +
-                    '<p class="act-name">' +
-                        (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.name) + '</a>' : esc(a.name)) +
-                    '</p>' +
-                    (a.detail ? '<p class="act-detail">' + esc(a.detail) + '</p>' : '') +
-                    bar +
-                '</div>' +
-            '</div>';
-        });
+            return {
+                noimg: !a.img,
+                sig: [a.img, a.url, a.start, a.end].join('|'),
+                html:
+                    (a.img ? '<img class="act-img" src="' + esc(a.img) + '" alt="" loading="lazy" ' +
+                             'onerror="this.onerror=null;this.src=&quot;https://cdn.discordapp.com/embed/avatars/0.png&quot;">' : '') +
+                    '<div class="act-body">' +
+                        '<div class="act-label">' + esc(a.label) +
+                            ((a.start && !bar && since(a.start)) ? ' <span class="act-time" data-start="' + a.start + '">' + esc(since(a.start)) + '</span>' : '') +
+                        '</div>' +
+                        '<p class="act-name">' +
+                            (a.url ? '<a href="' + esc(a.url) + '" target="_blank" rel="noopener">' + esc(a.name) + '</a>' : esc(a.name)) +
+                        '</p>' +
+                        (a.detail ? '<p class="act-detail">' + esc(a.detail) + '</p>' : '') +
+                        bar +
+                    '</div>'
+            };
+        };
 
-        const rest = cards.length - ACTS_VISIBLE;
-        let html = cards.slice(0, ACTS_VISIBLE).join('');
-        if (rest > 0) {
-            html += '<div class="acts-rest"' + (actsOpen ? '' : ' hidden') + '>' +
-                        cards.slice(ACTS_VISIBLE).join('') +
-                    '</div>' +
-                    '<button type="button" class="acts-toggle" data-rest="' + rest + '"' +
-                        ' aria-expanded="' + (actsOpen ? 'true' : 'false') + '">' +
-                        '<span class="acts-toggle-text">' +
-                            (actsOpen ? 'とじる' : 'ほかに ' + rest + ' こ') +
-                        '</span>' +
-                        '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>' +
-                    '</button>';
-        } else {
-            actsOpen = false;
-        }
-        actsBox.innerHTML = html;
+        const keyOf = (a) => a.label + '|' + a.name + '|' + a.detail;
+
+        // ある ものは のこし、足りないものだけ 足して、いらないものだけ 落とす
+        smoothActs(() => {
+            const none = actsBox.querySelector('.act-none');
+
+            if (!acts.length) {
+                actsBox.querySelectorAll('.act:not(.act-out)').forEach(leaveAct);
+                const old = actsBox.querySelector('.acts-toggle');
+                if (old) old.remove();
+                if (!none) {
+                    const p = document.createElement('p');
+                    p.className = 'act-none act-in';
+                    p.textContent = 'とくに なにもしてない。';
+                    actsBox.appendChild(p);
+                    setTimeout(() => p.classList.remove('act-in'), 30);
+                }
+                return;
+            }
+            if (none) none.remove();
+
+            const have = new Map();
+            actsBox.querySelectorAll('.act:not(.act-out)').forEach(el => have.set(el.dataset.key, el));
+
+            const want = new Set(acts.map(keyOf));
+            have.forEach((el, k) => {
+                if (want.has(k)) return;
+                leaveAct(el);
+                have.delete(k);
+            });
+
+            let prev = null;
+            acts.forEach(a => {
+                const k = keyOf(a);
+                const b = buildAct(a);
+                let el = have.get(k);
+                if (el) {
+                    if (el.dataset.sig !== b.sig) {
+                        el.innerHTML = b.html;
+                        el.dataset.sig = b.sig;
+                    }
+                    el.classList.toggle('act-noimg', b.noimg);
+                } else {
+                    el = document.createElement('div');
+                    el.className = 'act act-in' + (b.noimg ? ' act-noimg' : '');
+                    el.dataset.key = k;
+                    el.dataset.sig = b.sig;
+                    el.innerHTML = b.html;
+                    setTimeout(() => el.classList.remove('act-in'), 30);
+                }
+                if (prev) prev.after(el);
+                else actsBox.insertBefore(el, actsBox.firstChild);
+                prev = el;
+            });
+
+            // あまりは たたむ
+            const alive = Array.prototype.slice.call(actsBox.querySelectorAll('.act:not(.act-out)'));
+            alive.forEach((el, i) => el.classList.toggle('act-extra', i >= ACTS_VISIBLE));
+
+            const rest = Math.max(alive.length - ACTS_VISIBLE, 0);
+            if (!rest) actsOpen = false;
+            actsBox.classList.toggle('open', actsOpen && rest > 0);
+
+            let btn = actsBox.querySelector('.acts-toggle');
+            if (rest > 0) {
+                if (!btn) {
+                    btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'acts-toggle';
+                    btn.innerHTML = '<span class="acts-toggle-text"></span>' +
+                                    '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>';
+                }
+                btn.dataset.rest = rest;
+                btn.setAttribute('aria-expanded', actsOpen ? 'true' : 'false');
+                btn.querySelector('.acts-toggle-text').textContent =
+                    actsOpen ? 'とじる' : 'ほかに ' + rest + ' こ';
+                actsBox.appendChild(btn);
+            } else if (btn) {
+                btn.remove();
+            }
+        });
 
         if (acts.some(a => a.start && a.end && a.end > a.start)) runBars();
         else if (barTimer) clearInterval(barTimer);

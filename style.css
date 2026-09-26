@@ -211,8 +211,27 @@ body.dark-mode .status-dot { border-color: #e9e2d4; }
     color: var(--ink-2); letter-spacing: 0.05em;
 }
 
-.acts { margin-top: 10px; display: flex; flex-direction: column; gap: 14px; }
-.act { display: flex; gap: 13px; align-items: flex-start; }
+.acts {
+    margin-top: 10px; display: flex; flex-direction: column; gap: 14px;
+    position: relative;
+    transition: height 0.44s cubic-bezier(0.22,1,0.36,1);
+}
+.acts.acts-moving { overflow: hidden; }
+
+.act {
+    display: flex; gap: 13px; align-items: flex-start;
+    transition: opacity 0.34s, transform 0.36s cubic-bezier(0.22,1,0.36,1);
+}
+/* 入ってくる */
+.act.act-in { opacity: 0; transform: translateY(12px) scale(0.985); }
+/* 出ていく — 浮かせて まわりを すぐ詰める */
+.act.act-out {
+    position: absolute; left: 0; right: 0; z-index: 0; pointer-events: none;
+    opacity: 0; transform: translateY(-9px) scale(0.985);
+}
+/* あまったぶん */
+.act-extra { display: none; }
+.acts.open .act-extra { display: flex; }
 .act-img {
     width: 48px; height: 48px; flex-shrink: 0; object-fit: cover;
     background: #fff; padding: 3px; border: 1px solid rgba(0,0,0,0.12);
@@ -223,10 +242,6 @@ body.dark-mode .status-dot { border-color: #e9e2d4; }
 .act-name { font-size: 0.92rem; font-weight: 700; line-height: 1.45; word-break: break-word; }
 .act-detail { font-size: 0.8rem; color: var(--ink-2); line-height: 1.45; }
 .act-noimg { padding-left: 2px; }
-
-/* たたんである ぶん */
-.acts-rest { display: flex; flex-direction: column; gap: 14px; }
-.acts-rest[hidden] { display: none; }
 
 /* ほかに ◯ こ */
 .acts-toggle {
@@ -244,7 +259,11 @@ body.dark-mode .status-dot { border-color: #e9e2d4; }
 }
 .acts-toggle i { font-size: 0.64rem; transition: transform 0.3s; }
 .acts-toggle[aria-expanded="true"] i { transform: rotate(180deg); }
-.act-none { font-family: 'Yomogi', cursive; font-size: 0.9rem; color: var(--ink-2); }
+.act-none {
+    font-family: 'Yomogi', cursive; font-size: 0.9rem; color: var(--ink-2);
+    transition: opacity 0.34s;
+}
+.act-none.act-in { opacity: 0; }
 
 .bar { margin-top: 8px; }
 .bar-bg { height: 3px; background: rgba(0,0,0,0.16); position: relative; }
