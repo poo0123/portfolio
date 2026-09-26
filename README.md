@@ -22,9 +22,12 @@ https://poo123.com/
 | すきな ごはん | レシート |
 | しよう | PC のスペック板 |
 | よくある しつもん | 開いて閉じるやつ |
-| りんく | 各サービスへ。カードに触ると 外部のミニプロフィールが出る |
+| りんく | 各サービスへの 切り抜き |
 
 ページが見つからないときは `404.html`（下が破れた紙）が出る。
+
+スマホでは、下までスクロールすると 右下に **丸いボタン**が出る。
+押すと ページの中を いどうする 丸いふだが 下から ならぶ。
 
 ---
 
@@ -92,21 +95,6 @@ X や LINE に貼ったときは、`og:image` に指定した `photo/ogp.jpg`（
 
 ---
 
-## りんくの ミニプロフィール
-
-りんくのカードに 触れると、そのサービスの プロフィールが 小さい紙で出てくる。
-
-| サービス | どこから |
-| --- | --- |
-| Discord | Lanyard（「いま」と おなじ接続を 使いまわす） |
-| X | `api.fxtwitter.com` |
-| GitHub | `api.github.com` |
-| Instagram / Spotify / Steam | 公開 API が ないので ひとことだけ |
-
-どれも キーなし・CORS 許可ずみ。取れなかったときは 黙って ひとことだけに なる。
-
----
-
 ## うごかしかた
 
 静的ファイルだけなので、置いて開けば うごく。
@@ -133,7 +121,6 @@ npx wrangler deploy
 - [Lanyard](https://github.com/Phineas/lanyard) — Discord のようす
 - [Google Fonts](https://fonts.google.com/) — Yomogi / Zen Kurenaido / Caveat
 - [Font Awesome](https://fontawesome.com/) — アイコン
-- [fxtwitter](https://github.com/FixTweet/FxTwitter) — X のプロフィール
 
 ---
 
