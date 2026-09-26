@@ -180,15 +180,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const wrap = document.getElementById('now-wrap');
             if (np && np.asset) {
                 const base = 'https://cdn.discordapp.com/assets/collectibles/' + np.asset;
+                const still = 'url("' + base + 'static.png")';
                 // 動かない環境のために 静止画も敷いておく
-                head.style.backgroundImage = 'url("' + base + 'static.png")';
+                head.style.backgroundImage = still;
                 if (plate && !calm) {
                     if (plate.dataset.base !== base) {
                         plate.dataset.base = base;
                         plate.src = base + 'asset.webm';
+                        // 動くほうは 透けている部分があるので、
+                        // 流れはじめたら 下の静止画は どける（二重に見えてしまう）
+                        plate.addEventListener('playing', () => {
+                            head.style.backgroundImage = '';
+                        }, { once: true });
+                        // 読めなかったときは 静止画に もどす
+                        plate.addEventListener('error', () => {
+                            head.style.backgroundImage = still;
+                        });
                         const go = () => { const p = plate.play(); if (p && p.catch) p.catch(() => {}); };
                         go();
                         plate.addEventListener('loadeddata', go, { once: true });
+                    } else if (!plate.paused) {
+                        head.style.backgroundImage = '';
                     }
                     plate.hidden = false;
                 }
@@ -473,57 +485,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const n2 = new Date();
         const p = (x) => String(x).padStart(2, '0');
         rdate.textContent = n2.getFullYear() + '-' + p(n2.getMonth() + 1) + '-' + p(n2.getDate()) + '  ' + p(n2.getHours()) + ':' + p(n2.getMinutes());
-    }
-
-    /* ---------- あしあと ---------- */
-
-    // この端末で 何回目か
-    const footprint = document.getElementById('footprint');
-    if (footprint) {
-        let n = 1;
-        try {
-            n = parseInt(localStorage.getItem('poo-visits') || '0', 10) + 1;
-            if (!n || n < 1) n = 1;
-            localStorage.setItem('poo-visits', String(n));
-        } catch (e) { n = 1; }
-        footprint.textContent = n === 1 ? 'あなたは はじめて' : 'あなたは ' + n + ' かいめ';
-    }
-
-    // みんなで 何人きたか
-    const tally      = document.getElementById('tally');
-    const tallyAll   = document.getElementById('tally-all');
-    const tallyToday = document.getElementById('tally-today');
-
-    if (tally && tallyAll) {
-        const BASE = 'https://abacus.jasoncameron.dev/';
-        const NS   = 'poo123-com';
-        const two  = (x) => String(x).padStart(2, '0');
-        const nd   = new Date();
-        const dayKey = 'd' + nd.getFullYear() + two(nd.getMonth() + 1) + two(nd.getDate());
-
-        // 数えるのは ひらいた ひとまわりにつき 一回だけ
-        let firstTime = true;
-        try {
-            firstTime = !sessionStorage.getItem('poo-counted');
-            if (firstTime) sessionStorage.setItem('poo-counted', '1');
-        } catch (e) { firstTime = true; }
-        const verb = firstTime ? 'hit' : 'get';
-
-        const ask = (key) => fetch(BASE + verb + '/' + NS + '/' + key)
-            .then(r => r.ok ? r.json() : null)
-            .then(d => (d && typeof d.value === 'number') ? d.value : null)
-            .catch(() => null);
-
-        const nf = (n) => n.toLocaleString('ja-JP');
-
-        Promise.all([ask('all'), ask(dayKey)]).then(([all, today]) => {
-            if (all === null) return;   // もらえなかったら 出さない
-            tallyAll.textContent = nf(all);
-            if (tallyToday) tallyToday.textContent = (today === null) ? '‥' : nf(today);
-            tally.hidden = false;
-            // うしろのタブでも かならず出るように（rAF は 止まることがある）
-            setTimeout(() => tally.classList.add('on'), 30);
-        });
     }
 
     /* ---------- やっている時間を ときどき 更新 ---------- */

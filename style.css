@@ -469,20 +469,6 @@ body.dark-mode .clip { border-color: #6c6456; }
 @keyframes flap { from { opacity: 0; transform: rotateX(-70deg); } }
 
 /* あしあと */
-.footprint { font-family: 'Yomogi', cursive; color: var(--ink-2); }
-
-/* 奥付の おわりに、来た人の数を 一行だけ */
-.tally {
-    display: flex; justify-content: center; flex-wrap: wrap;
-    margin-top: 16px;
-    font-family: 'Yomogi', cursive; font-size: 0.72rem; color: var(--ink-2);
-    opacity: 0; transition: opacity 0.9s;
-}
-.tally.on { opacity: 0.78; }
-.tally[hidden] { display: none; }
-.tally span + span::before { content: '・'; margin: 0 8px; opacity: 0.45; }
-.tally b { font-weight: 400; color: var(--ink); font-size: 0.82rem; }
-
 /* =========================================================
    ページが ないとき
    ========================================================= */
