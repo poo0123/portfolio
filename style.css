@@ -279,8 +279,9 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
 .cuts em { font-family: 'Caveat', cursive; font-style: normal; font-size: 0.95rem; color: var(--ink-2); margin-left: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* りんくの つまみを 押すと 下から にょこっと */
-.cuts { align-items: start; gap: 17px 12px; }
+.cuts { align-items: start; gap: 16px 12px; }
 .cuts li { position: relative; }
+.cut-head { position: relative; }
 
 /* つまみ */
 .peek-btn {
@@ -300,32 +301,29 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
 }
 .cuts li.open .peek-btn i { transform: rotate(180deg); }
 
-/* 引き出し */
-.peek-wrap {
-    max-height: 0; overflow: hidden;
-    transition: max-height 0.38s cubic-bezier(0.22,1,0.36,1);
-}
-.cuts li.open .peek-wrap { max-height: 260px; }
-
+/* 下から にょこっと */
 .peek {
+    position: absolute; left: 2px; right: 2px; top: calc(100% + 11px); z-index: 60;
     display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start;
-    margin: 14px 4px 0;
     padding: 13px 15px 14px;
     background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
-    box-shadow: 0 7px 16px rgba(70,55,35,0.18);
-    transform: translateY(-10px) rotate(-0.8deg);
-    opacity: 0;
-    transition: opacity 0.3s 0.04s, transform 0.36s 0.04s cubic-bezier(0.34,1.4,0.64,1);
+    box-shadow: 0 9px 20px rgba(70,55,35,0.22);
+    transform-origin: top center;
+    transform: translateY(-14px) scale(0.96) rotate(-0.8deg);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.22s, transform 0.34s cubic-bezier(0.34,1.45,0.64,1);
 }
-.cuts li.open .peek { opacity: 1; transform: translateY(0) rotate(-0.8deg); }
+.cuts li.open .peek {
+    opacity: 1; pointer-events: auto;
+    transform: translateY(0) scale(1) rotate(-0.8deg);
+}
 .peek::before {
     content: ''; position: absolute; z-index: 2;
-    top: -6px; left: 20px; width: 42px; height: 13px;
+    top: -6px; left: 22px; width: 42px; height: 13px;
     background: var(--tape);
     background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.22) 0 3px, transparent 3px 7px);
     transform: rotate(-5deg);
 }
-.peek { position: relative; }
 
 .peek-face {
     width: 46px; height: 46px; flex: none;
