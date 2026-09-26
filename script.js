@@ -143,17 +143,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- りんくの ミニプロフィール ---------- */
 
-    // 公開 API が あるものだけ 取りにいく。ないものは ひとことだけ。
+    // 名前・ID・絵 だけ。取れるものは あとで 入れかえる。
     const PEEK = {
-        discord:   { name: 'poo.pptx',   handle: 'Discord',       note: 'ようすは 「いま」に 出ています' },
-        x:         { name: 'poo',        handle: '@_poo_main',    note: 'しょうもないことしか 言わない' },
-        instagram: { name: 'poo._.abc',  handle: 'Instagram',     note: 'ごはんの写真くらい' },
-        spotify:   { name: 'Poo',        handle: 'Spotify',       note: 'きいてるものは 「いま」に 出ます' },
-        github:    { name: 'Poo',        handle: 'poo0123',       note: 'このサイトも ここに あります' },
-        steam:     { name: 'Poo0123',    handle: 'Steam',         note: 'あまり やっていない' }
+        discord:   { name: 'Poo',        handle: '@poo.pptx' },
+        x:         { name: 'poo',        handle: '@_poo_main' },
+        instagram: { name: 'poo._.abc',  handle: 'Instagram' },
+        spotify:   { name: 'Poo',        handle: 'Spotify' },
+        github:    { name: 'Poo',        handle: '@poo0123' },
+        // Steam は ブラウザから 直に取れないので、公開プロフィールの ものを そのまま
+        steam:     { name: 'Poo',        handle: '@Poo0123',
+                     img: 'https://avatars.fastly.steamstatic.com/1e35378ed36a4e8cd62de30ba58c6ee861809144_full.jpg' }
     };
 
     const peekCards = {};
+    const fillLater = [];
 
     const buildPeeks = () => {
         document.querySelectorAll('.cuts li[data-peek]').forEach(li => {
@@ -165,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.type = 'button';
             btn.className = 'peek-btn';
             btn.setAttribute('aria-expanded', 'false');
-            btn.setAttribute('aria-label', d.name + ' の ようすを 見る');
+            btn.setAttribute('aria-label', d.name + ' の プロフィールを 見る');
             btn.innerHTML = '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>';
 
             // カードと つまみを ひとまとめにして、つまみの位置を 動かさない
@@ -185,10 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 '<div class="peek-body">' +
                     '<p class="peek-name">' + esc(d.name) + '</p>' +
                     '<p class="peek-handle">' + esc(d.handle) + '</p>' +
-                    '<p class="peek-note">' + esc(d.note) + '</p>' +
-                    '<p class="peek-stat" hidden></p>' +
                 '</div>';
             li.appendChild(box);
+            if (d.img) fillLater.push([key, { img: d.img }]);
             btn.addEventListener('click', () => {
                 const open = !li.classList.contains('open');
                 // ひらくのは ひとつだけ
@@ -226,15 +228,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (o.name)   box.querySelector('.peek-name').textContent = o.name;
         if (o.handle) box.querySelector('.peek-handle').textContent = o.handle;
-        if (o.note)   box.querySelector('.peek-note').textContent = o.note;
-        if (o.stat) {
-            const s = box.querySelector('.peek-stat');
-            s.textContent = o.stat;
-            s.hidden = false;
-        }
     };
 
     buildPeeks();
+    fillLater.forEach(([k, o]) => fillPeek(k, o));
 
     // ほかのところを 押したら しまう
     document.addEventListener('click', (e) => {
@@ -256,9 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fillPeek('github', {
                 img: u.avatar_url ? u.avatar_url + '&s=96' : null,
                 name: u.name || u.login,
-                handle: '@' + u.login,
-                note: u.bio || null,
-                stat: 'リポジトリ ' + u.public_repos + ' ・ フォロワー ' + u.followers
+                handle: '@' + u.login
             });
         })
         .catch(() => {});
@@ -273,9 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // 小さい版が来るので 大きいほうに 差し替える
                 img: u.avatar_url ? u.avatar_url.replace("_normal.", "_400x400.") : null,
                 name: u.name || u.screen_name,
-                handle: '@' + u.screen_name,
-                note: u.description || null,
-                stat: 'フォロワー ' + u.followers + ' ・ ポスト ' + u.tweets
+                handle: '@' + u.screen_name
             });
         })
         .catch(() => {});
@@ -383,10 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? 'https://cdn.discordapp.com/avatars/' + du.id + '/' + du.avatar + '.webp?size=96'
                     : null,
                 name: du.display_name || du.global_name || du.username,
-                handle: du.username ? '@' + du.username : 'Discord',
-                stat: (data.discord_status && data.discord_status !== 'offline')
-                    ? 'いま ' + (STATUS_LABEL[data.discord_status] || data.discord_status)
-                    : 'いまは いない'
+                handle: du.username ? '@' + du.username : 'Discord'
             });
         }
 
