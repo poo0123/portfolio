@@ -141,6 +141,99 @@ document.addEventListener('DOMContentLoaded', () => {
         barTimer = setInterval(tick, 1000);
     };
 
+    /* ---------- りんくの ミニプロフィール ---------- */
+
+    // 公開 API が あるものだけ 取りにいく。ないものは ひとことだけ。
+    const PEEK = {
+        discord:   { name: 'poo.pptx',   handle: 'Discord',       note: 'ようすは 「いま」に 出ています' },
+        x:         { name: 'poo',        handle: '@_poo_main',    note: 'しょうもないことしか 言わない' },
+        instagram: { name: 'poo._.abc',  handle: 'Instagram',     note: 'ごはんの写真くらい' },
+        spotify:   { name: 'Poo',        handle: 'Spotify',       note: 'きいてるものは 「いま」に 出ます' },
+        github:    { name: 'Poo',        handle: 'poo0123',       note: 'このサイトも ここに あります' },
+        steam:     { name: 'Poo0123',    handle: 'Steam',         note: 'あまり やっていない' }
+    };
+
+    const peekCards = {};
+
+    const buildPeeks = () => {
+        document.querySelectorAll('.cuts li[data-peek]').forEach(li => {
+            const key = li.dataset.peek;
+            const d = PEEK[key];
+            if (!d) return;
+            const box = document.createElement('div');
+            box.className = 'peek';
+            box.setAttribute('aria-hidden', 'true');
+            box.innerHTML =
+                '<span class="peek-face"><i class="' + esc(li.querySelector('a i').className) + '"></i></span>' +
+                '<div class="peek-body">' +
+                    '<p class="peek-name">' + esc(d.name) + '</p>' +
+                    '<p class="peek-handle">' + esc(d.handle) + '</p>' +
+                    '<p class="peek-note">' + esc(d.note) + '</p>' +
+                    '<p class="peek-stat" hidden></p>' +
+                '</div>';
+            li.appendChild(box);
+            peekCards[key] = box;
+        });
+    };
+
+    // 顔・名前・ひとこと・かずを 入れかえる
+    const fillPeek = (key, o) => {
+        const box = peekCards[key];
+        if (!box) return;
+        if (o.img) {
+            const face = box.querySelector('.peek-face');
+            const img = document.createElement('img');
+            img.alt = '';
+            img.loading = 'lazy';
+            img.onerror = () => { img.remove(); };
+            img.src = o.img;
+            face.insertBefore(img, face.firstChild);
+            face.classList.add('has-img');
+        }
+        if (o.name)   box.querySelector('.peek-name').textContent = o.name;
+        if (o.handle) box.querySelector('.peek-handle').textContent = o.handle;
+        if (o.note)   box.querySelector('.peek-note').textContent = o.note;
+        if (o.stat) {
+            const s = box.querySelector('.peek-stat');
+            s.textContent = o.stat;
+            s.hidden = false;
+        }
+    };
+
+    buildPeeks();
+
+    // GitHub
+    fetch('https://api.github.com/users/poo0123')
+        .then(r => r.ok ? r.json() : null)
+        .then(u => {
+            if (!u) return;
+            fillPeek('github', {
+                img: u.avatar_url ? u.avatar_url + '&s=96' : null,
+                name: u.name || u.login,
+                handle: '@' + u.login,
+                note: u.bio || null,
+                stat: 'リポジトリ ' + u.public_repos + ' ・ フォロワー ' + u.followers
+            });
+        })
+        .catch(() => {});
+
+    // X
+    fetch('https://api.fxtwitter.com/_poo_main')
+        .then(r => r.ok ? r.json() : null)
+        .then(d => {
+            const u = d && d.user;
+            if (!u) return;
+            fillPeek('x', {
+                // 小さい版が来るので 大きいほうに 差し替える
+                img: u.avatar_url ? u.avatar_url.replace("_normal.", "_400x400.") : null,
+                name: u.name || u.screen_name,
+                handle: '@' + u.screen_name,
+                note: u.description || null,
+                stat: 'フォロワー ' + u.followers + ' ・ ポスト ' + u.tweets
+            });
+        })
+        .catch(() => {});
+
     /* ---------- Discord のいま ---------- */
 
     const paint = (data) => {
@@ -233,6 +326,22 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 tag.hidden = true;
             }
+        }
+
+        // りんくの Discord カードにも 同じ人となりを 出す
+        if (!peekCards.__discordDone && data.discord_user) {
+            peekCards.__discordDone = true;
+            const du = data.discord_user;
+            fillPeek('discord', {
+                img: du.avatar
+                    ? 'https://cdn.discordapp.com/avatars/' + du.id + '/' + du.avatar + '.webp?size=96'
+                    : null,
+                name: du.display_name || du.global_name || du.username,
+                handle: du.username ? '@' + du.username : 'Discord',
+                stat: (data.discord_status && data.discord_status !== 'offline')
+                    ? 'いま ' + (STATUS_LABEL[data.discord_status] || data.discord_status)
+                    : 'いまは いない'
+            });
         }
 
         const status = data.discord_status || 'offline';
