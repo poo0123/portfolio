@@ -278,27 +278,54 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
 .cuts b { font-family: 'Yomogi', cursive; font-weight: 400; font-size: 0.95rem; }
 .cuts em { font-family: 'Caveat', cursive; font-style: normal; font-size: 0.95rem; color: var(--ink-2); margin-left: auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* りんくに さわると 出る ミニプロフィール */
+/* りんくの つまみを 押すと 下から にょこっと */
+.cuts { align-items: start; gap: 17px 12px; }
 .cuts li { position: relative; }
+
+/* つまみ */
+.peek-btn {
+    position: absolute; right: 12px; bottom: -10px; z-index: 3;
+    width: 25px; height: 25px; padding: 0; border-radius: 50%;
+    background: var(--card); border: 1px dashed var(--rule); color: var(--red);
+    font-size: 0.6rem; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 6px rgba(70,55,35,0.2);
+    transform: rotate(-5deg);
+    transition: transform 0.25s, background 0.25s, border-color 0.25s, border-style 0.25s;
+}
+.peek-btn:hover { transform: rotate(0deg) scale(1.14); background: var(--note); }
+.peek-btn i { transition: transform 0.32s cubic-bezier(0.22,1,0.36,1); }
+.cuts li.open .peek-btn {
+    background: var(--note); border-style: solid; border-color: var(--red); transform: rotate(0deg);
+}
+.cuts li.open .peek-btn i { transform: rotate(180deg); }
+
+/* 引き出し */
+.peek-wrap {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.38s cubic-bezier(0.22,1,0.36,1);
+}
+.cuts li.open .peek-wrap { max-height: 260px; }
+
 .peek {
-    position: absolute; left: 0; right: 0; top: calc(100% + 9px); z-index: 60;
     display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start;
+    margin: 14px 4px 0;
     padding: 13px 15px 14px;
     background: var(--card); border: 1px solid var(--rule); border-radius: 3px;
-    box-shadow: 0 11px 24px rgba(70,55,35,0.24);
-    opacity: 0; pointer-events: none;
-    transform: translateY(-7px) rotate(-0.9deg);
-    transition: opacity 0.24s, transform 0.24s;
+    box-shadow: 0 7px 16px rgba(70,55,35,0.18);
+    transform: translateY(-10px) rotate(-0.8deg);
+    opacity: 0;
+    transition: opacity 0.3s 0.04s, transform 0.36s 0.04s cubic-bezier(0.34,1.4,0.64,1);
 }
+.cuts li.open .peek { opacity: 1; transform: translateY(0) rotate(-0.8deg); }
 .peek::before {
     content: ''; position: absolute; z-index: 2;
-    top: -7px; left: 18px; width: 44px; height: 14px;
+    top: -6px; left: 20px; width: 42px; height: 13px;
     background: var(--tape);
     background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.22) 0 3px, transparent 3px 7px);
-    transform: rotate(-4deg);
+    transform: rotate(-5deg);
 }
-.cuts li:hover .peek,
-.cuts li:focus-within .peek { opacity: 1; transform: translateY(0) rotate(-0.9deg); }
+.peek { position: relative; }
 
 .peek-face {
     width: 46px; height: 46px; flex: none;
@@ -328,22 +355,6 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
     font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
 }
 .peek-stat[hidden] { display: none; }
-
-/* さわれない端末では たたんだまま 下に出す */
-@media (hover: none) {
-    .peek {
-        position: static; opacity: 1; pointer-events: auto; transform: none;
-        margin-top: 9px; padding: 10px 2px 0;
-        background: none; border: none; border-top: 1px dashed var(--rule);
-        box-shadow: none; border-radius: 0;
-        grid-template-columns: auto 1fr; gap: 10px;
-    }
-    .peek::before { display: none; }
-    .peek-face { width: 34px; height: 34px; }
-    .peek-name { font-size: 0.86rem; }
-    .peek-handle { font-size: 0.85rem; }
-    .peek-note { -webkit-line-clamp: 1; }
-}
 
 /* 奥付 */
 .colophon { text-align: center; margin-top: 60px; padding-top: 26px; border-top: 1px dashed var(--rule); color: var(--ink-2); font-size: 0.82rem; }

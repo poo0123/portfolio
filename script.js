@@ -160,18 +160,49 @@ document.addEventListener('DOMContentLoaded', () => {
             const key = li.dataset.peek;
             const d = PEEK[key];
             if (!d) return;
-            const box = document.createElement('div');
-            box.className = 'peek';
-            box.setAttribute('aria-hidden', 'true');
-            box.innerHTML =
-                '<span class="peek-face"><i class="' + esc(li.querySelector('a i').className) + '"></i></span>' +
-                '<div class="peek-body">' +
-                    '<p class="peek-name">' + esc(d.name) + '</p>' +
-                    '<p class="peek-handle">' + esc(d.handle) + '</p>' +
-                    '<p class="peek-note">' + esc(d.note) + '</p>' +
-                    '<p class="peek-stat" hidden></p>' +
-                '</div>';
-            li.appendChild(box);
+            // 押すための つまみ
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'peek-btn';
+            btn.setAttribute('aria-expanded', 'false');
+            btn.setAttribute('aria-label', d.name + ' の ようすを 見る');
+            btn.innerHTML = '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>';
+
+            // 下から にょこっと 出てくるところ
+            const wrap = document.createElement('div');
+            wrap.className = 'peek-wrap';
+            wrap.innerHTML =
+                '<div class="peek-clip"><div class="peek" aria-hidden="true">' +
+                    '<span class="peek-face"><i class="' + esc(li.querySelector('a i').className) + '"></i></span>' +
+                    '<div class="peek-body">' +
+                        '<p class="peek-name">' + esc(d.name) + '</p>' +
+                        '<p class="peek-handle">' + esc(d.handle) + '</p>' +
+                        '<p class="peek-note">' + esc(d.note) + '</p>' +
+                        '<p class="peek-stat" hidden></p>' +
+                    '</div>' +
+                '</div></div>';
+
+            li.appendChild(btn);
+            li.appendChild(wrap);
+
+            const box = wrap.querySelector('.peek');
+            btn.addEventListener('click', () => {
+                const open = !li.classList.contains('open');
+                // ひらくのは ひとつだけ
+                document.querySelectorAll('.cuts li.open').forEach(o => {
+                    if (o === li) return;
+                    o.classList.remove('open');
+                    const b = o.querySelector('.peek-btn');
+                    if (b) b.setAttribute('aria-expanded', 'false');
+                    const p = o.querySelector('.peek');
+                    if (p) p.setAttribute('aria-hidden', 'true');
+                });
+                li.classList.toggle('open', open);
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (open) box.removeAttribute('aria-hidden');
+                else box.setAttribute('aria-hidden', 'true');
+            });
+
             peekCards[key] = box;
         });
     };
