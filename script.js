@@ -141,138 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
         barTimer = setInterval(tick, 1000);
     };
 
-    /* ---------- りんくの ミニプロフィール ---------- */
-
-    // 名前・ID・絵 だけ。取れるものは あとで 入れかえる。
-    const PEEK = {
-        discord:   { name: 'Poo',        handle: '@poo.pptx' },
-        x:         { name: 'poo',        handle: '@_poo_main' },
-        instagram: { name: 'poo._.abc',  handle: 'Instagram' },
-        spotify:   { name: 'Poo',        handle: 'Spotify' },
-        github:    { name: 'Poo',        handle: '@poo0123' },
-        // Steam は ブラウザから 直に取れないので、公開プロフィールの ものを そのまま
-        steam:     { name: 'Poo',        handle: '@Poo0123',
-                     img: 'https://avatars.fastly.steamstatic.com/1e35378ed36a4e8cd62de30ba58c6ee861809144_full.jpg' }
-    };
-
-    const peekCards = {};
-    const fillLater = [];
-
-    const buildPeeks = () => {
-        document.querySelectorAll('.cuts li[data-peek]').forEach(li => {
-            const key = li.dataset.peek;
-            const d = PEEK[key];
-            if (!d) return;
-            // 押すための つまみ
-            const btn = document.createElement('button');
-            btn.type = 'button';
-            btn.className = 'peek-btn';
-            btn.setAttribute('aria-expanded', 'false');
-            btn.setAttribute('aria-label', d.name + ' の プロフィールを 見る');
-            btn.innerHTML = '<i class="fa-solid fa-chevron-down" aria-hidden="true"></i>';
-
-            // カードと つまみを ひとまとめにして、つまみの位置を 動かさない
-            const a = li.querySelector('a');
-            const head = document.createElement('div');
-            head.className = 'cut-head';
-            li.insertBefore(head, a);
-            head.appendChild(a);
-            head.appendChild(btn);
-
-            // 下から にょこっと 出てくるところ
-            const box = document.createElement('div');
-            box.className = 'peek';
-            box.setAttribute('aria-hidden', 'true');
-            box.innerHTML =
-                '<span class="peek-face"><i class="' + esc(a.querySelector('i').className) + '"></i></span>' +
-                '<div class="peek-body">' +
-                    '<p class="peek-name">' + esc(d.name) + '</p>' +
-                    '<p class="peek-handle">' + esc(d.handle) + '</p>' +
-                '</div>';
-            li.appendChild(box);
-            if (d.img) fillLater.push([key, { img: d.img }]);
-            btn.addEventListener('click', () => {
-                const open = !li.classList.contains('open');
-                // ひらくのは ひとつだけ
-                document.querySelectorAll('.cuts li.open').forEach(o => {
-                    if (o === li) return;
-                    o.classList.remove('open');
-                    const b = o.querySelector('.peek-btn');
-                    if (b) b.setAttribute('aria-expanded', 'false');
-                    const p = o.querySelector('.peek');
-                    if (p) p.setAttribute('aria-hidden', 'true');
-                });
-                li.classList.toggle('open', open);
-                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-                if (open) box.removeAttribute('aria-hidden');
-                else box.setAttribute('aria-hidden', 'true');
-            });
-
-            peekCards[key] = box;
-        });
-    };
-
-    // 顔・名前・ひとこと・かずを 入れかえる
-    const fillPeek = (key, o) => {
-        const box = peekCards[key];
-        if (!box) return;
-        if (o.img) {
-            const face = box.querySelector('.peek-face');
-            const img = document.createElement('img');
-            img.alt = '';
-            img.loading = 'lazy';
-            img.onerror = () => { img.remove(); };
-            img.src = o.img;
-            face.insertBefore(img, face.firstChild);
-            face.classList.add('has-img');
-        }
-        if (o.name)   box.querySelector('.peek-name').textContent = o.name;
-        if (o.handle) box.querySelector('.peek-handle').textContent = o.handle;
-    };
-
-    buildPeeks();
-    fillLater.forEach(([k, o]) => fillPeek(k, o));
-
-    // ほかのところを 押したら しまう
-    document.addEventListener('click', (e) => {
-        if (e.target.closest('.cuts li')) return;
-        document.querySelectorAll('.cuts li.open').forEach(o => {
-            o.classList.remove('open');
-            const b = o.querySelector('.peek-btn');
-            if (b) b.setAttribute('aria-expanded', 'false');
-            const p = o.querySelector('.peek');
-            if (p) p.setAttribute('aria-hidden', 'true');
-        });
-    });
-
-    // GitHub
-    fetch('https://api.github.com/users/poo0123')
-        .then(r => r.ok ? r.json() : null)
-        .then(u => {
-            if (!u) return;
-            fillPeek('github', {
-                img: u.avatar_url ? u.avatar_url + '&s=96' : null,
-                name: u.name || u.login,
-                handle: '@' + u.login
-            });
-        })
-        .catch(() => {});
-
-    // X
-    fetch('https://api.fxtwitter.com/_poo_main')
-        .then(r => r.ok ? r.json() : null)
-        .then(d => {
-            const u = d && d.user;
-            if (!u) return;
-            fillPeek('x', {
-                // 小さい版が来るので 大きいほうに 差し替える
-                img: u.avatar_url ? u.avatar_url.replace("_normal.", "_400x400.") : null,
-                name: u.name || u.screen_name,
-                handle: '@' + u.screen_name
-            });
-        })
-        .catch(() => {});
-
     /* ---------- Discord のいま ---------- */
 
     const paint = (data) => {
@@ -365,19 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 tag.hidden = true;
             }
-        }
-
-        // りんくの Discord カードにも 同じ人となりを 出す
-        if (!peekCards.__discordDone && data.discord_user) {
-            peekCards.__discordDone = true;
-            const du = data.discord_user;
-            fillPeek('discord', {
-                img: du.avatar
-                    ? 'https://cdn.discordapp.com/avatars/' + du.id + '/' + du.avatar + '.webp?size=96'
-                    : null,
-                name: du.display_name || du.global_name || du.username,
-                handle: du.username ? '@' + du.username : 'Discord'
-            });
         }
 
         const status = data.discord_status || 'offline';
@@ -567,6 +422,43 @@ document.addEventListener('DOMContentLoaded', () => {
         backBtn.addEventListener('click', (e) => {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    /* ---------- スマホの 丸いいどう ---------- */
+
+    const dots    = document.getElementById('dots');
+    const dotsBtn = document.getElementById('dots-toggle');
+
+    if (dots && dotsBtn) {
+        const closeDots = () => {
+            dots.classList.remove('open');
+            dotsBtn.setAttribute('aria-expanded', 'false');
+        };
+
+        const onScrollDots = () => dots.classList.toggle('show', window.scrollY > 300);
+        window.addEventListener('scroll', onScrollDots, { passive: true });
+        onScrollDots();
+
+        dotsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const open = !dots.classList.contains('open');
+            dots.classList.toggle('open', open);
+            dotsBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+
+        dots.querySelectorAll('.dots-list a').forEach(a => {
+            a.addEventListener('click', (e) => {
+                closeDots();
+                if (a.dataset.top) {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('#dots')) closeDots();
         });
     }
 
