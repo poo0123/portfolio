@@ -27,12 +27,13 @@
         })();
     </script>
     <style>
-        html.pre-dark body { background-color: #1d1a16; }
+        html.pre-dark body { background-color: #070b1c; }
     </style>
 </head>
 <body class="light-mode">
 
     <div class="grain" aria-hidden="true"></div>
+    <div id="fireflies" aria-hidden="true"></div>
 
     <div class="page nf-page">
 
@@ -58,6 +59,29 @@
             var dark = document.documentElement.className === 'pre-dark';
             document.body.classList.toggle('dark-mode', dark);
             document.body.classList.toggle('light-mode', !dark);
+
+            var calm = window.matchMedia
+                && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var box = document.getElementById('fireflies');
+            if (!dark || calm || !box) return;
+
+            function rnd(a, b) { return a + Math.random() * (b - a); }
+
+            var n = window.innerWidth < 720 ? 8 : 13;
+            for (var i = 0; i < n; i++) {
+                var el = document.createElement('i');
+                el.className = 'ff';
+                el.style.left = rnd(2, 96).toFixed(1) + 'vw';
+                el.style.top  = rnd(6, 92).toFixed(1) + 'vh';
+                el.style.setProperty('--r',  rnd(2.6, 5).toFixed(1) + 'px');
+                el.style.setProperty('--dx', rnd(-90, 90).toFixed(0) + 'px');
+                el.style.setProperty('--dy', rnd(-120, 40).toFixed(0) + 'px');
+                el.style.setProperty('--d',  rnd(16, 30).toFixed(1) + 's');
+                el.style.setProperty('--b',  rnd(2.6, 5.4).toFixed(1) + 's');
+                el.style.setProperty('--dd', (-rnd(0, 20)).toFixed(1) + 's');
+                el.style.setProperty('--bd', (-rnd(0, 6)).toFixed(1) + 's');
+                box.appendChild(el);
+            }
         })();
     </script>
 </body>

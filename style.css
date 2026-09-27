@@ -16,18 +16,31 @@
     --shadow:  0 10px 22px rgba(70,55,35,0.16);
 }
 
+/* よる ― 月あかりの 夜空 */
 body.dark-mode {
-    --paper:   #1d1a16;
-    --paper-2: #24201a;
-    --card:    #272219;
-    --note:    #4b4327;
-    --ink:     #ece3d3;
-    --ink-2:   #ab9e8b;
-    --rule:    #3b342a;
-    --red:     #e58585;
-    --blue:    #93a9de;
-    --tape:    rgba(196,168,110,0.30);
-    --shadow:  0 10px 24px rgba(0,0,0,0.45);
+    --paper:   #070b1c;
+    --paper-2: #0e1530;
+    --card:    #131c3c;
+    --note:    #222d5c;
+    --ink:     #e3ebff;
+    --ink-2:   #98a6d4;
+    --rule:    #2a3566;
+    --red:     #ff96a8;
+    --blue:    #8fb5ff;
+    --tape:    rgba(150,175,235,0.22);
+    --shadow:  0 12px 30px rgba(0,0,0,0.65);
+}
+/* 左うえに 月、右したに 沈んだ 雲。
+   background-attachment:fixed は スマホで あてに ならないので
+   画面いっぱいの うすい膜を いちまい 敷いて すませる。 */
+body.dark-mode::before {
+    content: '';
+    position: fixed; inset: 0; z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(58vw 42vw at 11% -8%, rgba(158,196,255,0.17), rgba(0,0,0,0) 62%),
+        radial-gradient(34vw 26vw at 11% -8%, rgba(206,228,255,0.14), rgba(0,0,0,0) 58%),
+        radial-gradient(96vw 62vw at 86% 112%, rgba(46,68,142,0.24), rgba(0,0,0,0) 70%);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1409,7 +1422,13 @@ body.dark-mode .scrap-receipt hr { border-top-color: rgba(255,255,255,0.16); }
 }
 .scrap-photo .scrap-tape { top: -13px; left: 22px; transform: rotate(-5deg); }
 body.dark-mode .scrap-photo { background: #e9e2d4; }
-body.dark-mode .scrap-photo img { filter: brightness(0.84) saturate(0.88); }
+/* よるは 絵の うえに 夜の 膜を いちまい。
+   絵じたいに filter を かけると 別レイヤーに なって 描画が こけることがある */
+body.dark-mode .scrap-photo::after {
+    content: ''; position: absolute; inset: 11px 11px 32px;
+    background: rgba(9, 14, 38, 0.26);
+    pointer-events: none;
+}
 
 /* 右した ― はがれかけの ふせん */
 .scrap-memo {
@@ -1493,4 +1512,72 @@ body.dark-mode .minibar { box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
 }
 @media (prefers-reduced-motion: reduce) {
     .minibar { transition: opacity 0.001ms, visibility 0.001ms; transform: none; }
+}
+
+
+/* =========================================================
+   よるだけ ― 蛍と、夜に 飛んでいるもの
+   ========================================================= */
+
+/* 蛍。ゆっくり ながれながら 明滅する */
+#fireflies {
+    position: fixed; inset: 0; z-index: 0;
+    overflow: hidden; pointer-events: none;
+}
+.ff {
+    position: absolute;
+    width: var(--r, 4px); height: var(--r, 4px);
+    border-radius: 50%;
+    background: #fff8cd;
+    box-shadow:
+        0 0 6px 2px rgba(255,238,158,0.75),
+        0 0 18px 7px rgba(255,214,96,0.26);
+    opacity: 0;
+    will-change: transform, opacity;
+    animation:
+        ff-drift var(--d, 22s) ease-in-out infinite alternate,
+        ff-blink var(--b, 3.4s) ease-in-out infinite;
+    animation-delay: var(--dd, 0s), var(--bd, 0s);
+}
+@keyframes ff-drift {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(var(--dx, 60px), var(--dy, -80px), 0); }
+}
+@keyframes ff-blink {
+    0%, 100% { opacity: 0; }
+    14%      { opacity: 0.22; }
+    50%      { opacity: 1; }
+    74%      { opacity: 0.3; }
+}
+
+/* 蛾：はねを ふるわせながら 上へ */
+.f-moth { bottom: -50px; animation-name: fly-moth; animation-duration: 15s; }
+@keyframes fly-moth {
+    0%   { transform: translate3d(0, 0, 0) rotate(0deg);              opacity: 0; }
+    8%   {                                                             opacity: 0.9; }
+    22%  { transform: translate3d(36px, -22vh, 0) rotate(11deg); }
+    40%  { transform: translate3d(-28px, -41vh, 0) rotate(-13deg); }
+    58%  { transform: translate3d(42px, -59vh, 0) rotate(9deg); }
+    76%  { transform: translate3d(-20px, -77vh, 0) rotate(-7deg); }
+    92%  {                                                             opacity: 0.9; }
+    100% { transform: translate3d(24px, -110vh, 0) rotate(5deg);       opacity: 0; }
+}
+.f-moth svg { animation: moth-flap 0.42s ease-in-out infinite alternate; }
+@keyframes moth-flap {
+    from { transform: scale(var(--sc, 1)) scaleX(1); }
+    to   { transform: scale(var(--sc, 1)) scaleX(0.58); }
+}
+
+/* 流れ星：ななめに すっと 落ちて 消える */
+.f-star { animation-name: fly-star; animation-duration: 2.4s;
+          animation-timing-function: cubic-bezier(0.38, 0, 0.9, 0.62); }
+@keyframes fly-star {
+    0%   { transform: translate3d(0, 0, 0) scale(0.7);        opacity: 0; }
+    12%  {                                                     opacity: 1; }
+    68%  {                                                     opacity: 1; }
+    100% { transform: translate3d(-56vw, 40vh, 0) scale(1);    opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #fireflies { display: none; }
 }

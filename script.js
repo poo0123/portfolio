@@ -486,10 +486,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- あかるさ ---------- */
 
+    // よる/ひるが 切りかわったら 知らせる（あとで 蛍が つかう）
+    let onTheme = null;
+
     const applyTheme = (dark) => {
         document.body.classList.toggle('dark-mode', dark);
         document.body.classList.toggle('light-mode', !dark);
         if (themeBtn) themeBtn.textContent = dark ? 'ひる' : 'よる';
+        const meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', dark ? '#070b1c' : '#dc6969');
+        if (onTheme) onTheme(dark);
     };
 
     let saved = null;
@@ -674,7 +680,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (sky && !calm) {
-        const FLOATERS = [
+        const DAY = [
             {
                 cls: 'f-balloon', min: 17000, max: 24000, count: [1, 2],
                 colors: ['#dc6969', '#7ea7d6', '#8dc39a', '#dfae5e', '#c58ac8'],
@@ -710,6 +716,42 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         ];
 
+        // よるは 夜に 飛んでいそうなもの だけ
+        const NIGHT = [
+            {
+                cls: 'f-moth', min: 13000, max: 18000, count: [1, 2],
+                colors: ['#cfd9f6', '#b7c4e6', '#e2d8bd', '#a8b3d8'],
+                svg: '<svg width="30" height="24" viewBox="0 0 30 24" fill="none">' +
+                     '<path d="M15 12C11 3 4 1 2 5c-2 4 3 9 13 7z" fill="currentColor" opacity="0.7"/>' +
+                     '<path d="M15 12c4-9 11-11 13-7 2 4-3 9-13 7z" fill="currentColor" opacity="0.7"/>' +
+                     '<path d="M15 12c-3 5-8 6-9 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity="0.5" fill="none"/>' +
+                     '<path d="M15 12c3 5 8 6 9 3" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" opacity="0.5" fill="none"/>' +
+                     '<ellipse cx="15" cy="13" rx="1.6" ry="5" fill="currentColor" opacity="0.9"/>' +
+                     '<path d="M15 8l-2.6-3.4M15 8l2.6-3.4" stroke="currentColor" stroke-width="1" stroke-linecap="round" opacity="0.8"/>' +
+                     '</svg>'
+            },
+            {
+                cls: 'f-star', min: 2000, max: 2900, count: [1, 1],
+                colors: ['#eaf3ff', '#dceaff'],
+                svg: '<svg width="120" height="36" viewBox="0 0 120 36" fill="none">' +
+                     '<path d="M114 5 18 31" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.16"/>' +
+                     '<path d="M114 5 56 21" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" opacity="0.42"/>' +
+                     '<path d="M114 5 88 12" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" opacity="0.88"/>' +
+                     '<circle cx="114" cy="5" r="2.5" fill="currentColor"/>' +
+                     '</svg>'
+            },
+            {
+                cls: 'f-plane', min: 13000, max: 17000, count: [1, 1],
+                colors: ['#b9c6e8'],
+                svg: '<svg width="42" height="28" viewBox="0 0 42 28" fill="none">' +
+                     '<path d="M2 13L40 2 27 26l-6.5-8.5L2 13z" fill="currentColor" opacity="0.4"/>' +
+                     '<path d="M2 13l18.5 4.5M20.5 17.5L40 2" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round" opacity="0.75"/>' +
+                     '</svg>'
+            }
+        ];
+
+        const pool = () => document.body.classList.contains('dark-mode') ? NIGHT : DAY;
+
         const rand = (a, b) => a + Math.random() * (b - a);
         const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
@@ -719,7 +761,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 見ていないときは 出さずに 待ちなおす
             if (document.hidden) { plan(rand(8000, 15000)); return; }
 
-            const f = pick(FLOATERS);
+            const f = pick(pool());
             const n = Math.round(rand(f.count[0], f.count[1]));
             for (let i = 0; i < n; i++) {
                 // ぱらぱらと 時間差で
@@ -740,14 +782,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const dur = Math.round(rand(f.min, f.max));
             el.style.animationDuration = dur + 'ms';
-            if (f.cls === 'f-plane') el.style.top = rand(10, 64).toFixed(1) + 'vh';
-            else el.style.left = rand(4, 84).toFixed(1) + 'vw';
+            if (f.cls === 'f-plane') {
+                el.style.top = rand(10, 64).toFixed(1) + 'vh';
+            } else if (f.cls === 'f-star') {
+                // 流れ星は 右うえから
+                el.style.left = rand(52, 96).toFixed(1) + 'vw';
+                el.style.top = rand(2, 26).toFixed(1) + 'vh';
+            } else {
+                el.style.left = rand(4, 84).toFixed(1) + 'vw';
+            }
 
             sky.appendChild(el);
             setTimeout(() => el.remove(), dur + 900);
         }
 
         plan(rand(3000, 9000));
+    }
+
+    /* ---------- よるの 蛍 ---------- */
+
+    const ffBox = document.getElementById('fireflies');
+
+    if (ffBox && !calm) {
+        const rnd = (a, b) => a + Math.random() * (b - a);
+
+        const light = () => {
+            if (ffBox.childElementCount) return;
+            const n = window.innerWidth < 720 ? 9 : 16;
+            for (let i = 0; i < n; i++) {
+                const el = document.createElement('i');
+                el.className = 'ff';
+                el.style.left = rnd(2, 96).toFixed(1) + 'vw';
+                el.style.top  = rnd(6, 92).toFixed(1) + 'vh';
+                el.style.setProperty('--r',  rnd(2.6, 5).toFixed(1) + 'px');
+                el.style.setProperty('--dx', rnd(-90, 90).toFixed(0) + 'px');
+                el.style.setProperty('--dy', rnd(-120, 40).toFixed(0) + 'px');
+                el.style.setProperty('--d',  rnd(16, 30).toFixed(1) + 's');
+                el.style.setProperty('--b',  rnd(2.6, 5.4).toFixed(1) + 's');
+                // 出そろって しまわないよう ばらばらに ずらす
+                el.style.setProperty('--dd', (-rnd(0, 20)).toFixed(1) + 's');
+                el.style.setProperty('--bd', (-rnd(0, 6)).toFixed(1) + 's');
+                ffBox.appendChild(el);
+            }
+        };
+
+        const out = () => { ffBox.textContent = ''; };
+
+        onTheme = (dark) => { if (dark) light(); else out(); };
+        onTheme(document.body.classList.contains('dark-mode'));
     }
 
     /* ---------- 写真に さわると ぬるっと まっすぐ ---------- */
