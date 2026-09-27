@@ -1189,7 +1189,33 @@ body.dark-mode .receipt { background: #e9e3d6; color: #33302b; }
     transition: transform 0.35s;
 }
 .now-wrap.has-plate:hover { transform: rotate(0deg); }
-body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
+/* よるは ネームプレートの まわりも 夜に する。
+   台紙・プレートの 地・かぶせる膜・文字・札を まとめて 青に よせる。 */
+body.dark-mode .now-wrap.has-plate {
+    background: #172152;
+    border-color: rgba(190, 210, 255, 0.10);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.55);
+}
+body.dark-mode .now-head.has-plate {
+    background-color: #0a1128;
+    background-image: linear-gradient(103deg, #16204a 0%, #080d20 62%);
+    box-shadow: inset 0 0 0 1px rgba(190, 210, 255, 0.09),
+                inset 0 -20px 28px -22px rgba(0, 0, 0, 0.6);
+}
+/* 焼けた写真の膜 → 月あかりの膜 */
+body.dark-mode .now-head.has-plate::after {
+    background:
+        radial-gradient(130% 150% at 26% 24%, rgba(168,204,255,0.18), rgba(0,0,0,0) 62%),
+        linear-gradient(176deg, rgba(146,186,255,0.10) 0%, rgba(8,14,40,0.30) 100%);
+}
+body.dark-mode .now-head.has-plate .now-avatar .status-dot { border-color: #0a1128; }
+body.dark-mode .now-head.has-plate .now-avatar .status-dot::after { color: #0a1128; }
+body.dark-mode .now-head.has-plate .status-line { color: #aab7de; }
+body.dark-mode .now-head.has-plate .guild-tag {
+    background: #e8edfc;
+    border-color: rgba(28, 42, 88, 0.28);
+    color: #151f3e;
+}
 /* 角に ちいさく テープ */
 .now-wrap.has-plate::before {
     content: ''; position: absolute; z-index: 4;
@@ -1422,13 +1448,7 @@ body.dark-mode .scrap-receipt hr { border-top-color: rgba(255,255,255,0.16); }
 }
 .scrap-photo .scrap-tape { top: -13px; left: 22px; transform: rotate(-5deg); }
 body.dark-mode .scrap-photo { background: #e9e2d4; }
-/* よるは 絵の うえに 夜の 膜を いちまい。
-   絵じたいに filter を かけると 別レイヤーに なって 描画が こけることがある */
-body.dark-mode .scrap-photo::after {
-    content: ''; position: absolute; inset: 11px 11px 32px;
-    background: rgba(9, 14, 38, 0.26);
-    pointer-events: none;
-}
+/* 写真だけは よるでも 明るいまま。月あかりが あたっている ことにする */
 
 /* 右した ― はがれかけの ふせん */
 .scrap-memo {
@@ -1449,6 +1469,18 @@ body.dark-mode .scrap-photo::after {
     0%, 100% { translate: 0 0; }
     50%      { translate: 0 -9px; }
 }
+
+/* よるは 紙きれを 沈ませる。月あかりから 遠い 机のすみ ということにして
+   本文の 紙より 暗くする。写真だけ 明るいまま のこす。 */
+body.dark-mode .scrap {
+    background: #0c1230;
+    border-color: rgba(150, 175, 235, 0.09);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.55);
+    color: #8091bd;
+}
+body.dark-mode .scrap-memo { background: #1a2350; }
+body.dark-mode .scrap-photo { background: #e9e2d4; }
+body.dark-mode .scrap-ticket::before { border-left-color: rgba(190, 205, 240, 0.16); }
 
 /* せまい画面では じゃまなので ぜんぶ しまう */
 @media (max-width: 1180px) {
