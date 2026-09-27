@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>poo123.com — ダッシュボード風</title>
-<meta name="description" content="Pooのくそさいと の Cloudflare パネルふう。">
+<title>poo123.com — ダッシュボード</title>
+<meta name="description" content="Pooのくそさいと を Cloudflare のダッシュボードとして再構成したページ。">
 <meta name="theme-color" content="#0f0f11">
 <meta name="robots" content="noindex, follow">
 <link rel="icon" href="/photo/favicon.ico" type="image/x-icon">
@@ -17,28 +17,25 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   background:var(--bg);color:var(--ink);min-height:100svh;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic UI",system-ui,sans-serif;
-  font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Yu Gothic UI","Meiryo",system-ui,sans-serif;
+  font-size:14px;line-height:1.7;-webkit-font-smoothing:antialiased;
 }
 a{color:var(--link);text-decoration:none}
 a:hover{text-decoration:underline}
-code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.ic{width:1em;height:1em;display:inline-block;vertical-align:-.13em;flex:none}
 
-/* ===== てっぺん ===== */
+/* ===== ヘッダー ===== */
 .top{
   display:flex;align-items:center;gap:14px;height:54px;padding:0 18px;
   border-bottom:1px solid var(--line);background:var(--panel);
   position:sticky;top:0;z-index:30;
 }
 .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:15px;color:var(--ink)}
-.logo i{
-  font-style:normal;width:26px;height:26px;border-radius:5px;display:flex;align-items:center;
-  justify-content:center;background:var(--acc);color:#1a1a1a;font-size:14px;font-weight:800;
-}
-.acct{
-  margin-left:6px;font-size:12.5px;color:var(--ink2);border:1px solid var(--line);
-  padding:4px 11px;border-radius:5px;
-}
+.logo:hover{text-decoration:none}
+.logo .ic{font-size:26px;color:var(--acc)}
+.acct{margin-left:6px;font-size:12.5px;color:var(--ink2);border:1px solid var(--line);
+  padding:4px 11px;border-radius:5px}
 .top .right{margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12.5px;color:var(--ink2)}
 .top .right a{color:var(--ink2)}
 .avatar-s{width:26px;height:26px;border-radius:50%;background:#333;overflow:hidden;display:block}
@@ -46,27 +43,25 @@ code,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
 
 .wrap{display:flex;min-height:calc(100svh - 54px)}
 
-/* ===== ひだり ===== */
-.side{
-  width:230px;flex:none;border-right:1px solid var(--line);background:var(--panel);
-  padding:16px 10px 40px;
-}
-.sgroup{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink2);
-  padding:14px 10px 6px}
-.side a{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:5px;
+/* ===== サイドバー ===== */
+.side{width:238px;flex:none;border-right:1px solid var(--line);background:var(--panel);padding:16px 10px 40px}
+.sgroup{font-size:11px;letter-spacing:.09em;color:var(--ink2);padding:14px 10px 6px}
+.side a{display:flex;align-items:center;gap:11px;padding:7px 10px;border-radius:5px;
   color:var(--ink);font-size:13px}
 .side a:hover{background:rgba(255,255,255,.06);text-decoration:none}
 .side a.on{background:rgba(246,130,31,.14);color:var(--acc)}
-.side em{font-style:normal;width:16px;text-align:center;opacity:.8}
+.side .ic{font-size:15px;opacity:.85}
 
-/* ===== みぎ ===== */
+/* ===== 本文 ===== */
 .main{flex:1;min-width:0;padding:22px 26px 70px}
 .crumb{font-size:12px;color:var(--ink2);margin-bottom:6px}
 h1{font-size:24px;font-weight:700;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .badge{
-  font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 10px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 11px;border-radius:999px;
   background:rgba(46,204,113,.16);color:var(--ok);border:1px solid rgba(46,204,113,.3);
 }
+.badge i{width:7px;height:7px;border-radius:50%;background:currentColor;display:block}
 .sub{color:var(--ink2);font-size:13px;margin:6px 0 20px}
 
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:22px;overflow-x:auto}
@@ -74,56 +69,48 @@ h1{font-size:24px;font-weight:700;display:flex;align-items:center;gap:12px;flex-
 .tabs a:hover{color:var(--ink);text-decoration:none}
 .tabs a.on{color:var(--ink);border-bottom-color:var(--acc);font-weight:600}
 
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:14px;margin-bottom:26px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:14px;margin-bottom:26px}
 .tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:15px 16px}
-.tile b{display:block;font-size:11.5px;color:var(--ink2);font-weight:500;letter-spacing:.02em}
-.tile strong{display:block;font-size:26px;font-weight:700;line-height:1.3;margin-top:3px}
+.tile b{display:block;font-size:11.5px;color:var(--ink2);font-weight:500}
+.tile strong{display:block;font-size:26px;font-weight:700;line-height:1.35;margin-top:3px}
 .tile span{display:block;font-size:11.5px;color:var(--ink2)}
 
 .card{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:24px;overflow:hidden}
-.card>h2{
-  font-size:14px;font-weight:600;padding:14px 16px;border-bottom:1px solid var(--line);
-  display:flex;align-items:center;gap:10px;
-}
-.card>h2 small{margin-left:auto;font-weight:400;font-size:11.5px;color:var(--ink2)}
+.card>h2{font-size:14px;font-weight:600;padding:14px 16px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px}
+.card>h2 .ic{color:var(--acc);font-size:16px}
+.card>h2 small{margin-left:auto;font-weight:400;font-size:11.5px;color:var(--ink2);
+  display:flex;align-items:center;gap:7px}
 .cbody{padding:16px}
 
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{
-  text-align:left;font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);
-  font-weight:600;padding:9px 16px;border-bottom:1px solid var(--line);background:var(--panel2);
-}
+th{text-align:left;font-size:11px;letter-spacing:.07em;color:var(--ink2);
+  font-weight:600;padding:9px 16px;border-bottom:1px solid var(--line);background:var(--panel2)}
 td{padding:11px 16px;border-bottom:1px solid var(--line);vertical-align:top}
 tr:last-child td{border-bottom:none}
-td.k{color:var(--ink2);width:200px}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--off);margin-right:7px}
+td.k{color:var(--ink2);width:210px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--off)}
 .dot.online{background:var(--ok)}.dot.idle{background:var(--warn)}
 .dot.dnd{background:var(--dnd)}.dot.offline{background:var(--off)}
 
-/* リアルタイム */
 .live{transition:height .42s cubic-bezier(.22,1,.36,1)}
 .live.moving{overflow:hidden}
-.lrow{
-  display:flex;gap:13px;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--line);
-  transition:opacity .3s,transform .34s cubic-bezier(.22,1,.36,1);
-}
+.lrow{display:flex;gap:13px;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--line);
+  transition:opacity .3s,transform .34s cubic-bezier(.22,1,.36,1)}
 .lrow:last-child{border-bottom:none}
 .lrow.in{opacity:0;transform:translateY(10px)}
 .lrow.out{position:absolute;left:0;right:0;opacity:0;transform:translateY(-8px);pointer-events:none}
 .lico{width:34px;height:34px;flex:none;border-radius:5px;background:var(--panel2);overflow:hidden;
-  display:flex;align-items:center;justify-content:center;font-size:15px}
+  display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink2)}
 .lico img{width:100%;height:100%;object-fit:cover;display:block}
 .lbody{flex:1;min-width:0}
-.ltag{
-  display:inline-block;font-size:10.5px;letter-spacing:.05em;padding:1px 7px;border-radius:3px;
-  background:rgba(90,169,255,.14);color:var(--link);margin-bottom:3px;
-}
+.ltag{display:inline-block;font-size:10.5px;letter-spacing:.04em;padding:1px 8px;border-radius:3px;
+  background:rgba(90,169,255,.14);color:var(--link);margin-bottom:3px}
 .lname{font-weight:600;font-size:13.5px;word-break:break-word}
 .ldet{font-size:12px;color:var(--ink2);word-break:break-word}
 .bar{height:4px;border-radius:2px;background:#2a2a2f;margin-top:8px;overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:var(--acc);transition:width 1s linear}
-.times{display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-top:3px}
-.mono-t{font-variant-numeric:tabular-nums}
+.times{display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-top:3px;font-variant-numeric:tabular-nums}
 
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{font-size:12px;padding:3px 11px;border-radius:4px;background:var(--panel2);
@@ -131,25 +118,25 @@ td.k{color:var(--ink2);width:200px}
 
 details{border-bottom:1px solid var(--line)}
 details:last-child{border-bottom:none}
-summary{list-style:none;cursor:pointer;padding:13px 16px;font-size:13.5px;font-weight:600}
+summary{list-style:none;cursor:pointer;padding:13px 16px;font-size:13.5px;font-weight:600;
+  display:flex;align-items:center;gap:11px}
 summary::-webkit-details-marker{display:none}
-summary::before{content:"▸";color:var(--acc);margin-right:10px;display:inline-block;transition:transform .2s}
-details[open] summary::before{transform:rotate(90deg)}
-details p{padding:0 16px 14px 34px;color:var(--ink2);font-size:13px}
+summary .chevR{color:var(--acc);transition:transform .2s;flex:none}
+details[open] summary .chevR{transform:rotate(90deg)}
+details p{padding:0 16px 14px 43px;color:var(--ink2);font-size:13px}
 
-.note{
-  border:1px solid rgba(246,130,31,.32);background:rgba(246,130,31,.08);
-  border-radius:8px;padding:12px 15px;font-size:13px;color:var(--ink2);margin-bottom:24px;
-}
+.note{border:1px solid rgba(246,130,31,.32);background:rgba(246,130,31,.08);
+  border-radius:8px;padding:12px 15px;font-size:13px;color:var(--ink2);margin-bottom:24px}
 .note b{color:var(--acc)}
 
 .foot{border-top:1px solid var(--line);margin-top:30px;padding-top:16px;font-size:12px;color:var(--ink2);
-  display:flex;gap:16px;flex-wrap:wrap}
+  display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+.foot a{display:inline-flex;align-items:center;gap:7px}
 
 @media (max-width:860px){
   .side{display:none}
   .main{padding:18px 15px 60px}
-  td.k{width:120px}
+  td.k{width:130px}
 }
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001ms!important;transition-duration:.001ms!important}
@@ -157,9 +144,10 @@ details p{padding:0 16px 14px 34px;color:var(--ink2);font-size:13px}
 </style>
 </head>
 <body>
+<script src="/other/icons.js"></script>
 
 <header class="top">
-  <a class="logo" href="/"><i>☁</i>Poo</a>
+  <a class="logo" href="/"><svg class="ic"><use href="#i-cloudflare"/></svg>Poo</a>
   <span class="acct">アカウント：Poo</span>
   <div class="right">
     <a href="/">サポート</a>
@@ -170,63 +158,64 @@ details p{padding:0 16px 14px 34px;color:var(--ink2);font-size:13px}
 <div class="wrap">
   <aside class="side">
     <div class="sgroup">サイト</div>
-    <a href="#overview" class="on"><em>◎</em>概要</a>
-    <a href="#live"><em>◉</em>リアルタイム</a>
-    <a href="#analytics"><em>▤</em>アナリティクス</a>
-    <div class="sgroup">せってい</div>
-    <a href="#gohan"><em>≡</em>すきな ごはん</a>
-    <a href="#spec"><em>▣</em>しよう</a>
-    <a href="#faq"><em>?</em>よくある しつもん</a>
-    <a href="#links"><em>↗</em>りんく</a>
-    <div class="sgroup">そのた</div>
-    <a href="/"><em>←</em>もとのサイト</a>
+    <a href="#overview" class="on"><svg class="ic"><use href="#i-target"/></svg>概要</a>
+    <a href="#live"><svg class="ic"><use href="#i-activity"/></svg>リアルタイム</a>
+    <a href="#langs"><svg class="ic"><use href="#i-chart"/></svg>アナリティクス</a>
+    <div class="sgroup">設定</div>
+    <a href="#food"><svg class="ic"><use href="#i-list"/></svg>好きな食べ物</a>
+    <a href="#spec"><svg class="ic"><use href="#i-table"/></svg>仕様</a>
+    <a href="#faq"><svg class="ic"><use href="#i-question"/></svg>よくある質問</a>
+    <a href="#links"><svg class="ic"><use href="#i-link"/></svg>リンク</a>
+    <div class="sgroup">その他</div>
+    <a href="/"><svg class="ic"><use href="#i-arrowL"/></svg>元のサイトへ戻る</a>
   </aside>
 
   <main class="main">
-    <p class="crumb">アカウント &nbsp;›&nbsp; ウェブサイト &nbsp;›&nbsp; poo123.com</p>
-    <h1 id="overview">poo123.com <span class="badge">● アクティブ</span></h1>
-    <p class="sub" id="hitokoto">きょうの ひとこと</p>
+    <p class="crumb">アカウント ／ ウェブサイト ／ poo123.com</p>
+    <h1 id="overview">poo123.com <span class="badge"><i></i>アクティブ</span></h1>
+    <p class="sub" id="hitokoto">本日の一言</p>
 
     <div class="tabs">
       <a href="#overview" class="on">概要</a>
       <a href="#live">リアルタイム</a>
-      <a href="#analytics">アナリティクス</a>
-      <a href="#gohan">ごはん</a>
-      <a href="#spec">しよう</a>
-      <a href="#faq">しつもん</a>
+      <a href="#langs">アナリティクス</a>
+      <a href="#food">食べ物</a>
+      <a href="#spec">仕様</a>
+      <a href="#faq">質問</a>
     </div>
 
     <div class="note">
-      <b>おしらせ</b> — むだに買ったドメインの使い道がなくて、なんとなく置いてあるだけの場所です。
-      深い意味はないし、たぶんこれからもない。
+      <b>お知らせ</b>　無駄に取得したドメインの使い道がなく、なんとなく置いてあるだけの場所です。
+      深い意味はなく、今後もおそらく増えません。
     </div>
 
     <div class="tiles">
-      <div class="tile"><b>ステータス</b><strong id="t-status">—</strong><span id="t-status-en">つないでいます…</span></div>
-      <div class="tile"><b>うごいているもの</b><strong id="t-acts">0</strong><span>Discord から</span></div>
-      <div class="tile"><b>さわった言語</b><strong>9</strong><span>どれも そこそこ</span></div>
-      <div class="tile"><b>すきな ごはん</b><strong>6</strong><span>てん</span></div>
+      <div class="tile"><b>ステータス</b><strong id="t-status">—</strong><span id="t-status-en">接続しています…</span></div>
+      <div class="tile"><b>実行中のアクティビティ</b><strong id="t-acts">0</strong><span>Discord より取得</span></div>
+      <div class="tile"><b>使用経験のある言語</b><strong>9</strong><span>いずれも中程度</span></div>
+      <div class="tile"><b>好きな食べ物</b><strong>6</strong><span>件</span></div>
     </div>
 
     <div class="card">
-      <h2>◎ 概要 <small>poo123.com</small></h2>
+      <h2><svg class="ic"><use href="#i-target"/></svg>概要<small>poo123.com</small></h2>
       <table>
         <tr><td class="k">サイト名</td><td>Pooのくそさいと</td></tr>
-        <tr><td class="k">いるところ</td><td>東京</td></tr>
-        <tr><td class="k">たべかた</td><td>ドカ食い</td></tr>
-        <tr><td class="k">更新ひんど</td><td>気まぐれ（気は だいたい 向かない）</td></tr>
-        <tr><td class="k">中身</td><td>期待しないでください</td></tr>
-        <tr><td class="k">プラン</td><td>Free（もとは とれていない）</td></tr>
+        <tr><td class="k">所在地</td><td>東京都</td></tr>
+        <tr><td class="k">食事の傾向</td><td>大食い</td></tr>
+        <tr><td class="k">更新頻度</td><td>不定期（意思はありますが実行されません）</td></tr>
+        <tr><td class="k">内容</td><td>期待しないでください</td></tr>
+        <tr><td class="k">プラン</td><td>Free（元は取れていません）</td></tr>
       </table>
     </div>
 
     <div class="card">
-      <h2 id="live">◉ リアルタイム <small><span class="dot offline" id="live-dot"></span><span id="live-name">つないでいます…</span></small></h2>
+      <h2 id="live"><svg class="ic"><use href="#i-activity"/></svg>リアルタイム
+        <small><span class="dot offline" id="live-dot"></span><span id="live-name">接続しています…</span></small></h2>
       <div class="live" id="acts"></div>
     </div>
 
     <div class="card">
-      <h2 id="analytics">▤ さわったことある やつ</h2>
+      <h2 id="langs"><svg class="ic"><use href="#i-chart"/></svg>使用経験のある言語<small>9 件</small></h2>
       <div class="cbody">
         <div class="chips">
           <span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">PHP</span>
@@ -237,60 +226,60 @@ details p{padding:0 16px 14px 34px;color:var(--ink2);font-size:13px}
     </div>
 
     <div class="card">
-      <h2 id="gohan">≡ すきな ごはん <small>6 けん</small></h2>
+      <h2 id="food"><svg class="ic"><use href="#i-list"/></svg>好きな食べ物<small>6 件</small></h2>
       <table>
-        <thead><tr><th>なまえ</th><th>しゅるい</th><th>ねだん</th></tr></thead>
+        <thead><tr><th>名称</th><th>種別</th><th>優先度</th></tr></thead>
         <tbody>
-          <tr><td>とんこつラーメン</td><td class="mono">RAMEN</td><td class="mono">¥ ---</td></tr>
-          <tr><td>すし</td><td class="mono">SUSHI</td><td class="mono">¥ ---</td></tr>
-          <tr><td>ハムカツ</td><td class="mono">FRIED</td><td class="mono">¥ ---</td></tr>
-          <tr><td>麻婆豆腐</td><td class="mono">SPICY</td><td class="mono">¥ ---</td></tr>
-          <tr><td>マック</td><td class="mono">FAST</td><td class="mono">¥ ---</td></tr>
-          <tr><td>ポテサラ</td><td class="mono">SALAD</td><td class="mono">¥ ---</td></tr>
+          <tr><td>豚骨ラーメン</td><td class="mono">RAMEN</td><td class="mono">1</td></tr>
+          <tr><td>寿司</td><td class="mono">SUSHI</td><td class="mono">2</td></tr>
+          <tr><td>ハムカツ</td><td class="mono">FRIED</td><td class="mono">3</td></tr>
+          <tr><td>麻婆豆腐</td><td class="mono">SPICY</td><td class="mono">4</td></tr>
+          <tr><td>マクドナルド</td><td class="mono">FAST</td><td class="mono">5</td></tr>
+          <tr><td>ポテトサラダ</td><td class="mono">SALAD</td><td class="mono">6</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="card">
-      <h2 id="spec">▣ しよう <small>MAIN-PC</small></h2>
+      <h2 id="spec"><svg class="ic"><use href="#i-table"/></svg>仕様<small>MAIN-PC</small></h2>
       <table>
         <tr><td class="k">CPU</td><td class="mono">Core i7-14700F</td></tr>
-        <tr><td class="k">コア</td><td class="mono">20 コア / 28 スレッド</td></tr>
+        <tr><td class="k">コア構成</td><td class="mono">20 コア / 28 スレッド</td></tr>
         <tr><td class="k">GPU</td><td class="mono">RTX 4070 SUPER</td></tr>
         <tr><td class="k">メモリ</td><td class="mono">32 GB</td></tr>
-        <tr><td class="k">ストレージ</td><td class="mono">ぜんぶで 7 TB</td></tr>
+        <tr><td class="k">ストレージ</td><td class="mono">合計 7 TB</td></tr>
         <tr><td class="k">OS</td><td class="mono">Windows 11 Pro</td></tr>
-        <tr><td class="k">ちゅうい</td><td>せいのうを いかしきれていません</td></tr>
+        <tr><td class="k">備考</td><td>性能を活かしきれていません</td></tr>
       </table>
     </div>
 
     <div class="card">
-      <h2 id="faq">? よくある しつもん</h2>
-      <details><summary>なにができるサイト？</summary><p>なにもできない。見るだけ。</p></details>
-      <details><summary>なんで このドメインにしたの？</summary><p>勢い。もう少し考えればよかった。</p></details>
-      <details><summary>「いま」のところは なに？</summary><p>うんちさんが 起きてるかどうか。遊んでるときは 遊んでるものが出ます。</p></details>
-      <details><summary>更新はするの？</summary><p>気が向いたら。気は だいたい 向かない。</p></details>
-      <details><summary>連絡したいときは？</summary><p>したの りんく から どうぞ。返事は 期待しないでください。</p></details>
+      <h2 id="faq"><svg class="ic"><use href="#i-question"/></svg>よくある質問</h2>
+      <details><summary><svg class="ic chevR"><use href="#i-chevR"/></svg>何ができるサイトですか？</summary><p>何もできません。閲覧のみです。</p></details>
+      <details><summary><svg class="ic chevR"><use href="#i-chevR"/></svg>なぜこのドメインを選んだのですか？</summary><p>勢いです。もう少し検討すべきでした。</p></details>
+      <details><summary><svg class="ic chevR"><use href="#i-chevR"/></svg>リアルタイムとは何ですか？</summary><p>管理者が起動しているかどうかです。何かを実行している場合は、その内容が表示されます。</p></details>
+      <details><summary><svg class="ic chevR"><use href="#i-chevR"/></svg>更新はされますか？</summary><p>気が向いた場合に限ります。おおむね向きません。</p></details>
+      <details><summary><svg class="ic chevR"><use href="#i-chevR"/></svg>連絡を取りたい場合は？</summary><p>下部のリンクからどうぞ。返信は期待しないでください。</p></details>
     </div>
 
     <div class="card">
-      <h2 id="links">↗ りんく</h2>
+      <h2 id="links"><svg class="ic"><use href="#i-link"/></svg>リンク<small>6 件</small></h2>
       <table>
         <thead><tr><th>サービス</th><th>ID</th><th></th></tr></thead>
         <tbody>
-          <tr><td>Discord</td><td class="mono">poo.pptx</td><td><a href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener">ひらく ↗</a></td></tr>
-          <tr><td>X</td><td class="mono">@_poo_main</td><td><a href="https://x.com/_poo_main" target="_blank" rel="noopener">ひらく ↗</a></td></tr>
-          <tr><td>Instagram</td><td class="mono">poo._.abc</td><td><a href="https://www.instagram.com/poo._.abc/" target="_blank" rel="noopener">ひらく ↗</a></td></tr>
-          <tr><td>Spotify</td><td class="mono">Poo</td><td><a href="https://open.spotify.com/user/9diufth0yxkusydwr2rt1vpbb" target="_blank" rel="noopener">ひらく ↗</a></td></tr>
-          <tr><td>GitHub</td><td class="mono">poo0123</td><td><a href="https://github.com/poo0123" target="_blank" rel="noopener">ひらく ↗</a></td></tr>
-          <tr><td>Steam</td><td class="mono">Poo0123</td><td><a href="https://steamcommunity.com/id/Poo0123/" target="_blank" rel="noopener">ひらく ↗</a></td></tr>
+          <tr><td><svg class="ic" style="margin-right:8px"><use href="#i-discord"/></svg>Discord</td><td class="mono">poo.pptx</td><td><a href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener">開く <svg class="ic"><use href="#i-arrowUR"/></svg></a></td></tr>
+          <tr><td><svg class="ic" style="margin-right:8px"><use href="#i-x"/></svg>X</td><td class="mono">@_poo_main</td><td><a href="https://x.com/_poo_main" target="_blank" rel="noopener">開く <svg class="ic"><use href="#i-arrowUR"/></svg></a></td></tr>
+          <tr><td><svg class="ic" style="margin-right:8px"><use href="#i-instagram"/></svg>Instagram</td><td class="mono">poo._.abc</td><td><a href="https://www.instagram.com/poo._.abc/" target="_blank" rel="noopener">開く <svg class="ic"><use href="#i-arrowUR"/></svg></a></td></tr>
+          <tr><td><svg class="ic" style="margin-right:8px"><use href="#i-spotify"/></svg>Spotify</td><td class="mono">Poo</td><td><a href="https://open.spotify.com/user/9diufth0yxkusydwr2rt1vpbb" target="_blank" rel="noopener">開く <svg class="ic"><use href="#i-arrowUR"/></svg></a></td></tr>
+          <tr><td><svg class="ic" style="margin-right:8px"><use href="#i-github"/></svg>GitHub</td><td class="mono">poo0123</td><td><a href="https://github.com/poo0123" target="_blank" rel="noopener">開く <svg class="ic"><use href="#i-arrowUR"/></svg></a></td></tr>
+          <tr><td><svg class="ic" style="margin-right:8px"><use href="#i-steam"/></svg>Steam</td><td class="mono">Poo0123</td><td><a href="https://steamcommunity.com/id/Poo0123/" target="_blank" rel="noopener">開く <svg class="ic"><use href="#i-arrowUR"/></svg></a></td></tr>
         </tbody>
       </table>
     </div>
 
     <p class="foot">
-      <a href="/">← Pooのくそさいと にもどる</a>
-      <span>Cloudflare パネルふう</span>
+      <a href="/"><svg class="ic"><use href="#i-arrowL"/></svg>Pooのくそさいと へ戻る</a>
+      <span>Cloudflare ダッシュボードとして再構成</span>
       <span class="mono">poo123.com</span>
     </p>
   </main>
@@ -322,12 +311,14 @@ details p{padding:0 16px 14px 34px;color:var(--ink2);font-size:13px}
     var bar = '';
     if (a.start && a.end && a.end > a.start){
       bar = '<div class="bar" data-s="'+a.start+'" data-e="'+a.end+'"><i></i></div>'+
-            '<div class="times mono-t"><span class="t-now">0:00</span><span>'+L.mmss(a.end-a.start)+'</span></div>';
+            '<div class="times"><span class="t-now">0:00</span><span>'+L.mmss(a.end-a.start)+'</span></div>';
     }
     var el = a.start && !bar ? L.since(a.start) : '';
-    return '<span class="lico">'+(a.img?'<img src="'+L.esc(a.img)+'" alt="" loading="lazy">':'▣')+'</span>'+
+    var pic = a.img ? '<img src="'+L.esc(a.img)+'" alt="" loading="lazy">'
+                    : '<svg class="ic"><use href="#i-gamepad"/></svg>';
+    return '<span class="lico">'+pic+'</span>'+
       '<div class="lbody">'+
-        '<span class="ltag">'+L.esc(a.label)+(el?' ・ '+L.esc(el):'')+'</span>'+
+        '<span class="ltag">'+L.esc(a.label)+(el?'　'+L.esc(el):'')+'</span>'+
         '<div class="lname">'+(a.url?'<a href="'+L.esc(a.url)+'" target="_blank" rel="noopener">'+L.esc(a.name)+'</a>':L.esc(a.name))+'</div>'+
         (a.detail?'<div class="ldet">'+L.esc(a.detail)+'</div>':'')+
         bar+
@@ -353,7 +344,7 @@ details p{padding:0 16px 14px 34px;color:var(--ink2);font-size:13px}
     if (!d) return;
     if (d.avatar) document.getElementById('top-face').src = d.avatar;
     document.getElementById('live-dot').className = 'dot '+d.status;
-    document.getElementById('live-name').textContent = d.name + ' ・ ' + d.statusLabel;
+    document.getElementById('live-name').textContent = d.name + ' ／ ' + d.statusLabel;
     document.getElementById('t-status').textContent = d.statusLabel;
     document.getElementById('t-status-en').textContent = d.statusEn;
     document.getElementById('t-acts').textContent = d.acts.length;
@@ -368,7 +359,9 @@ details p{padding:0 16px 14px 34px;color:var(--ink2);font-size:13px}
       if (!d.acts.length){
         if (!box.querySelector('.none')){
           var p=document.createElement('div'); p.className='lrow none';
-          p.innerHTML='<span class="lico">◌</span><div class="lbody"><div class="lname">とくに なにもしてない。</div><div class="ldet">うごいているものは ありません</div></div>';
+          p.innerHTML='<span class="lico"><svg class="ic"><use href="#i-circleD"/></svg></span>'+
+                      '<div class="lbody"><div class="lname">現在アクティビティはありません</div>'+
+                      '<div class="ldet">実行中のものはありません</div></div>';
           box.appendChild(p);
         }
         return;

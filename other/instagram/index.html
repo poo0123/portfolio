@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>poo123 — プロフィール風</title>
-<meta name="description" content="Pooのくそさいと の Instagram ふう。">
+<title>poo123 — プロフィール</title>
+<meta name="description" content="Pooのくそさいと を Instagram のプロフィールとして再構成したページ。">
 <meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex, follow">
 <link rel="icon" href="/photo/favicon.ico" type="image/x-icon">
@@ -20,95 +20,82 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   background:var(--bg);color:var(--ink);min-height:100svh;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
-  font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;
   padding-bottom:70px;
 }
 a{color:inherit;text-decoration:none}
 button{font:inherit;cursor:pointer}
+.ic{width:1em;height:1em;display:inline-block;vertical-align:-.13em;flex:none}
 
-/* ===== てっぺん ===== */
+/* ===== ヘッダー ===== */
 .top{
   position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;
   height:52px;padding:0 16px;background:var(--bg);border-bottom:1px solid var(--line);
 }
-.brand{font-size:22px;font-weight:600;font-family:"Snell Roundhand","Segoe Script","Brush Script MT",cursive;letter-spacing:.02em}
-.top .right{margin-left:auto;display:flex;gap:16px;font-size:18px;color:var(--ink)}
+.brand{font-size:23px;font-weight:600;letter-spacing:.02em;
+  font-family:"Snell Roundhand","Segoe Script","Brush Script MT",cursive}
+.top .right{margin-left:auto;display:flex;gap:18px;font-size:22px;color:var(--ink)}
 
 .page{max-width:935px;margin:0 auto;padding:22px 16px 0}
 
 /* ===== プロフィール ===== */
 .prof{display:flex;gap:28px;align-items:flex-start;margin-bottom:28px}
 .face-wrap{position:relative;flex:none}
-.face{
-  width:142px;height:142px;border-radius:50%;padding:4px;background:var(--ring);
-  display:block;
-}
-.face span{
-  display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;
-  border:3px solid var(--bg);background:#333;
-}
+.face{width:142px;height:142px;border-radius:50%;padding:4px;background:var(--ring);display:block}
+.face span{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;
+  border:3px solid var(--bg);background:#333}
 .face img{width:100%;height:100%;object-fit:cover;display:block}
-.pdot{
-  position:absolute;right:8px;bottom:8px;width:20px;height:20px;border-radius:50%;
-  background:var(--off);border:3px solid var(--bg);
-}
+.pdot{position:absolute;right:8px;bottom:8px;width:20px;height:20px;border-radius:50%;
+  background:var(--off);border:3px solid var(--bg)}
 .pdot.online{background:var(--ok)}.pdot.idle{background:var(--warn)}
 .pdot.dnd{background:var(--dnd)}.pdot.offline{background:var(--off)}
 .note{
-  position:absolute;left:50%;top:-16px;transform:translateX(-46%);
-  background:var(--soft);border-radius:16px;padding:6px 12px;font-size:11.5px;line-height:1.35;
-  max-width:190px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.12);z-index:2;
+  position:absolute;left:50%;top:-18px;transform:translateX(-46%);
+  background:var(--soft);border-radius:16px;padding:6px 13px;font-size:11.5px;line-height:1.4;
+  max-width:200px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.12);z-index:2;
 }
 .note::after{content:"";position:absolute;left:22px;bottom:-5px;width:9px;height:9px;border-radius:50%;background:var(--soft)}
 .note::before{content:"";position:absolute;left:16px;bottom:-11px;width:5px;height:5px;border-radius:50%;background:var(--soft)}
 
 .pbody{flex:1;min-width:0;padding-top:6px}
-.prow1{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.prow1{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
 .uname{font-size:20px;font-weight:400}
-.btn{
-  border:none;border-radius:8px;padding:7px 17px;font-size:13.5px;font-weight:600;
-  background:var(--blue);color:#fff;
-}
+.btn{border:none;border-radius:8px;padding:7px 17px;font-size:13.5px;font-weight:600;
+  background:var(--blue);color:#fff}
 .btn.sub{background:var(--soft);color:var(--ink)}
+.btn.icn{background:var(--soft);color:var(--ink);padding:8px 11px;display:flex;align-items:center}
 .stats{display:flex;gap:34px;margin-bottom:16px;font-size:15px}
 .stats b{font-weight:600}
 .stats span{color:var(--ink2)}
 .bio b{display:block;font-weight:600;margin-bottom:2px}
 .bio p{white-space:pre-line}
-.bio a{color:#00376b;font-weight:500}
-@media (prefers-color-scheme: dark){ .bio a{color:#e0f1ff} }
+.bio .meta{display:flex;gap:16px;flex-wrap:wrap;color:var(--ink2);font-size:13.5px;margin-top:4px}
+.bio .meta span{display:inline-flex;align-items:center;gap:6px}
+.bio .site{color:#00376b;font-weight:500;display:inline-flex;align-items:center;gap:6px;margin-top:5px}
+@media (prefers-color-scheme: dark){ .bio .site{color:#e0f1ff} }
 
 /* ===== ハイライト ===== */
-.hl{display:flex;gap:24px;overflow-x:auto;padding:10px 0 24px;border-bottom:1px solid var(--line);margin-bottom:0}
-.hl button{
-  background:none;border:none;color:inherit;display:flex;flex-direction:column;align-items:center;gap:7px;
-  flex:none;width:86px;
-}
-.hl i{
-  width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:26px;font-style:normal;background:var(--soft);border:1px solid var(--line);
-  transition:transform .2s;
-}
+.hl{display:flex;gap:24px;overflow-x:auto;padding:10px 0 24px;border-bottom:1px solid var(--line)}
+.hl button{background:none;border:none;color:inherit;display:flex;flex-direction:column;
+  align-items:center;gap:8px;flex:none;width:92px}
+.hl i{width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:27px;font-style:normal;background:var(--soft);border:1px solid var(--line);
+  transition:transform .2s;color:var(--ink)}
 .hl button:hover i{transform:scale(1.05)}
-.hl b{font-size:12px;font-weight:400}
+.hl b{font-size:12px;font-weight:400;text-align:center;line-height:1.35}
 
-/* ===== いま ===== */
+/* ===== アクティビティ ===== */
 .live-wrap{padding:18px 0 4px}
 .live-head{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--ink2);margin-bottom:10px}
 .live{transition:height .42s cubic-bezier(.22,1,.36,1)}
 .live.moving{overflow:hidden}
-.lrow{
-  display:flex;gap:12px;align-items:center;padding:9px 0;
-  transition:opacity .3s,transform .34s cubic-bezier(.22,1,.36,1);
-}
+.lrow{display:flex;gap:12px;align-items:center;padding:9px 0;
+  transition:opacity .3s,transform .34s cubic-bezier(.22,1,.36,1)}
 .lrow.in{opacity:0;transform:translateY(10px)}
 .lrow.out{position:absolute;left:0;right:0;opacity:0;transform:translateY(-8px);pointer-events:none}
-.lico{
-  width:54px;height:54px;flex:none;border-radius:50%;overflow:hidden;background:var(--soft);
-  display:flex;align-items:center;justify-content:center;font-size:20px;
-  padding:2px;
-}
+.lico{width:54px;height:54px;flex:none;border-radius:50%;overflow:hidden;background:var(--soft);
+  display:flex;align-items:center;justify-content:center;font-size:21px;color:var(--ink2)}
 .lico img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block}
 .lb{flex:1;min-width:0}
 .lb b{display:block;font-size:13.5px;font-weight:600;word-break:break-word}
@@ -119,75 +106,62 @@ button{font:inherit;cursor:pointer}
 
 /* ===== タブ ===== */
 .tabs{display:flex;justify-content:center;gap:58px;border-top:1px solid var(--line);margin-top:20px}
-.tabs span{
-  padding:16px 0;font-size:12px;letter-spacing:.12em;font-weight:600;color:var(--ink2);
-  display:flex;align-items:center;gap:7px;border-top:1px solid transparent;margin-top:-1px;
-}
+.tabs span{padding:16px 0;font-size:12px;letter-spacing:.1em;font-weight:600;color:var(--ink2);
+  display:flex;align-items:center;gap:8px;border-top:1px solid transparent;margin-top:-1px}
 .tabs span.on{color:var(--ink);border-top-color:var(--ink)}
 
 /* ===== グリッド ===== */
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:4px 0 30px}
-.cell{
-  position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--soft);
-  border:none;padding:0;display:block;color:#fff;
-}
+.cell{position:relative;aspect-ratio:1/1;overflow:hidden;background:var(--soft);
+  border:none;padding:0;display:block;color:#fff}
 .cell img{width:100%;height:100%;object-fit:cover;display:block}
-.cell .txt{
-  position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:6px;padding:14px;text-align:center;
-}
-.cell .txt em{font-style:normal;font-size:30px}
-.cell .txt b{font-size:14px;font-weight:600;line-height:1.4}
-.cell .txt small{font-size:11px;opacity:.85;line-height:1.5}
-.cell .over{
-  position:absolute;inset:0;background:rgba(0,0,0,.34);color:#fff;opacity:0;
-  display:flex;align-items:center;justify-content:center;gap:22px;font-size:14px;font-weight:700;
-  transition:opacity .2s;
-}
+.cell .txt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:9px;padding:16px;text-align:center}
+.cell .txt .ic{font-size:30px}
+.cell .txt b{font-size:14px;font-weight:600;line-height:1.5}
+.cell .txt small{font-size:11px;opacity:.85;line-height:1.6}
+.cell .over{position:absolute;inset:0;background:rgba(0,0,0,.34);color:#fff;opacity:0;
+  display:flex;align-items:center;justify-content:center;gap:24px;font-size:14px;font-weight:700;
+  transition:opacity .2s}
+.cell .over span{display:inline-flex;align-items:center;gap:7px}
 .cell:hover .over{opacity:1}
 
-/* ===== しゃしんを ひらく ===== */
-.modal{
-  position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.72);
+/* ===== 詳細 ===== */
+.modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.72);
   display:flex;align-items:center;justify-content:center;padding:18px;
-  opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s;
-}
+  opacity:0;visibility:hidden;transition:opacity .22s,visibility .22s}
 .modal.on{opacity:1;visibility:visible}
-.sheet{
-  background:var(--bg);border-radius:12px;max-width:520px;width:100%;
-  max-height:86svh;overflow-y:auto;transform:scale(.96);transition:transform .26s cubic-bezier(.34,1.4,.64,1);
-}
+.sheet{background:var(--bg);border-radius:12px;max-width:540px;width:100%;
+  max-height:86svh;overflow-y:auto;transform:scale(.96);transition:transform .26s cubic-bezier(.34,1.4,.64,1)}
 .modal.on .sheet{transform:scale(1)}
 .shead{display:flex;align-items:center;gap:11px;padding:13px 15px;border-bottom:1px solid var(--line)}
 .shead .f{width:34px;height:34px;border-radius:50%;padding:2px;background:var(--ring);flex:none}
 .shead .f span{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;background:#333;border:2px solid var(--bg)}
 .shead .f img{width:100%;height:100%;object-fit:cover;display:block}
 .shead b{font-size:13.5px;font-weight:600}
-.shead button{margin-left:auto;background:none;border:none;color:var(--ink);font-size:20px;line-height:1}
+.shead button{margin-left:auto;background:none;border:none;color:var(--ink);font-size:19px;display:flex}
 .sbody{padding:16px 18px 22px}
-.sbody h3{font-size:16px;margin-bottom:10px}
-.sbody ul{list-style:none;display:flex;flex-direction:column;gap:9px}
-.sbody li{display:flex;gap:12px;font-size:13.5px;border-bottom:1px solid var(--line);padding-bottom:9px}
+.sbody h3{font-size:16px;margin-bottom:12px}
+.sbody ul{list-style:none;display:flex;flex-direction:column;gap:0}
+.sbody li{display:flex;gap:14px;font-size:13.5px;border-bottom:1px solid var(--line);padding:9px 0}
 .sbody li:last-child{border-bottom:none}
-.sbody li b{flex:none;min-width:96px;color:var(--ink2);font-weight:400}
+.sbody li b{flex:none;min-width:104px;color:var(--ink2);font-weight:400}
 .sbody .chips{display:flex;flex-wrap:wrap;gap:8px}
-.sbody .chip{font-size:12.5px;padding:4px 12px;border-radius:999px;background:var(--soft)}
-.sbody .q{font-weight:600;font-size:13.5px;margin-top:14px}
+.sbody .chip{font-size:12.5px;padding:4px 13px;border-radius:999px;background:var(--soft)}
+.sbody .q{font-weight:600;font-size:13.5px;margin-top:15px}
 .sbody .a{font-size:13px;color:var(--ink2)}
-.sbody .lnk{display:flex;align-items:center;gap:11px;padding:10px 0;border-bottom:1px solid var(--line)}
+.sbody .lnk{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
 .sbody .lnk:last-child{border-bottom:none}
-.sbody .lnk i{font-style:normal;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--soft);font-size:15px}
-.sbody .lnk b{font-size:13.5px;font-weight:600}
-.sbody .lnk span{font-size:12px;color:var(--ink2)}
-.sbody .lnk em{margin-left:auto;font-style:normal;color:var(--ink2)}
+.sbody .lnk .bx{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;background:var(--soft);font-size:16px;flex:none}
+.sbody .lnk b{font-size:13.5px;font-weight:600;display:block;min-width:0;color:inherit}
+.sbody .lnk em{font-style:normal;font-size:12px;color:var(--ink2);display:block}
+.sbody .lnk .go{margin-left:auto;color:var(--ink2);font-size:14px}
 
-/* ===== したのバー ===== */
-.bottom{
-  position:fixed;left:0;right:0;bottom:0;z-index:40;height:52px;
+/* ===== 下部バー ===== */
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:40;height:52px;
   display:flex;align-items:center;justify-content:space-around;
-  background:var(--bg);border-top:1px solid var(--line);font-size:20px;
-}
-.bottom a{opacity:.9}
+  background:var(--bg);border-top:1px solid var(--line);font-size:23px}
 .bottom .me{width:26px;height:26px;border-radius:50%;overflow:hidden;background:#333;border:1.5px solid var(--ink)}
 .bottom .me img{width:100%;height:100%;object-fit:cover;display:block}
 
@@ -196,18 +170,18 @@ button{font:inherit;cursor:pointer}
   .prof{padding:0 16px;gap:18px}
   .face{width:86px;height:86px;padding:3px}
   .pdot{width:15px;height:15px;right:2px;bottom:2px;border-width:2px}
-  .note{max-width:150px;font-size:11px;top:-20px}
+  .note{max-width:158px;font-size:11px;top:-22px}
   .uname{font-size:17px}
   .stats{gap:22px;font-size:13px}
   .bio{padding:0 16px}
   .prow1{margin-bottom:12px}
   .hl{padding:14px 16px 20px;gap:18px}
-  .hl button{width:70px}
-  .hl i{width:62px;height:62px;font-size:22px}
+  .hl button{width:74px}
+  .hl i{width:62px;height:62px;font-size:23px}
   .live-wrap{padding:16px}
   .tabs{gap:40px}
   .grid{gap:2px}
-  .cell .txt em{font-size:22px}
+  .cell .txt .ic{font-size:22px}
   .cell .txt b{font-size:12px}
   .cell .txt small{display:none}
 }
@@ -217,17 +191,21 @@ button{font:inherit;cursor:pointer}
 </style>
 </head>
 <body>
+<script src="/other/icons.js"></script>
 
 <header class="top">
   <a class="brand" href="/">Poo</a>
-  <div class="right"><span>♡</span><span>✉</span></div>
+  <div class="right">
+    <span><svg class="ic"><use href="#i-heart"/></svg></span>
+    <span><svg class="ic"><use href="#i-send"/></svg></span>
+  </div>
 </header>
 
 <div class="page">
 
   <section class="prof">
     <div class="face-wrap">
-      <div class="note" id="note">つないでいます…</div>
+      <div class="note" id="note">接続しています…</div>
       <a class="face" href="#live"><span><img id="face" alt=""></span></a>
       <span class="pdot offline" id="pdot"></span>
     </div>
@@ -237,75 +215,78 @@ button{font:inherit;cursor:pointer}
         <span class="uname" id="uname">poo123</span>
         <button class="btn">フォロー</button>
         <button class="btn sub">メッセージ</button>
-        <button class="btn sub">⌄</button>
+        <button class="btn icn" aria-label="その他"><svg class="ic"><use href="#i-chevD"/></svg></button>
       </div>
       <div class="stats">
-        <div><b>9</b> <span>とうこう</span></div>
-        <div><b id="st-acts">0</b> <span>いま うごいてる</span></div>
-        <div><b>6</b> <span>すきなごはん</span></div>
+        <div><b>9</b> <span>投稿</span></div>
+        <div><b id="st-acts">0</b> <span>実行中</span></div>
+        <div><b>6</b> <span>好きな食べ物</span></div>
       </div>
       <div class="bio">
         <b id="dname">Poo</b>
-        <p>なにもない。
-むだに買ったドメインの使い道がなくて、なんとなく置いてあるだけの場所。
-深い意味はないし、たぶんこれからもない。
-📍 東京に住んでる ・ 🍚 ドカ食いが好き</p>
-        <a href="/">poo123.com</a>
+        <p>特に何もありません。
+無駄に取得したドメインの使い道がなく、なんとなく置いてあるだけの場所です。
+深い意味はなく、今後もおそらく増えません。</p>
+        <div class="meta">
+          <span><svg class="ic"><use href="#i-pin"/></svg>東京都在住</span>
+          <span><svg class="ic"><use href="#i-bowl"/></svg>大食いを好む</span>
+        </div>
+        <a class="site" href="/"><svg class="ic"><use href="#i-link"/></svg>poo123.com</a>
       </div>
     </div>
   </section>
 
   <nav class="hl">
-    <button data-open="gohan"><i>🍜</i><b>ごはん</b></button>
-    <button data-open="likes"><i>🧩</i><b>さわったやつ</b></button>
-    <button data-open="spec"><i>💻</i><b>しよう</b></button>
-    <button data-open="faq"><i>❓</i><b>しつもん</b></button>
-    <button data-open="links"><i>🔗</i><b>りんく</b></button>
+    <button data-open="food"><i><svg class="ic"><use href="#i-bowl"/></svg></i><b>好きな食べ物</b></button>
+    <button data-open="langs"><i><svg class="ic"><use href="#i-puzzle"/></svg></i><b>使用言語</b></button>
+    <button data-open="spec"><i><svg class="ic"><use href="#i-laptop"/></svg></i><b>仕様</b></button>
+    <button data-open="faq"><i><svg class="ic"><use href="#i-question"/></svg></i><b>よくある質問</b></button>
+    <button data-open="links"><i><svg class="ic"><use href="#i-link"/></svg></i><b>リンク</b></button>
   </nav>
 
   <section class="live-wrap" id="live">
-    <div class="live-head"><span id="live-title">いま</span></div>
+    <div class="live-head"><span id="live-title">アクティビティ</span></div>
     <div class="live" id="acts"></div>
   </section>
 
   <div class="tabs">
-    <span class="on">▦ とうこう</span>
-    <span>▷ リール</span>
-    <span>👤 タグ付け</span>
+    <span class="on"><svg class="ic"><use href="#i-grid"/></svg>投稿</span>
+    <span><svg class="ic"><use href="#i-reels"/></svg>リール</span>
+    <span><svg class="ic"><use href="#i-tagged"/></svg>タグ付け</span>
   </div>
 
   <div class="grid" id="grid">
-    <button class="cell" data-open="me" style="background:linear-gradient(140deg,#f6d365,#fda085)">
-      <span class="txt"><em>🧻</em><b>なにもない。</b><small>むだに買った ドメイン</small></span>
-      <span class="over">♡ 0　💬 0</span>
+    <button class="cell" data-open="about" style="background:linear-gradient(140deg,#f6d365,#fda085)">
+      <span class="txt"><svg class="ic"><use href="#i-doc"/></svg><b>特に何もありません</b><small>無駄に取得したドメイン</small></span>
+      <span class="over"><span><svg class="ic"><use href="#i-heart"/></svg>0</span><span><svg class="ic"><use href="#i-comment"/></svg>0</span></span>
     </button>
-    <button class="cell"><img src="/photo/icon.png" alt=""><span class="over">♡ 1　💬 0</span></button>
-    <button class="cell" data-open="gohan" style="background:linear-gradient(140deg,#ff9a9e,#fad0c4)">
-      <span class="txt"><em>🍜</em><b>すきな ごはん</b><small>とんこつラーメン ほか 5つ</small></span>
-      <span class="over">♡ 6　💬 0</span>
+    <button class="cell"><img src="/photo/icon.png" alt=""><span class="over"><span><svg class="ic"><use href="#i-heart"/></svg>1</span><span><svg class="ic"><use href="#i-comment"/></svg>0</span></span></button>
+    <button class="cell" data-open="food" style="background:linear-gradient(140deg,#ff9a9e,#fad0c4)">
+      <span class="txt"><svg class="ic"><use href="#i-bowl"/></svg><b>好きな食べ物</b><small>豚骨ラーメン ほか 5 件</small></span>
+      <span class="over"><span><svg class="ic"><use href="#i-heart"/></svg>6</span><span><svg class="ic"><use href="#i-comment"/></svg>0</span></span>
     </button>
-    <button class="cell" data-open="likes" style="background:linear-gradient(140deg,#a1c4fd,#c2e9fb)">
-      <span class="txt" style="color:#173a5e"><em>🧩</em><b>さわったやつ</b><small>どれも そこそこ</small></span>
-      <span class="over">♡ 9　💬 0</span>
+    <button class="cell" data-open="langs" style="background:linear-gradient(140deg,#a1c4fd,#c2e9fb)">
+      <span class="txt" style="color:#173a5e"><svg class="ic"><use href="#i-puzzle"/></svg><b>使用経験のある言語</b><small>いずれも中程度</small></span>
+      <span class="over"><span><svg class="ic"><use href="#i-heart"/></svg>9</span><span><svg class="ic"><use href="#i-comment"/></svg>0</span></span>
     </button>
-    <button class="cell"><img src="/photo/card2.jpg" alt=""><span class="over">♡ 2　💬 0</span></button>
+    <button class="cell"><img src="/photo/card2.jpg" alt=""><span class="over"><span><svg class="ic"><use href="#i-heart"/></svg>2</span><span><svg class="ic"><use href="#i-comment"/></svg>0</span></span></button>
     <button class="cell" data-open="spec" style="background:linear-gradient(140deg,#434343,#000)">
-      <span class="txt"><em>💻</em><b>しよう</b><small>せいのうを いかしきれていません</small></span>
-      <span class="over">♡ 4　💬 0</span>
+      <span class="txt"><svg class="ic"><use href="#i-laptop"/></svg><b>デバイスの仕様</b><small>性能を活かしきれていません</small></span>
+      <span class="over"><span><svg class="ic"><use href="#i-heart"/></svg>4</span><span><svg class="ic"><use href="#i-comment"/></svg>0</span></span>
     </button>
     <button class="cell" data-open="faq" style="background:linear-gradient(140deg,#84fab0,#8fd3f4)">
-      <span class="txt" style="color:#0d3b2e"><em>❓</em><b>よくある しつもん</b><small>こたえは だいたい 「ない」</small></span>
-      <span class="over">♡ 5　💬 0</span>
+      <span class="txt" style="color:#0d3b2e"><svg class="ic"><use href="#i-question"/></svg><b>よくある質問</b><small>回答はおおむね「ありません」</small></span>
+      <span class="over"><span><svg class="ic"><use href="#i-heart"/></svg>5</span><span><svg class="ic"><use href="#i-comment"/></svg>0</span></span>
     </button>
-    <button class="cell"><img src="/photo/ogp.jpg" alt=""><span class="over">♡ 3　💬 0</span></button>
+    <button class="cell"><img src="/photo/ogp.jpg" alt=""><span class="over"><span><svg class="ic"><use href="#i-heart"/></svg>3</span><span><svg class="ic"><use href="#i-comment"/></svg>0</span></span></button>
     <button class="cell" data-open="links" style="background:linear-gradient(140deg,#ee2a7b,#6228d7)">
-      <span class="txt"><em>🔗</em><b>りんく</b><small>返事は 期待しないでください</small></span>
-      <span class="over">♡ 6　💬 0</span>
+      <span class="txt"><svg class="ic"><use href="#i-link"/></svg><b>リンク</b><small>返信は期待しないでください</small></span>
+      <span class="over"><span><svg class="ic"><use href="#i-heart"/></svg>6</span><span><svg class="ic"><use href="#i-comment"/></svg>0</span></span>
     </button>
   </div>
 
   <p style="text-align:center;color:var(--ink2);font-size:12px;padding:6px 0 26px">
-    <a href="/" style="color:var(--blue);font-weight:600">← Pooのくそさいと にもどる</a>　・　Instagram ふう
+    <a href="/" style="color:var(--blue);font-weight:600">Pooのくそさいと へ戻る</a>　／　Instagram プロフィールとして再構成
   </p>
 </div>
 
@@ -314,17 +295,17 @@ button{font:inherit;cursor:pointer}
     <div class="shead">
       <span class="f"><span><img id="m-face" alt=""></span></span>
       <b id="m-user">poo123</b>
-      <button type="button" id="m-close" aria-label="とじる">✕</button>
+      <button type="button" id="m-close" aria-label="閉じる"><svg class="ic"><use href="#i-close"/></svg></button>
     </div>
     <div class="sbody" id="m-body"></div>
   </div>
 </div>
 
 <nav class="bottom">
-  <a href="/" title="ホーム">⌂</a>
-  <a href="#live" title="いま">🔍</a>
-  <a href="/other/windows/" title="Windows風">🪟</a>
-  <a href="/other/cloudflare/" title="Cloudflare風">☁</a>
+  <a href="/" title="ホーム"><svg class="ic"><use href="#i-house"/></svg></a>
+  <a href="#live" title="アクティビティ"><svg class="ic"><use href="#i-search"/></svg></a>
+  <a href="/other/windows/" title="Windows 設定画面"><svg class="ic"><use href="#i-windows"/></svg></a>
+  <a href="/other/cloudflare/" title="Cloudflare ダッシュボード"><svg class="ic"><use href="#i-cloudflare"/></svg></a>
   <a href="#" class="me" title="プロフィール"><img id="bot-face" alt=""></a>
 </nav>
 
@@ -332,56 +313,60 @@ button{font:inherit;cursor:pointer}
 <script>
 (function(){
   var L = window.PooLive;
+  var I = function(n){ return '<svg class="ic"><use href="#i-'+n+'"/></svg>'; };
 
-  /* ---------- ひらくもの ---------- */
   var SHEETS = {
-    me: '<h3>なにもない。</h3><p style="font-size:13.5px;line-height:1.9">むだに買ったドメインの使い道がなくて、なんとなく置いてあるだけの場所。深い意味はないし、たぶんこれからもない。</p>'+
-        '<ul style="margin-top:14px"><li><b>ばしょ</b>東京に住んでる</li><li><b>たべかた</b>ドカ食いが好き</li><li><b>更新</b>気まぐれ</li><li><b>中身</b>期待しないでください</li></ul>',
-    gohan: '<h3>すきな ごはん</h3><ul>'+
-        '<li><b>1</b>とんこつラーメン</li><li><b>2</b>すし</li><li><b>3</b>ハムカツ</li>'+
-        '<li><b>4</b>麻婆豆腐</li><li><b>5</b>マック</li><li><b>6</b>ポテサラ</li>'+
-        '<li><b>ごうけい</b>6 てん ／ おあずかり いのち ／ おつり なし</li></ul>',
-    likes: '<h3>さわったことある やつ</h3><div class="chips">'+
+    about: '<h3>特に何もありません</h3><p style="font-size:13.5px;line-height:1.95">無駄に取得したドメインの使い道がなく、なんとなく置いてあるだけの場所です。深い意味はなく、今後もおそらく増えません。</p>'+
+        '<ul style="margin-top:14px"><li><b>所在地</b>東京都</li><li><b>食事の傾向</b>大食いを好む</li>'+
+        '<li><b>更新頻度</b>不定期</li><li><b>内容</b>期待しないでください</li></ul>',
+    food: '<h3>好きな食べ物</h3><ul>'+
+        '<li><b>1</b>豚骨ラーメン</li><li><b>2</b>寿司</li><li><b>3</b>ハムカツ</li>'+
+        '<li><b>4</b>麻婆豆腐</li><li><b>5</b>マクドナルド</li><li><b>6</b>ポテトサラダ</li>'+
+        '<li><b>合計</b>6 件</li></ul>',
+    langs: '<h3>使用経験のある言語</h3><div class="chips">'+
         '<span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">PHP</span>'+
         '<span class="chip">VBA</span><span class="chip">Java</span><span class="chip">HTML</span>'+
         '<span class="chip">CSS</span><span class="chip">C</span><span class="chip">Kotlin</span></div>'+
-        '<p style="margin-top:14px;color:var(--ink2);font-size:13px">どれも そこそこ</p>',
-    spec: '<h3>しよう</h3><ul>'+
-        '<li><b>CPU</b>Core i7-14700F</li><li><b>コア</b>20 コア / 28 スレッド</li>'+
-        '<li><b>GPU</b>RTX 4070 SUPER</li><li><b>メモリ</b>32 GB</li>'+
-        '<li><b>ストレージ</b>ぜんぶで 7 TB</li><li><b>OS</b>Windows 11 Pro</li>'+
-        '<li><b>ちゅうい</b>せいのうを いかしきれていません</li></ul>',
-    faq: '<h3>よくある しつもん</h3>'+
-        '<p class="q">なにができるサイト？</p><p class="a">なにもできない。見るだけ。</p>'+
-        '<p class="q">なんで このドメインにしたの？</p><p class="a">勢い。もう少し考えればよかった。</p>'+
-        '<p class="q">「いま」のところは なに？</p><p class="a">うんちさんが 起きてるかどうか。遊んでるときは 遊んでるものが出ます。</p>'+
-        '<p class="q">更新はするの？</p><p class="a">気が向いたら。気は だいたい 向かない。</p>'+
-        '<p class="q">連絡したいときは？</p><p class="a">したの りんく から どうぞ。返事は 期待しないでください。</p>',
-    links: '<h3>りんく</h3>'+
-        '<a class="lnk" href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener"><i>💬</i><span><b>Discord</b><span>poo.pptx</span></span><em>↗</em></a>'+
-        '<a class="lnk" href="https://x.com/_poo_main" target="_blank" rel="noopener"><i>✕</i><span><b>X</b><span>@_poo_main</span></span><em>↗</em></a>'+
-        '<a class="lnk" href="https://www.instagram.com/poo._.abc/" target="_blank" rel="noopener"><i>📷</i><span><b>Instagram</b><span>poo._.abc</span></span><em>↗</em></a>'+
-        '<a class="lnk" href="https://open.spotify.com/user/9diufth0yxkusydwr2rt1vpbb" target="_blank" rel="noopener"><i>🎵</i><span><b>Spotify</b><span>Poo</span></span><em>↗</em></a>'+
-        '<a class="lnk" href="https://github.com/poo0123" target="_blank" rel="noopener"><i>🐙</i><span><b>GitHub</b><span>poo0123</span></span><em>↗</em></a>'+
-        '<a class="lnk" href="https://steamcommunity.com/id/Poo0123/" target="_blank" rel="noopener"><i>🎮</i><span><b>Steam</b><span>Poo0123</span></span><em>↗</em></a>'
+        '<p style="margin-top:14px;color:var(--ink2);font-size:13px">習熟度はいずれも中程度です。</p>',
+    spec: '<h3>デバイスの仕様</h3><ul>'+
+        '<li><b>デバイス名</b>MAIN-PC</li><li><b>CPU</b>Core i7-14700F</li>'+
+        '<li><b>コア構成</b>20 コア / 28 スレッド</li><li><b>GPU</b>RTX 4070 SUPER</li>'+
+        '<li><b>メモリ</b>32 GB</li><li><b>ストレージ</b>合計 7 TB</li>'+
+        '<li><b>OS</b>Windows 11 Pro</li><li><b>備考</b>性能を活かしきれていません</li></ul>',
+    faq: '<h3>よくある質問</h3>'+
+        '<p class="q">何ができるサイトですか？</p><p class="a">何もできません。閲覧のみです。</p>'+
+        '<p class="q">なぜこのドメインを選んだのですか？</p><p class="a">勢いです。もう少し検討すべきでした。</p>'+
+        '<p class="q">アクティビティとは何ですか？</p><p class="a">管理者が起動しているかどうかです。何かを実行している場合は、その内容が表示されます。</p>'+
+        '<p class="q">更新はされますか？</p><p class="a">気が向いた場合に限ります。おおむね向きません。</p>'+
+        '<p class="q">連絡を取りたい場合は？</p><p class="a">下部のリンクからどうぞ。返信は期待しないでください。</p>',
+    links:
+        '<h3>リンク</h3>'+
+        lnk('https://discord.com/users/339360580886593536','discord','Discord','poo.pptx')+
+        lnk('https://x.com/_poo_main','x','X','@_poo_main')+
+        lnk('https://www.instagram.com/poo._.abc/','instagram','Instagram','poo._.abc')+
+        lnk('https://open.spotify.com/user/9diufth0yxkusydwr2rt1vpbb','spotify','Spotify','Poo')+
+        lnk('https://github.com/poo0123','github','GitHub','poo0123')+
+        lnk('https://steamcommunity.com/id/Poo0123/','steam','Steam','Poo0123')
   };
+
+  function lnk(href, icon, name, id){
+    return '<a class="lnk" href="'+href+'" target="_blank" rel="noopener">'+
+      '<span class="bx">'+I(icon)+'</span>'+
+      '<span><b>'+name+'</b><em>'+id+'</em></span>'+
+      '<span class="go">'+I('arrowUR')+'</span></a>';
+  }
 
   var modal = document.getElementById('modal');
   var mBody = document.getElementById('m-body');
-  function open(k){
-    if (!SHEETS[k]) return;
-    mBody.innerHTML = SHEETS[k];
-    modal.classList.add('on');
-  }
+  function open(k){ if (!SHEETS[k]) return; mBody.innerHTML = SHEETS[k]; modal.classList.add('on'); }
   function close(){ modal.classList.remove('on'); }
   document.addEventListener('click', function(e){
     var t = e.target.closest('[data-open]');
     if (t){ open(t.dataset.open); return; }
-    if (e.target === modal || e.target.id === 'm-close') close();
+    if (e.target === modal || e.target.closest('#m-close')) close();
   });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
 
-  /* ---------- いま ---------- */
   var box = document.getElementById('acts');
   var tmr = null, hTmr = null;
 
@@ -405,9 +390,10 @@ button{font:inherit;cursor:pointer}
             '<div class="times"><span class="t-now">0:00</span><span>'+L.mmss(a.end-a.start)+'</span></div>';
     }
     var el = a.start && !bar ? L.since(a.start) : '';
-    return '<span class="lico">'+(a.img?'<img src="'+L.esc(a.img)+'" alt="" loading="lazy">':'🎮')+'</span>'+
+    var pic = a.img ? '<img src="'+L.esc(a.img)+'" alt="" loading="lazy">' : I('gamepad');
+    return '<span class="lico">'+pic+'</span>'+
       '<span class="lb"><b>'+(a.url?'<a href="'+L.esc(a.url)+'" target="_blank" rel="noopener" style="color:var(--blue)">'+L.esc(a.name)+'</a>':L.esc(a.name))+'</b>'+
-      '<span>'+L.esc(a.label)+(el?' ・ '+L.esc(el):'')+(a.detail?' ・ '+L.esc(a.detail):'')+'</span>'+bar+'</span>';
+      '<span>'+L.esc(a.label)+(el?'　'+L.esc(el):'')+(a.detail?'　'+L.esc(a.detail):'')+'</span>'+bar+'</span>';
   }
   function bars(){
     if (tmr) clearInterval(tmr);
@@ -437,7 +423,7 @@ button{font:inherit;cursor:pointer}
     document.getElementById('dname').textContent = d.name + (d.guild ? '　' + d.guild.tag : '');
     document.getElementById('st-acts').textContent = d.acts.length;
     document.getElementById('live-title').textContent =
-      'いま ・ ' + d.statusLabel + (d.acts.length ? '（' + d.acts.length + '）' : '');
+      'アクティビティ ／ ' + d.statusLabel + (d.acts.length ? '（' + d.acts.length + ' 件）' : '');
     document.getElementById('note').textContent =
       d.acts.length ? d.acts[0].label + '：' + d.acts[0].name : d.statusLabel;
 
@@ -451,7 +437,8 @@ button{font:inherit;cursor:pointer}
       if (!d.acts.length){
         if (!box.querySelector('.none')){
           var p=document.createElement('div'); p.className='lrow none';
-          p.innerHTML='<span class="lico">😴</span><span class="lb"><b>とくに なにもしてない。</b><span>また あとで のぞいてみてください</span></span>';
+          p.innerHTML='<span class="lico">'+I('moon')+'</span>'+
+            '<span class="lb"><b>現在アクティビティはありません</b><span>また後ほどご確認ください</span></span>';
           box.appendChild(p);
         }
         return;

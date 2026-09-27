@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>システム設定 — Pooのくそさいと</title>
-<meta name="description" content="Pooのくそさいと の macOS ふう。">
+<meta name="description" content="Pooのくそさいと を macOS のシステム設定として再構成したページ。">
 <meta name="theme-color" content="#2b6cb0">
 <meta name="robots" content="noindex, follow">
 <link rel="icon" href="/photo/favicon.ico" type="image/x-icon">
@@ -24,8 +24,8 @@
 html,body{height:100%}
 body{
   min-height:100svh;color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
-  font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased;
   background:
     radial-gradient(120% 90% at 18% 4%, #ffb36b 0%, rgba(255,179,107,0) 45%),
     radial-gradient(110% 100% at 88% 14%, #ff7ac6 0%, rgba(255,122,198,0) 48%),
@@ -34,36 +34,35 @@ body{
   padding:36px 14px 108px;
 }
 a{color:inherit}
+.ic{width:1em;height:1em;display:inline-block;vertical-align:-.13em;flex:none}
 
 /* ===== メニューバー ===== */
 .menubar{
   position:fixed;top:0;left:0;right:0;height:26px;z-index:50;
-  display:flex;align-items:center;gap:19px;padding:0 14px;
+  display:flex;align-items:center;gap:18px;padding:0 14px;
   background:rgba(255,255,255,.22);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
   color:#fff;font-size:12.5px;text-shadow:0 0 6px rgba(0,0,0,.25);
 }
 .menubar b{font-weight:600}
-.menubar .right{margin-left:auto;display:flex;gap:15px;align-items:center}
-.menubar a{text-decoration:none}
-@media (max-width:620px){ .menubar span.hide{display:none} }
+.menubar .right{margin-left:auto;display:flex;gap:14px;align-items:center}
+.mb-dot{width:9px;height:9px;border-radius:50%;background:#c8c8cc;display:inline-block}
+@media (max-width:640px){ .menubar .hide{display:none} }
 
-/* ===== まど ===== */
+/* ===== ウインドウ ===== */
 .window{
-  max-width:940px;margin:0 auto;border-radius:12px;overflow:hidden;
+  max-width:940px;margin:0 auto;border-radius:12px;overflow:hidden;position:relative;
   background:var(--win);backdrop-filter:blur(34px);-webkit-backdrop-filter:blur(34px);
   box-shadow:0 26px 70px rgba(0,0,0,.42),0 0 0 .5px rgba(255,255,255,.22);
   display:flex;min-height:560px;
 }
-.lights{display:flex;gap:8px;padding:13px 14px 0;position:absolute}
+.lights{display:flex;gap:8px;padding:13px 14px 0;position:absolute;z-index:3}
 .lights i{width:12px;height:12px;border-radius:50%;display:block}
 .lights i:nth-child(1){background:#ff5f57}
 .lights i:nth-child(2){background:#febc2e}
 .lights i:nth-child(3){background:#28c840}
 
-.side{
-  width:232px;flex:none;background:var(--side);padding:44px 10px 18px;
-  border-right:.5px solid var(--line);overflow-y:auto;
-}
+.side{width:236px;flex:none;background:var(--side);padding:44px 10px 18px;
+  border-right:.5px solid var(--line);overflow-y:auto}
 .me{display:flex;align-items:center;gap:11px;padding:8px 8px 16px}
 .me-face{width:44px;height:44px;border-radius:50%;flex:none;position:relative;overflow:hidden;
   background:linear-gradient(135deg,#7b8cff,#c76aff)}
@@ -75,18 +74,16 @@ a{color:inherit}
 .me b{display:block;font-size:13px;font-weight:600}
 .me span{display:block;font-size:11.5px;color:var(--ink2)}
 
-.search{
-  margin:0 6px 12px;padding:5px 10px;border-radius:7px;font-size:12px;color:var(--ink2);
-  background:rgba(127,127,127,.14);
-}
+.search{margin:0 6px 12px;padding:5px 10px;border-radius:7px;font-size:12px;color:var(--ink2);
+  background:rgba(127,127,127,.14);display:flex;align-items:center;gap:7px}
 .nav{list-style:none;display:flex;flex-direction:column;gap:1px}
 .nav a{display:flex;align-items:center;gap:10px;padding:6px 9px;border-radius:7px;
   text-decoration:none;color:var(--ink);font-size:12.5px}
 .nav a:hover{background:rgba(127,127,127,.14)}
 .nav a.on{background:var(--acc);color:#fff}
-.nav em{font-style:normal;width:20px;height:20px;border-radius:5px;display:flex;
-  align-items:center;justify-content:center;font-size:11px;background:rgba(127,127,127,.2)}
-.nav a.on em{background:rgba(255,255,255,.25)}
+.nav em{font-style:normal;width:21px;height:21px;border-radius:5px;display:flex;
+  align-items:center;justify-content:center;font-size:12px;color:#fff;flex:none}
+.nav a.on em{box-shadow:0 0 0 1px rgba(255,255,255,.4)}
 
 .main{flex:1;min-width:0;padding:44px 26px 40px;overflow-y:auto}
 h1{font-size:19px;font-weight:700;margin-bottom:3px}
@@ -99,13 +96,13 @@ h2{font-size:12px;font-weight:600;color:var(--ink2);margin:24px 0 7px;padding-le
 .row.link{text-decoration:none;color:inherit}
 .row.link:hover{background:rgba(127,127,127,.07)}
 .ico{width:28px;height:28px;flex:none;border-radius:7px;display:flex;align-items:center;
-  justify-content:center;font-size:14px;background:rgba(127,127,127,.15)}
-.ico img{width:100%;height:100%;object-fit:cover;border-radius:7px;display:block}
+  justify-content:center;font-size:15px;background:rgba(127,127,127,.15);overflow:hidden}
+.ico img{width:100%;height:100%;object-fit:cover;display:block}
 .rw{flex:1;min-width:0}
-.rw b{display:block;font-size:12.5px;font-weight:600;line-height:1.4}
-.rw span{display:block;font-size:11.5px;color:var(--ink2);line-height:1.5;word-break:break-word}
-.val{font-size:12px;color:var(--ink2);text-align:right;flex:none;max-width:60%}
-.chev{color:var(--ink2);font-size:11px;flex:none}
+.rw b{display:block;font-size:12.5px;font-weight:600;line-height:1.45}
+.rw span{display:block;font-size:11.5px;color:var(--ink2);line-height:1.6;word-break:break-word}
+.val{font-size:12px;color:var(--ink2);text-align:right;flex:none;max-width:62%}
+.chev{color:var(--ink2);font-size:12px;flex:none}
 .sw{width:38px;height:22px;border-radius:999px;background:var(--ok);position:relative;flex:none}
 .sw::after{content:"";position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;
   background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.28)}
@@ -126,13 +123,15 @@ h2{font-size:12px;font-weight:600;color:var(--ink2);margin:24px 0 7px;padding-le
 
 details{border-bottom:.5px solid var(--line)}
 details:last-child{border-bottom:none}
-summary{list-style:none;cursor:pointer;padding:11px 14px;font-size:12.5px;font-weight:600;display:flex;gap:10px;align-items:center}
+summary{list-style:none;cursor:pointer;padding:11px 14px;font-size:12.5px;font-weight:600;
+  display:flex;gap:10px;align-items:center}
 summary::-webkit-details-marker{display:none}
-summary::after{content:"›";margin-left:auto;color:var(--ink2);transition:transform .25s}
-details[open] summary::after{transform:rotate(90deg)}
+summary .chevR{margin-left:auto;color:var(--ink2);transition:transform .25s}
+details[open] summary .chevR{transform:rotate(90deg)}
 details p{padding:0 14px 13px 46px;color:var(--ink2);font-size:12px}
 
-.back{display:inline-block;margin:18px 0 0;font-size:12px;color:var(--acc);text-decoration:none}
+.back{display:inline-flex;align-items:center;gap:7px;margin:18px 0 0;font-size:12px;
+  color:var(--acc);text-decoration:none}
 .back:hover{text-decoration:underline}
 
 /* ===== Dock ===== */
@@ -145,7 +144,7 @@ details p{padding:0 14px 13px 46px;color:var(--ink2);font-size:12px}
 }
 .dock a{
   width:46px;height:46px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;
-  font-size:21px;text-decoration:none;color:#fff;
+  font-size:22px;text-decoration:none;color:#fff;
   box-shadow:0 3px 8px rgba(0,0,0,.24);
   transition:transform .2s cubic-bezier(.34,1.5,.64,1);
 }
@@ -164,13 +163,16 @@ details p{padding:0 14px 13px 46px;color:var(--ink2);font-size:12px}
 </style>
 </head>
 <body>
+<script src="/other/icons.js"></script>
 
 <div class="menubar">
-  <b>🍎</b><b>システム設定</b>
+  <b><svg class="ic" style="font-size:14px"><use href="#i-apple"/></svg></b>
+  <b>システム設定</b>
   <span class="hide">ファイル</span><span class="hide">編集</span><span class="hide">表示</span><span class="hide">ウインドウ</span>
   <div class="right">
-    <span id="mb-status">●</span>
-    <span class="hide">🔋</span><span class="hide">📶</span>
+    <span class="mb-dot" id="mb-status"></span>
+    <span class="hide"><svg class="ic"><use href="#i-battery"/></svg></span>
+    <span class="hide"><svg class="ic"><use href="#i-wifi"/></svg></span>
     <span id="mb-clock">--:--</span>
   </div>
 </div>
@@ -183,104 +185,104 @@ details p{padding:0 14px 13px 46px;color:var(--ink2);font-size:12px}
       <span class="me-face"><img id="side-face" alt=""><span class="me-dot offline" id="side-dot"></span></span>
       <div><b id="side-name">Poo</b><span id="side-sub">poo.pptx</span></div>
     </div>
-    <div class="search">🔍 検索（つかえません）</div>
+    <div class="search"><svg class="ic"><use href="#i-search"/></svg>検索（動作しません）</div>
     <ul class="nav">
-      <li><a href="#me" class="on"><em>👤</em>じぶん</a></li>
-      <li><a href="#now"><em>💬</em>いま</a></li>
-      <li><a href="#likes"><em>🧩</em>さわったやつ</a></li>
-      <li><a href="#gohan"><em>🍜</em>ごはん</a></li>
-      <li><a href="#spec"><em>💻</em>このMacについて</a></li>
-      <li><a href="#faq"><em>❓</em>しつもん</a></li>
-      <li><a href="#links"><em>🔗</em>りんく</a></li>
+      <li><a href="#profile" class="on"><em style="background:#8e8e93"><svg class="ic"><use href="#i-person"/></svg></em>プロフィール</a></li>
+      <li><a href="#activity"><em style="background:#5865f2"><svg class="ic"><use href="#i-discord"/></svg></em>アクティビティ</a></li>
+      <li><a href="#langs"><em style="background:#34c759"><svg class="ic"><use href="#i-puzzle"/></svg></em>使用経験のある言語</a></li>
+      <li><a href="#food"><em style="background:#ff9500"><svg class="ic"><use href="#i-bowl"/></svg></em>好きな食べ物</a></li>
+      <li><a href="#spec"><em style="background:#0a84ff"><svg class="ic"><use href="#i-laptop"/></svg></em>この Mac について</a></li>
+      <li><a href="#faq"><em style="background:#af52de"><svg class="ic"><use href="#i-question"/></svg></em>よくある質問</a></li>
+      <li><a href="#links"><em style="background:#5ac8fa"><svg class="ic"><use href="#i-link"/></svg></em>リンク</a></li>
     </ul>
   </aside>
 
   <main class="main">
-    <h1 id="me">じぶん</h1>
-    <p class="lead" id="hitokoto">きょうの ひとこと</p>
+    <h1 id="profile">プロフィール</h1>
+    <p class="lead" id="hitokoto">本日の一言</p>
 
     <div class="card">
       <div class="row">
-        <span class="ico">📄</span>
-        <div class="rw"><b>なにもない。</b>
-          <span>むだに買ったドメインの使い道がなくて、なんとなく置いてあるだけの場所。深い意味はないし、たぶんこれからもない。</span></div>
+        <span class="ico"><svg class="ic"><use href="#i-doc"/></svg></span>
+        <div class="rw"><b>特に何もありません</b>
+          <span>無駄に取得したドメインの使い道がなく、なんとなく置いてあるだけの場所です。深い意味はなく、今後もおそらく増えません。</span></div>
       </div>
-      <div class="row"><span class="ico">📍</span><div class="rw"><b>東京に住んでる</b></div><span class="sw"></span></div>
-      <div class="row"><span class="ico">🍚</span><div class="rw"><b>ドカ食いが好き</b></div><span class="sw"></span></div>
-      <div class="row"><span class="ico">🔄</span><div class="rw"><b>更新は 気まぐれ</b></div><span class="sw off"></span></div>
-      <div class="row"><span class="ico">📦</span><div class="rw"><b>中身は 期待しないでください</b></div><span class="sw"></span></div>
+      <div class="row"><span class="ico"><svg class="ic"><use href="#i-pin"/></svg></span><div class="rw"><b>東京都在住</b></div><span class="sw"></span></div>
+      <div class="row"><span class="ico"><svg class="ic"><use href="#i-bowl"/></svg></span><div class="rw"><b>大食いを好む</b></div><span class="sw"></span></div>
+      <div class="row"><span class="ico"><svg class="ic"><use href="#i-refresh"/></svg></span><div class="rw"><b>更新は不定期</b></div><span class="sw off"></span></div>
+      <div class="row"><span class="ico"><svg class="ic"><use href="#i-box"/></svg></span><div class="rw"><b>内容には期待しないでください</b></div><span class="sw"></span></div>
     </div>
 
-    <h2 id="now">いま</h2>
+    <h2 id="activity">アクティビティ</h2>
     <div class="card">
       <div class="row">
-        <span class="ico" style="background:#5865f2;color:#fff">💬</span>
-        <div class="rw"><b id="now-name">Poo</b><span id="now-state">つないでいます…</span></div>
+        <span class="ico" style="background:#5865f2;color:#fff"><svg class="ic"><use href="#i-discord"/></svg></span>
+        <div class="rw"><b id="now-name">Poo</b><span id="now-state">接続しています…</span></div>
         <span class="val" id="now-pill">—</span>
       </div>
       <div class="row" style="display:block;padding:0"><div class="acts" id="acts"></div></div>
     </div>
 
-    <h2 id="likes">さわったことある やつ</h2>
+    <h2 id="langs">使用経験のある言語</h2>
     <div class="card">
       <div class="chips">
         <span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">PHP</span>
         <span class="chip">VBA</span><span class="chip">Java</span><span class="chip">HTML</span>
         <span class="chip">CSS</span><span class="chip">C</span><span class="chip">Kotlin</span>
       </div>
-      <div class="row"><span class="ico">📊</span><div class="rw"><b>習熟度</b></div><span class="val">どれも そこそこ</span></div>
+      <div class="row"><span class="ico"><svg class="ic"><use href="#i-chart"/></svg></span><div class="rw"><b>習熟度</b></div><span class="val">いずれも中程度です</span></div>
     </div>
 
-    <h2 id="gohan">すきな ごはん</h2>
+    <h2 id="food">好きな食べ物</h2>
     <div class="card">
-      <div class="row"><div class="rw"><b>とんこつラーメン</b></div><span class="val">¥ ---</span></div>
-      <div class="row"><div class="rw"><b>すし</b></div><span class="val">¥ ---</span></div>
-      <div class="row"><div class="rw"><b>ハムカツ</b></div><span class="val">¥ ---</span></div>
-      <div class="row"><div class="rw"><b>麻婆豆腐</b></div><span class="val">¥ ---</span></div>
-      <div class="row"><div class="rw"><b>マック</b></div><span class="val">¥ ---</span></div>
-      <div class="row"><div class="rw"><b>ポテサラ</b></div><span class="val">¥ ---</span></div>
-      <div class="row"><div class="rw"><b>ごうけい</b></div><span class="val">6 てん ／ おつり なし</span></div>
+      <div class="row"><div class="rw"><b>豚骨ラーメン</b></div><span class="val">1</span></div>
+      <div class="row"><div class="rw"><b>寿司</b></div><span class="val">2</span></div>
+      <div class="row"><div class="rw"><b>ハムカツ</b></div><span class="val">3</span></div>
+      <div class="row"><div class="rw"><b>麻婆豆腐</b></div><span class="val">4</span></div>
+      <div class="row"><div class="rw"><b>マクドナルド</b></div><span class="val">5</span></div>
+      <div class="row"><div class="rw"><b>ポテトサラダ</b></div><span class="val">6</span></div>
+      <div class="row"><div class="rw"><b>合計</b></div><span class="val">6 件</span></div>
     </div>
 
-    <h2 id="spec">このMacについて</h2>
+    <h2 id="spec">この Mac について</h2>
     <div class="card">
-      <div class="row"><div class="rw"><b>名前</b></div><span class="val">MAIN-PC</span></div>
-      <div class="row"><div class="rw"><b>チップ</b></div><span class="val">Core i7-14700F（20コア / 28スレッド）</span></div>
+      <div class="row"><div class="rw"><b>名称</b></div><span class="val">MAIN-PC</span></div>
+      <div class="row"><div class="rw"><b>チップ</b></div><span class="val">Core i7-14700F（20 コア / 28 スレッド）</span></div>
       <div class="row"><div class="rw"><b>グラフィックス</b></div><span class="val">RTX 4070 SUPER</span></div>
       <div class="row"><div class="rw"><b>メモリ</b></div><span class="val">32 GB</span></div>
-      <div class="row"><div class="rw"><b>ストレージ</b></div><span class="val">ぜんぶで 7 TB</span></div>
-      <div class="row"><div class="rw"><b>OS</b></div><span class="val">Windows 11 Pro（Mac ではない）</span></div>
+      <div class="row"><div class="rw"><b>ストレージ</b></div><span class="val">合計 7 TB</span></div>
+      <div class="row"><div class="rw"><b>OS</b></div><span class="val">Windows 11 Pro（Mac ではありません）</span></div>
     </div>
 
-    <h2 id="faq">よくある しつもん</h2>
+    <h2 id="faq">よくある質問</h2>
     <div class="card">
-      <details><summary><span class="ico">❓</span>なにができるサイト？</summary><p>なにもできない。見るだけ。</p></details>
-      <details><summary><span class="ico">❓</span>なんで このドメインにしたの？</summary><p>勢い。もう少し考えればよかった。</p></details>
-      <details><summary><span class="ico">❓</span>「いま」のところは なに？</summary><p>うんちさんが 起きてるかどうか。遊んでるときは 遊んでるものが出ます。</p></details>
-      <details><summary><span class="ico">❓</span>更新はするの？</summary><p>気が向いたら。気は だいたい 向かない。</p></details>
-      <details><summary><span class="ico">❓</span>連絡したいときは？</summary><p>したの りんく から どうぞ。返事は 期待しないでください。</p></details>
+      <details><summary><span class="ico"><svg class="ic"><use href="#i-question"/></svg></span>何ができるサイトですか？<svg class="ic chevR"><use href="#i-chevR"/></svg></summary><p>何もできません。閲覧のみです。</p></details>
+      <details><summary><span class="ico"><svg class="ic"><use href="#i-question"/></svg></span>なぜこのドメインを選んだのですか？<svg class="ic chevR"><use href="#i-chevR"/></svg></summary><p>勢いです。もう少し検討すべきでした。</p></details>
+      <details><summary><span class="ico"><svg class="ic"><use href="#i-question"/></svg></span>アクティビティとは何ですか？<svg class="ic chevR"><use href="#i-chevR"/></svg></summary><p>管理者が起動しているかどうかです。何かを実行している場合は、その内容が表示されます。</p></details>
+      <details><summary><span class="ico"><svg class="ic"><use href="#i-question"/></svg></span>更新はされますか？<svg class="ic chevR"><use href="#i-chevR"/></svg></summary><p>気が向いた場合に限ります。おおむね向きません。</p></details>
+      <details><summary><span class="ico"><svg class="ic"><use href="#i-question"/></svg></span>連絡を取りたい場合は？<svg class="ic chevR"><use href="#i-chevR"/></svg></summary><p>下部のリンクからどうぞ。返信は期待しないでください。</p></details>
     </div>
 
-    <h2 id="links">りんく</h2>
+    <h2 id="links">リンク</h2>
     <div class="card">
-      <a class="row link" href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener"><span class="ico" style="background:#5865f2;color:#fff">💬</span><div class="rw"><b>Discord</b><span>poo.pptx</span></div><span class="chev">↗</span></a>
-      <a class="row link" href="https://x.com/_poo_main" target="_blank" rel="noopener"><span class="ico" style="background:#000;color:#fff">✕</span><div class="rw"><b>X</b><span>@_poo_main</span></div><span class="chev">↗</span></a>
-      <a class="row link" href="https://www.instagram.com/poo._.abc/" target="_blank" rel="noopener"><span class="ico" style="background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);color:#fff">📷</span><div class="rw"><b>Instagram</b><span>poo._.abc</span></div><span class="chev">↗</span></a>
-      <a class="row link" href="https://open.spotify.com/user/9diufth0yxkusydwr2rt1vpbb" target="_blank" rel="noopener"><span class="ico" style="background:#1db954;color:#fff">🎵</span><div class="rw"><b>Spotify</b><span>Poo</span></div><span class="chev">↗</span></a>
-      <a class="row link" href="https://github.com/poo0123" target="_blank" rel="noopener"><span class="ico" style="background:#24292f;color:#fff">🐙</span><div class="rw"><b>GitHub</b><span>poo0123</span></div><span class="chev">↗</span></a>
-      <a class="row link" href="https://steamcommunity.com/id/Poo0123/" target="_blank" rel="noopener"><span class="ico" style="background:#1b2838;color:#fff">🎮</span><div class="rw"><b>Steam</b><span>Poo0123</span></div><span class="chev">↗</span></a>
+      <a class="row link" href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener"><span class="ico" style="background:#5865f2;color:#fff"><svg class="ic"><use href="#i-discord"/></svg></span><div class="rw"><b>Discord</b><span>poo.pptx</span></div><svg class="ic chev"><use href="#i-arrowUR"/></svg></a>
+      <a class="row link" href="https://x.com/_poo_main" target="_blank" rel="noopener"><span class="ico" style="background:#000;color:#fff"><svg class="ic"><use href="#i-x"/></svg></span><div class="rw"><b>X</b><span>@_poo_main</span></div><svg class="ic chev"><use href="#i-arrowUR"/></svg></a>
+      <a class="row link" href="https://www.instagram.com/poo._.abc/" target="_blank" rel="noopener"><span class="ico" style="background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);color:#fff"><svg class="ic"><use href="#i-instagram"/></svg></span><div class="rw"><b>Instagram</b><span>poo._.abc</span></div><svg class="ic chev"><use href="#i-arrowUR"/></svg></a>
+      <a class="row link" href="https://open.spotify.com/user/9diufth0yxkusydwr2rt1vpbb" target="_blank" rel="noopener"><span class="ico" style="background:#1db954;color:#fff"><svg class="ic"><use href="#i-spotify"/></svg></span><div class="rw"><b>Spotify</b><span>Poo</span></div><svg class="ic chev"><use href="#i-arrowUR"/></svg></a>
+      <a class="row link" href="https://github.com/poo0123" target="_blank" rel="noopener"><span class="ico" style="background:#24292f;color:#fff"><svg class="ic"><use href="#i-github"/></svg></span><div class="rw"><b>GitHub</b><span>poo0123</span></div><svg class="ic chev"><use href="#i-arrowUR"/></svg></a>
+      <a class="row link" href="https://steamcommunity.com/id/Poo0123/" target="_blank" rel="noopener"><span class="ico" style="background:#1b2838;color:#fff"><svg class="ic"><use href="#i-steam"/></svg></span><div class="rw"><b>Steam</b><span>Poo0123</span></div><svg class="ic chev"><use href="#i-arrowUR"/></svg></a>
     </div>
 
-    <a class="back" href="/">← Pooのくそさいと にもどる</a>
+    <a class="back" href="/"><svg class="ic"><use href="#i-arrowL"/></svg>Pooのくそさいと へ戻る</a>
   </main>
 </div>
 
 <nav class="dock" aria-label="Dock">
-  <a href="/" title="Pooのくそさいと" style="background:linear-gradient(145deg,#f5efe2,#ddd0b8);color:#c0564f">📄</a>
-  <a href="/other/windows/" title="Windows風" style="background:linear-gradient(145deg,#4aa3e8,#0067c0)">🪟</a>
-  <a href="/other/cloudflare/" title="Cloudflare風" style="background:linear-gradient(145deg,#ffab53,#f6821f)">☁</a>
-  <a href="/other/instagram/" title="Instagram風" style="background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)">📷</a>
-  <a href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener" title="Discord" style="background:linear-gradient(145deg,#7d88f7,#5865f2)">💬</a>
+  <a href="/" title="Pooのくそさいと" style="background:linear-gradient(145deg,#f5efe2,#ddd0b8);color:#c0564f"><svg class="ic"><use href="#i-doc"/></svg></a>
+  <a href="/other/windows/" title="Windows 設定画面" style="background:linear-gradient(145deg,#4aa3e8,#0067c0)"><svg class="ic"><use href="#i-windows"/></svg></a>
+  <a href="/other/cloudflare/" title="Cloudflare パネル" style="background:linear-gradient(145deg,#ffab53,#f6821f)"><svg class="ic"><use href="#i-cloudflare"/></svg></a>
+  <a href="/other/instagram/" title="Instagram プロフィール" style="background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)"><svg class="ic"><use href="#i-instagram"/></svg></a>
+  <a href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener" title="Discord" style="background:linear-gradient(145deg,#7d88f7,#5865f2)"><svg class="ic"><use href="#i-discord"/></svg></a>
 </nav>
 
 <script src="/other/live.js"></script>
@@ -319,9 +321,11 @@ details p{padding:0 14px 13px 46px;color:var(--ink2);font-size:12px}
             '<div class="times"><span class="t-now">0:00</span><span>'+L.mmss(a.end-a.start)+'</span></div>';
     }
     var el = a.start && !bar ? L.since(a.start) : '';
-    return '<span class="ico">'+(a.img?'<img src="'+L.esc(a.img)+'" alt="" loading="lazy">':'🎮')+'</span>'+
+    var pic = a.img ? '<img src="'+L.esc(a.img)+'" alt="" loading="lazy">'
+                    : '<svg class="ic"><use href="#i-gamepad"/></svg>';
+    return '<span class="ico">'+pic+'</span>'+
       '<div class="rw"><b>'+(a.url?'<a href="'+L.esc(a.url)+'" target="_blank" rel="noopener" style="color:var(--acc);text-decoration:none">'+L.esc(a.name)+'</a>':L.esc(a.name))+'</b>'+
-      '<span>'+L.esc(a.label)+(el?' ・ '+L.esc(el):'')+(a.detail?'<br>'+L.esc(a.detail):'')+'</span>'+bar+'</div>';
+      '<span>'+L.esc(a.label)+(el?'　'+L.esc(el):'')+(a.detail?'<br>'+L.esc(a.detail):'')+'</span>'+bar+'</div>';
   }
   function bars(){
     if (tmr) clearInterval(tmr);
@@ -348,9 +352,8 @@ details p{padding:0 14px 13px 46px;color:var(--ink2);font-size:12px}
     document.getElementById('now-name').textContent = d.name + (d.guild ? '　'+d.guild.tag : '');
     document.getElementById('now-state').textContent = d.statusEn;
     document.getElementById('now-pill').textContent = d.statusLabel;
-    var mb = document.getElementById('mb-status');
-    mb.textContent = '●';
-    mb.style.color = d.status==='online'?'#30d158':d.status==='idle'?'#ffd60a':d.status==='dnd'?'#ff453a':'#c8c8cc';
+    document.getElementById('mb-status').style.background =
+      d.status==='online'?'#30d158':d.status==='idle'?'#ffd60a':d.status==='dnd'?'#ff453a':'#c8c8cc';
 
     smooth(function(){
       var have = {};
@@ -362,7 +365,8 @@ details p{padding:0 14px 13px 46px;color:var(--ink2);font-size:12px}
       if (!d.acts.length){
         if (!box.querySelector('.act-none')){
           var p=document.createElement('div'); p.className='row act-none';
-          p.innerHTML='<span class="ico">😴</span><div class="rw"><b>とくに なにもしてない。</b></div>';
+          p.innerHTML='<span class="ico"><svg class="ic"><use href="#i-moon"/></svg></span>'+
+                      '<div class="rw"><b>現在アクティビティはありません</b></div>';
           box.appendChild(p);
         }
         return;
