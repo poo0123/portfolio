@@ -34,7 +34,7 @@ body.dark-mode {
 html {
     /* 全体の 文字を すこしだけ 大きく（16px -> 17px） */
     font-size: 106.25%;
-    scroll-behavior: smooth; scroll-padding-top: 24px;
+    scroll-behavior: smooth; scroll-padding-top: 64px;
 }
 
 body {
@@ -1402,11 +1402,11 @@ body.dark-mode .scrap-receipt hr { border-top-color: rgba(255,255,255,0.16); }
 .scrap-photo img {
     display: block; width: 100%; height: 100%;
     object-fit: cover;
-    filter: sepia(0.28) saturate(0.82) brightness(1.04);
+    filter: sepia(0.14) saturate(0.94) brightness(1.02);
 }
 .scrap-photo .scrap-tape { top: -13px; left: 22px; transform: rotate(-5deg); }
 body.dark-mode .scrap-photo { background: #e9e2d4; }
-body.dark-mode .scrap-photo img { filter: sepia(0.30) saturate(0.70) brightness(0.86); }
+body.dark-mode .scrap-photo img { filter: sepia(0.16) saturate(0.82) brightness(0.88); }
 
 /* 右した ― はがれかけの ふせん */
 .scrap-memo {
@@ -1417,7 +1417,7 @@ body.dark-mode .scrap-photo img { filter: sepia(0.30) saturate(0.70) brightness(
     background: var(--note);
     display: flex; align-items: center; justify-content: center;
     text-align: center; padding: 0 20px;
-    font-size: 0.78rem; line-height: 1.8; color: var(--ink);
+    font-size: 1.15rem; letter-spacing: 0.1em; line-height: 1.8; color: var(--ink);
     animation-delay: 0.6s, 5.5s;
     animation-duration: 0.9s, 21s;
 }
@@ -1436,4 +1436,58 @@ body.dark-mode .scrap-photo img { filter: sepia(0.30) saturate(0.70) brightness(
 /* うごきを へらす設定のときは そのまま 置いておく */
 @media (prefers-reduced-motion: reduce) {
     .scrap { opacity: 1; animation: none; }
+}
+
+
+/* =========================================================
+   スクロール中の 小さい見出し
+   ========================================================= */
+.minibar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 880;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+    box-shadow: 0 4px 14px rgba(70,55,35,0.10);
+    opacity: 0; visibility: hidden;
+    transform: translateY(-100%);
+    transition: opacity 0.28s ease,
+                transform 0.32s cubic-bezier(0.22,1,0.36,1),
+                visibility 0.32s,
+                background-color 0.4s;
+}
+.minibar.show { opacity: 1; visibility: visible; transform: none; }
+body.dark-mode .minibar { box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
+
+.minibar-in {
+    max-width: 744px; margin: 0 auto;
+    padding: 8px 20px 9px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+}
+.minibar-logo {
+    font-family: 'Yomogi', cursive; font-size: 1.06rem; line-height: 1.5;
+    color: var(--ink); text-decoration: none; white-space: nowrap; flex: none;
+}
+.minibar-logo span {
+    color: var(--red);
+    border-bottom: 2px solid var(--red);
+    padding-bottom: 1px;
+}
+.minibar-logo:hover span { border-bottom-style: dotted; }
+
+.minibar-nav { display: flex; gap: 15px; min-width: 0; overflow: hidden; }
+.minibar-nav a {
+    font-family: 'Yomogi', cursive; font-size: 0.8rem; color: var(--ink-2);
+    text-decoration: none; white-space: nowrap;
+    border-bottom: 2px dotted transparent; padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+}
+.minibar-nav a:hover { color: var(--red); border-bottom-color: var(--red); }
+
+/* せまい画面では 名まえだけ（いどうは 丸ボタンに まかせる） */
+@media (max-width: 720px) {
+    .minibar-in { padding: 7px 16px 8px; justify-content: flex-start; }
+    .minibar-nav { display: none; }
+    .minibar-logo { font-size: 0.98rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .minibar { transition: opacity 0.001ms, visibility 0.001ms; transform: none; }
 }

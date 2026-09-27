@@ -505,6 +505,41 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /* ---------- スクロール中の 小さい見出し ---------- */
+
+    const minibar = document.getElementById('minibar');
+
+    if (minibar) {
+        // 見出しを 通りすぎたら 出す。高さは 測りなおせるように しておく
+        let mastBottom = 300;
+        const measureMast = () => {
+            const mast = document.querySelector('.masthead');
+            mastBottom = mast
+                ? mast.getBoundingClientRect().bottom + window.scrollY - 8
+                : 300;
+        };
+        const onScrollMini = () => {
+            minibar.classList.toggle('show', window.scrollY > mastBottom);
+        };
+        const remeasure = () => { measureMast(); onScrollMini(); };
+
+        remeasure();
+        window.addEventListener('scroll', onScrollMini, { passive: true });
+        window.addEventListener('resize', remeasure);
+        window.addEventListener('load', remeasure);
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(remeasure).catch(() => {});
+        }
+
+        const miniLogo = minibar.querySelector('.minibar-logo');
+        if (miniLogo) {
+            miniLogo.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        }
+    }
+
     /* ---------- うえへ ---------- */
 
     if (backBtn) {
