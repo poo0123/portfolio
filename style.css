@@ -1208,12 +1208,12 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
                 inset 0 -20px 28px -22px rgba(0,0,0,0.5);
 }
 .now-head.has-plate .now-avatar {
-    width: clamp(38px, 15.6cqw, 62px);
-    height: clamp(38px, 15.6cqw, 62px);
+    width: clamp(41px, 17.2cqw, 68px);
+    height: clamp(41px, 17.2cqw, 68px);
 }
 .now-head.has-plate .now-avatar .status-dot {
-    width: clamp(10px, 4.75cqw, 19px); height: clamp(10px, 4.75cqw, 19px);
-    border-width: clamp(2px, 0.75cqw, 3px); border-color: #2c231c;
+    width: clamp(11px, 5.24cqw, 21px); height: clamp(11px, 5.24cqw, 21px);
+    border-width: clamp(2px, 0.82cqw, 3px); border-color: #2c231c;
     right: 1px; bottom: 1px;
 }
 .now-head.has-plate .now-avatar .status-dot::after {
@@ -1275,7 +1275,7 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
     .now-wrap.has-plate { margin-left: 0; }
 }
 
-.now-avatar { position: relative; width: 66px; height: 66px; flex: none; display: block; }
+.now-avatar { position: relative; width: 72px; height: 72px; flex: none; display: block; }
 .now-avatar .deco-face {
     position: absolute; left: 50%; top: 50%;
     width: 100%; height: 100%;
@@ -1288,7 +1288,7 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
 .now-avatar .deco-ring[hidden] { display: none; }
 .now-avatar .status-dot {
     position: absolute; right: 1px; bottom: 1px; z-index: 2;
-    width: 19px; height: 19px; border: 3px solid var(--note);
+    width: 21px; height: 21px; border: 3px solid var(--note);
 }
 .now-avatar .status-dot::after { font-size: 9px; color: var(--note); }
 
@@ -1312,8 +1312,8 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
 }
 @media (max-width: 720px) {
     .now-head { gap: 12px; }
-    .now-avatar { width: 58px; height: 58px; }
-    .now-avatar .status-dot { width: 17px; height: 17px; border-width: 3px; }
+    .now-avatar { width: 63px; height: 63px; }
+    .now-avatar .status-dot { width: 18px; height: 18px; border-width: 3px; }
 }
 
 /* 付箋の上に置くときの見え方 */
@@ -1324,3 +1324,116 @@ body.dark-mode .now-wrap.has-plate { background: #e9e2d4; }
     box-shadow: 0 1px 3px rgba(0,0,0,0.10);
 }
 body.dark-mode .sticky-title .guild-tag { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.18); }
+
+
+/* =========================================================
+   余白から はみ出している 紙きれ（かざり／ひろい画面だけ）
+   ========================================================= */
+.scrap {
+    position: fixed; z-index: 0;
+    pointer-events: none; user-select: none;
+    background: var(--card);
+    border: 1px solid rgba(0,0,0,0.07);
+    box-shadow: 0 10px 26px rgba(70,55,35,0.20);
+    font-family: 'Yomogi', cursive; color: var(--ink-2);
+    opacity: 0;
+    animation: scrap-in 0.9s ease forwards, scrap-sway 15s ease-in-out infinite;
+}
+/* 紙きれに 貼る テープ */
+.scrap .scrap-tape {
+    position: absolute; width: 86px; height: 24px;
+    background: var(--tape);
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.22) 0 3px, transparent 3px 7px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+}
+
+/* 左うえ ― もぎった 半券 */
+.scrap-ticket {
+    left: -58px; top: 9%;
+    width: 212px; height: 96px;
+    transform: rotate(-7deg);
+    display: flex; align-items: center; justify-content: flex-end;
+    padding: 0 18px;
+    font-size: 0.7rem; letter-spacing: 0.16em;
+    animation-delay: 0.15s, 1.2s;
+}
+.scrap-ticket .scrap-tape { top: -12px; right: 26px; transform: rotate(6deg); }
+/* 半券の ミシン目 */
+.scrap-ticket::before {
+    content: ''; position: absolute; left: 62px; top: 10px; bottom: 10px;
+    border-left: 2px dotted rgba(0,0,0,0.16);
+}
+
+/* 左した ― レシートの 切れはし */
+.scrap-receipt {
+    left: -74px; bottom: 13%;
+    width: 192px; height: 162px;
+    transform: rotate(5deg);
+    padding: 15px 18px 0;
+    font-size: 0.62rem; letter-spacing: 0.1em; line-height: 2;
+    --zig: 10px;
+    -webkit-mask:
+        conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+            bottom / var(--zig) var(--zig) repeat-x,
+        linear-gradient(#000 0 0) top / 100% calc(100% - var(--zig)) no-repeat;
+    mask:
+        conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg)
+            bottom / var(--zig) var(--zig) repeat-x,
+        linear-gradient(#000 0 0) top / 100% calc(100% - var(--zig)) no-repeat;
+    animation-delay: 0.45s, 3.6s;
+    animation-duration: 0.9s, 19s;
+}
+.scrap-receipt b { display: block; font-weight: 400; }
+.scrap-receipt span { display: flex; justify-content: space-between; }
+.scrap-receipt em { font-style: normal; }
+.scrap-receipt hr { border: none; border-top: 1px dashed rgba(0,0,0,0.20); margin: 4px 0; }
+body.dark-mode .scrap-receipt hr { border-top-color: rgba(255,255,255,0.16); }
+
+/* 右うえ ― 焼き増しした 写真 */
+.scrap-photo {
+    right: -66px; top: 15%;
+    width: 168px; height: 198px;
+    transform: rotate(6deg);
+    padding: 11px 11px 32px;
+    background: #fdfbf6;
+    animation-delay: 0.3s, 2.4s;
+    animation-duration: 0.9s, 17s;
+}
+.scrap-photo img {
+    display: block; width: 100%; height: 100%;
+    object-fit: cover;
+    filter: sepia(0.28) saturate(0.82) brightness(1.04);
+}
+.scrap-photo .scrap-tape { top: -13px; left: 22px; transform: rotate(-5deg); }
+body.dark-mode .scrap-photo { background: #e9e2d4; }
+body.dark-mode .scrap-photo img { filter: sepia(0.30) saturate(0.70) brightness(0.86); }
+
+/* 右した ― はがれかけの ふせん */
+.scrap-memo {
+    right: -50px; bottom: 15%;
+    width: 158px; height: 158px;
+    transform: rotate(-4deg);
+    border: none;
+    background: var(--note);
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 0 20px;
+    font-size: 0.78rem; line-height: 1.8; color: var(--ink);
+    animation-delay: 0.6s, 5.5s;
+    animation-duration: 0.9s, 21s;
+}
+
+@keyframes scrap-in { to { opacity: 1; } }
+@keyframes scrap-sway {
+    0%, 100% { translate: 0 0; }
+    50%      { translate: 0 -9px; }
+}
+
+/* せまい画面では じゃまなので ぜんぶ しまう */
+@media (max-width: 1180px) {
+    .scrap { display: none; }
+}
+
+/* うごきを へらす設定のときは そのまま 置いておく */
+@media (prefers-reduced-motion: reduce) {
+    .scrap { opacity: 1; animation: none; }
+}
