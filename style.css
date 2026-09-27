@@ -31,7 +31,11 @@ body.dark-mode {
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+html {
+    /* 全体の 文字を すこしだけ 大きく（16px -> 17px） */
+    font-size: 106.25%;
+    scroll-behavior: smooth; scroll-padding-top: 24px;
+}
 
 body {
     font-family: 'Zen Kurenaido', 'Hiragino Sans', sans-serif;
@@ -81,7 +85,8 @@ body.dark-mode .grain { mix-blend-mode: overlay; opacity: 0.22; }
 @keyframes hop { 0%, 70%, 100% { transform: translateY(0); opacity: 0.45; } 35% { transform: translateY(-7px); opacity: 1; } }
 
 /* 台紙 */
-.page { max-width: 700px; margin: 0 auto; padding: 46px 20px 90px; position: relative; }
+/* 文字が 大きくなったぶん、一行の長さが 変わらないように 幅も すこし */
+.page { max-width: 744px; margin: 0 auto; padding: 46px 20px 90px; position: relative; }
 
 /* 見出し */
 .masthead { position: relative; margin-bottom: 52px; padding-right: 76px; }
