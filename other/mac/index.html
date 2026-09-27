@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>システム設定 — Pooのくそさいと</title>
+<meta name="description" content="Pooのくそさいと の macOS ふう。">
+<meta name="theme-color" content="#2b6cb0">
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="/photo/favicon.ico" type="image/x-icon">
+<style>
+:root{
+  --win:rgba(246,246,246,.86); --side:rgba(236,236,238,.72); --card:#fff;
+  --ink:#1d1d1f; --ink2:#6e6e73; --line:rgba(0,0,0,.09);
+  --acc:#0a84ff; --ok:#30d158; --warn:#ffd60a; --dnd:#ff453a; --off:#98989d;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --win:rgba(40,40,42,.84); --side:rgba(52,52,54,.7); --card:#3a3a3c;
+    --ink:#f5f5f7; --ink2:#a1a1a6; --line:rgba(255,255,255,.1);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  min-height:100svh;color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  font-size:13px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(120% 90% at 18% 4%, #ffb36b 0%, rgba(255,179,107,0) 45%),
+    radial-gradient(110% 100% at 88% 14%, #ff7ac6 0%, rgba(255,122,198,0) 48%),
+    radial-gradient(140% 120% at 50% 100%, #1b3b8f 0%, #0b1b46 70%);
+  background-attachment:fixed;
+  padding:36px 14px 108px;
+}
+a{color:inherit}
+
+/* ===== メニューバー ===== */
+.menubar{
+  position:fixed;top:0;left:0;right:0;height:26px;z-index:50;
+  display:flex;align-items:center;gap:19px;padding:0 14px;
+  background:rgba(255,255,255,.22);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  color:#fff;font-size:12.5px;text-shadow:0 0 6px rgba(0,0,0,.25);
+}
+.menubar b{font-weight:600}
+.menubar .right{margin-left:auto;display:flex;gap:15px;align-items:center}
+.menubar a{text-decoration:none}
+@media (max-width:620px){ .menubar span.hide{display:none} }
+
+/* ===== まど ===== */
+.window{
+  max-width:940px;margin:0 auto;border-radius:12px;overflow:hidden;
+  background:var(--win);backdrop-filter:blur(34px);-webkit-backdrop-filter:blur(34px);
+  box-shadow:0 26px 70px rgba(0,0,0,.42),0 0 0 .5px rgba(255,255,255,.22);
+  display:flex;min-height:560px;
+}
+.lights{display:flex;gap:8px;padding:13px 14px 0;position:absolute}
+.lights i{width:12px;height:12px;border-radius:50%;display:block}
+.lights i:nth-child(1){background:#ff5f57}
+.lights i:nth-child(2){background:#febc2e}
+.lights i:nth-child(3){background:#28c840}
+
+.side{
+  width:232px;flex:none;background:var(--side);padding:44px 10px 18px;
+  border-right:.5px solid var(--line);overflow-y:auto;
+}
+.me{display:flex;align-items:center;gap:11px;padding:8px 8px 16px}
+.me-face{width:44px;height:44px;border-radius:50%;flex:none;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#7b8cff,#c76aff)}
+.me-face img{width:100%;height:100%;object-fit:cover;display:block}
+.me-dot{position:absolute;right:0;bottom:0;width:13px;height:13px;border-radius:50%;
+  background:var(--off);border:2px solid var(--side)}
+.me-dot.online{background:var(--ok)}.me-dot.idle{background:var(--warn)}
+.me-dot.dnd{background:var(--dnd)}.me-dot.offline{background:var(--off)}
+.me b{display:block;font-size:13px;font-weight:600}
+.me span{display:block;font-size:11.5px;color:var(--ink2)}
+
+.search{
+  margin:0 6px 12px;padding:5px 10px;border-radius:7px;font-size:12px;color:var(--ink2);
+  background:rgba(127,127,127,.14);
+}
+.nav{list-style:none;display:flex;flex-direction:column;gap:1px}
+.nav a{display:flex;align-items:center;gap:10px;padding:6px 9px;border-radius:7px;
+  text-decoration:none;color:var(--ink);font-size:12.5px}
+.nav a:hover{background:rgba(127,127,127,.14)}
+.nav a.on{background:var(--acc);color:#fff}
+.nav em{font-style:normal;width:20px;height:20px;border-radius:5px;display:flex;
+  align-items:center;justify-content:center;font-size:11px;background:rgba(127,127,127,.2)}
+.nav a.on em{background:rgba(255,255,255,.25)}
+
+.main{flex:1;min-width:0;padding:44px 26px 40px;overflow-y:auto}
+h1{font-size:19px;font-weight:700;margin-bottom:3px}
+.lead{color:var(--ink2);font-size:12.5px;margin-bottom:22px}
+h2{font-size:12px;font-weight:600;color:var(--ink2);margin:24px 0 7px;padding-left:3px}
+
+.card{background:var(--card);border-radius:10px;overflow:hidden;box-shadow:0 0 0 .5px var(--line)}
+.row{display:flex;align-items:center;gap:12px;padding:10px 14px;border-bottom:.5px solid var(--line)}
+.row:last-child{border-bottom:none}
+.row.link{text-decoration:none;color:inherit}
+.row.link:hover{background:rgba(127,127,127,.07)}
+.ico{width:28px;height:28px;flex:none;border-radius:7px;display:flex;align-items:center;
+  justify-content:center;font-size:14px;background:rgba(127,127,127,.15)}
+.ico img{width:100%;height:100%;object-fit:cover;border-radius:7px;display:block}
+.rw{flex:1;min-width:0}
+.rw b{display:block;font-size:12.5px;font-weight:600;line-height:1.4}
+.rw span{display:block;font-size:11.5px;color:var(--ink2);line-height:1.5;word-break:break-word}
+.val{font-size:12px;color:var(--ink2);text-align:right;flex:none;max-width:60%}
+.chev{color:var(--ink2);font-size:11px;flex:none}
+.sw{width:38px;height:22px;border-radius:999px;background:var(--ok);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.28)}
+.sw.off{background:rgba(127,127,127,.32)}
+.sw.off::after{right:auto;left:2px}
+
+.acts{display:flex;flex-direction:column;transition:height .42s cubic-bezier(.22,1,.36,1)}
+.acts.moving{overflow:hidden}
+.act{transition:opacity .3s,transform .34s cubic-bezier(.22,1,.36,1)}
+.act.in{opacity:0;transform:translateY(10px)}
+.act.out{position:absolute;left:0;right:0;opacity:0;transform:translateY(-8px);pointer-events:none}
+.bar{height:4px;border-radius:2px;background:rgba(127,127,127,.24);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width 1s linear}
+.times{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink2);margin-top:3px;font-variant-numeric:tabular-nums}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px;padding:13px 14px}
+.chip{font-size:11.5px;padding:3px 11px;border-radius:999px;background:rgba(127,127,127,.15)}
+
+details{border-bottom:.5px solid var(--line)}
+details:last-child{border-bottom:none}
+summary{list-style:none;cursor:pointer;padding:11px 14px;font-size:12.5px;font-weight:600;display:flex;gap:10px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"›";margin-left:auto;color:var(--ink2);transition:transform .25s}
+details[open] summary::after{transform:rotate(90deg)}
+details p{padding:0 14px 13px 46px;color:var(--ink2);font-size:12px}
+
+.back{display:inline-block;margin:18px 0 0;font-size:12px;color:var(--acc);text-decoration:none}
+.back:hover{text-decoration:underline}
+
+/* ===== Dock ===== */
+.dock{
+  position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:40;
+  display:flex;gap:9px;padding:8px 10px;border-radius:19px;
+  background:rgba(255,255,255,.26);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  box-shadow:0 10px 30px rgba(0,0,0,.3),0 0 0 .5px rgba(255,255,255,.28);
+  max-width:calc(100vw - 24px);overflow-x:auto;
+}
+.dock a{
+  width:46px;height:46px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;
+  font-size:21px;text-decoration:none;color:#fff;
+  box-shadow:0 3px 8px rgba(0,0,0,.24);
+  transition:transform .2s cubic-bezier(.34,1.5,.64,1);
+}
+.dock a:hover{transform:translateY(-9px) scale(1.12)}
+
+@media (max-width:780px){
+  body{padding:34px 8px 104px}
+  .window{flex-direction:column;min-height:0}
+  .side{width:auto;padding:38px 10px 12px;border-right:none;border-bottom:.5px solid var(--line)}
+  .nav{flex-direction:row;flex-wrap:wrap}
+  .main{padding:18px 16px 30px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="menubar">
+  <b>🍎</b><b>システム設定</b>
+  <span class="hide">ファイル</span><span class="hide">編集</span><span class="hide">表示</span><span class="hide">ウインドウ</span>
+  <div class="right">
+    <span id="mb-status">●</span>
+    <span class="hide">🔋</span><span class="hide">📶</span>
+    <span id="mb-clock">--:--</span>
+  </div>
+</div>
+
+<div class="window">
+  <div class="lights"><i></i><i></i><i></i></div>
+
+  <aside class="side">
+    <div class="me">
+      <span class="me-face"><img id="side-face" alt=""><span class="me-dot offline" id="side-dot"></span></span>
+      <div><b id="side-name">Poo</b><span id="side-sub">poo.pptx</span></div>
+    </div>
+    <div class="search">🔍 検索（つかえません）</div>
+    <ul class="nav">
+      <li><a href="#me" class="on"><em>👤</em>じぶん</a></li>
+      <li><a href="#now"><em>💬</em>いま</a></li>
+      <li><a href="#likes"><em>🧩</em>さわったやつ</a></li>
+      <li><a href="#gohan"><em>🍜</em>ごはん</a></li>
+      <li><a href="#spec"><em>💻</em>このMacについて</a></li>
+      <li><a href="#faq"><em>❓</em>しつもん</a></li>
+      <li><a href="#links"><em>🔗</em>りんく</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <h1 id="me">じぶん</h1>
+    <p class="lead" id="hitokoto">きょうの ひとこと</p>
+
+    <div class="card">
+      <div class="row">
+        <span class="ico">📄</span>
+        <div class="rw"><b>なにもない。</b>
+          <span>むだに買ったドメインの使い道がなくて、なんとなく置いてあるだけの場所。深い意味はないし、たぶんこれからもない。</span></div>
+      </div>
+      <div class="row"><span class="ico">📍</span><div class="rw"><b>東京に住んでる</b></div><span class="sw"></span></div>
+      <div class="row"><span class="ico">🍚</span><div class="rw"><b>ドカ食いが好き</b></div><span class="sw"></span></div>
+      <div class="row"><span class="ico">🔄</span><div class="rw"><b>更新は 気まぐれ</b></div><span class="sw off"></span></div>
+      <div class="row"><span class="ico">📦</span><div class="rw"><b>中身は 期待しないでください</b></div><span class="sw"></span></div>
+    </div>
+
+    <h2 id="now">いま</h2>
+    <div class="card">
+      <div class="row">
+        <span class="ico" style="background:#5865f2;color:#fff">💬</span>
+        <div class="rw"><b id="now-name">Poo</b><span id="now-state">つないでいます…</span></div>
+        <span class="val" id="now-pill">—</span>
+      </div>
+      <div class="row" style="display:block;padding:0"><div class="acts" id="acts"></div></div>
+    </div>
+
+    <h2 id="likes">さわったことある やつ</h2>
+    <div class="card">
+      <div class="chips">
+        <span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">PHP</span>
+        <span class="chip">VBA</span><span class="chip">Java</span><span class="chip">HTML</span>
+        <span class="chip">CSS</span><span class="chip">C</span><span class="chip">Kotlin</span>
+      </div>
+      <div class="row"><span class="ico">📊</span><div class="rw"><b>習熟度</b></div><span class="val">どれも そこそこ</span></div>
+    </div>
+
+    <h2 id="gohan">すきな ごはん</h2>
+    <div class="card">
+      <div class="row"><div class="rw"><b>とんこつラーメン</b></div><span class="val">¥ ---</span></div>
+      <div class="row"><div class="rw"><b>すし</b></div><span class="val">¥ ---</span></div>
+      <div class="row"><div class="rw"><b>ハムカツ</b></div><span class="val">¥ ---</span></div>
+      <div class="row"><div class="rw"><b>麻婆豆腐</b></div><span class="val">¥ ---</span></div>
+      <div class="row"><div class="rw"><b>マック</b></div><span class="val">¥ ---</span></div>
+      <div class="row"><div class="rw"><b>ポテサラ</b></div><span class="val">¥ ---</span></div>
+      <div class="row"><div class="rw"><b>ごうけい</b></div><span class="val">6 てん ／ おつり なし</span></div>
+    </div>
+
+    <h2 id="spec">このMacについて</h2>
+    <div class="card">
+      <div class="row"><div class="rw"><b>名前</b></div><span class="val">MAIN-PC</span></div>
+      <div class="row"><div class="rw"><b>チップ</b></div><span class="val">Core i7-14700F（20コア / 28スレッド）</span></div>
+      <div class="row"><div class="rw"><b>グラフィックス</b></div><span class="val">RTX 4070 SUPER</span></div>
+      <div class="row"><div class="rw"><b>メモリ</b></div><span class="val">32 GB</span></div>
+      <div class="row"><div class="rw"><b>ストレージ</b></div><span class="val">ぜんぶで 7 TB</span></div>
+      <div class="row"><div class="rw"><b>OS</b></div><span class="val">Windows 11 Pro（Mac ではない）</span></div>
+    </div>
+
+    <h2 id="faq">よくある しつもん</h2>
+    <div class="card">
+      <details><summary><span class="ico">❓</span>なにができるサイト？</summary><p>なにもできない。見るだけ。</p></details>
+      <details><summary><span class="ico">❓</span>なんで このドメインにしたの？</summary><p>勢い。もう少し考えればよかった。</p></details>
+      <details><summary><span class="ico">❓</span>「いま」のところは なに？</summary><p>うんちさんが 起きてるかどうか。遊んでるときは 遊んでるものが出ます。</p></details>
+      <details><summary><span class="ico">❓</span>更新はするの？</summary><p>気が向いたら。気は だいたい 向かない。</p></details>
+      <details><summary><span class="ico">❓</span>連絡したいときは？</summary><p>したの りんく から どうぞ。返事は 期待しないでください。</p></details>
+    </div>
+
+    <h2 id="links">りんく</h2>
+    <div class="card">
+      <a class="row link" href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener"><span class="ico" style="background:#5865f2;color:#fff">💬</span><div class="rw"><b>Discord</b><span>poo.pptx</span></div><span class="chev">↗</span></a>
+      <a class="row link" href="https://x.com/_poo_main" target="_blank" rel="noopener"><span class="ico" style="background:#000;color:#fff">✕</span><div class="rw"><b>X</b><span>@_poo_main</span></div><span class="chev">↗</span></a>
+      <a class="row link" href="https://www.instagram.com/poo._.abc/" target="_blank" rel="noopener"><span class="ico" style="background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7);color:#fff">📷</span><div class="rw"><b>Instagram</b><span>poo._.abc</span></div><span class="chev">↗</span></a>
+      <a class="row link" href="https://open.spotify.com/user/9diufth0yxkusydwr2rt1vpbb" target="_blank" rel="noopener"><span class="ico" style="background:#1db954;color:#fff">🎵</span><div class="rw"><b>Spotify</b><span>Poo</span></div><span class="chev">↗</span></a>
+      <a class="row link" href="https://github.com/poo0123" target="_blank" rel="noopener"><span class="ico" style="background:#24292f;color:#fff">🐙</span><div class="rw"><b>GitHub</b><span>poo0123</span></div><span class="chev">↗</span></a>
+      <a class="row link" href="https://steamcommunity.com/id/Poo0123/" target="_blank" rel="noopener"><span class="ico" style="background:#1b2838;color:#fff">🎮</span><div class="rw"><b>Steam</b><span>Poo0123</span></div><span class="chev">↗</span></a>
+    </div>
+
+    <a class="back" href="/">← Pooのくそさいと にもどる</a>
+  </main>
+</div>
+
+<nav class="dock" aria-label="Dock">
+  <a href="/" title="Pooのくそさいと" style="background:linear-gradient(145deg,#f5efe2,#ddd0b8);color:#c0564f">📄</a>
+  <a href="/other/windows/" title="Windows風" style="background:linear-gradient(145deg,#4aa3e8,#0067c0)">🪟</a>
+  <a href="/other/cloudflare/" title="Cloudflare風" style="background:linear-gradient(145deg,#ffab53,#f6821f)">☁</a>
+  <a href="/other/instagram/" title="Instagram風" style="background:linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)">📷</a>
+  <a href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener" title="Discord" style="background:linear-gradient(145deg,#7d88f7,#5865f2)">💬</a>
+</nav>
+
+<script src="/other/live.js"></script>
+<script>
+(function(){
+  var L = window.PooLive;
+  document.getElementById('hitokoto').textContent = L.hitokoto();
+
+  function clock(){
+    var n = new Date(), w = ['日','月','火','水','木','金','土'][n.getDay()];
+    document.getElementById('mb-clock').textContent =
+      (n.getMonth()+1)+'月'+n.getDate()+'日('+w+') '+n.getHours()+':'+('0'+n.getMinutes()).slice(-2);
+  }
+  clock(); setInterval(clock, 20000);
+
+  var box = document.getElementById('acts');
+  var tmr = null, hTmr = null;
+
+  function smooth(fn){
+    var a = box.offsetHeight; fn(); box.style.height = ''; var b = box.offsetHeight;
+    if (a === b) return;
+    box.style.height = a+'px'; box.classList.add('moving'); void box.offsetHeight;
+    box.style.height = b+'px';
+    clearTimeout(hTmr);
+    hTmr = setTimeout(function(){ box.style.height=''; box.classList.remove('moving'); }, 440);
+  }
+  function leave(el){
+    el.style.top = el.offsetTop+'px'; el.style.height = el.offsetHeight+'px';
+    el.removeAttribute('data-k'); el.classList.add('out');
+    setTimeout(function(){ el.remove(); }, 380);
+  }
+  function inner(a){
+    var bar = '';
+    if (a.start && a.end && a.end > a.start){
+      bar = '<div class="bar" data-s="'+a.start+'" data-e="'+a.end+'"><i></i></div>'+
+            '<div class="times"><span class="t-now">0:00</span><span>'+L.mmss(a.end-a.start)+'</span></div>';
+    }
+    var el = a.start && !bar ? L.since(a.start) : '';
+    return '<span class="ico">'+(a.img?'<img src="'+L.esc(a.img)+'" alt="" loading="lazy">':'🎮')+'</span>'+
+      '<div class="rw"><b>'+(a.url?'<a href="'+L.esc(a.url)+'" target="_blank" rel="noopener" style="color:var(--acc);text-decoration:none">'+L.esc(a.name)+'</a>':L.esc(a.name))+'</b>'+
+      '<span>'+L.esc(a.label)+(el?' ・ '+L.esc(el):'')+(a.detail?'<br>'+L.esc(a.detail):'')+'</span>'+bar+'</div>';
+  }
+  function bars(){
+    if (tmr) clearInterval(tmr);
+    var run = function(){
+      var live = false;
+      box.querySelectorAll('.bar[data-s]').forEach(function(b){
+        var s=+b.dataset.s,e=+b.dataset.e,total=e-s,done=Date.now()-s;
+        var f=b.querySelector('i'), n=b.parentNode.querySelector('.t-now');
+        if(total>0&&f){ f.style.width=Math.min(Math.max(done/total,0)*100,100)+'%';
+          if(n) n.textContent=L.mmss(Math.max(Math.min(done,total),0)); }
+        if(done<total) live=true;
+      });
+      if(!live) clearInterval(tmr);
+    };
+    run(); tmr = setInterval(run, 1000);
+  }
+
+  L.subscribe(function(d){
+    if (!d) return;
+    if (d.avatar) document.getElementById('side-face').src = d.avatar;
+    document.getElementById('side-dot').className = 'me-dot '+d.status;
+    document.getElementById('side-name').textContent = d.name;
+    document.getElementById('side-sub').textContent = '@'+d.username;
+    document.getElementById('now-name').textContent = d.name + (d.guild ? '　'+d.guild.tag : '');
+    document.getElementById('now-state').textContent = d.statusEn;
+    document.getElementById('now-pill').textContent = d.statusLabel;
+    var mb = document.getElementById('mb-status');
+    mb.textContent = '●';
+    mb.style.color = d.status==='online'?'#30d158':d.status==='idle'?'#ffd60a':d.status==='dnd'?'#ff453a':'#c8c8cc';
+
+    smooth(function(){
+      var have = {};
+      box.querySelectorAll('.act:not(.out)').forEach(function(el){ have[el.dataset.k]=el; });
+      var want = {};
+      d.acts.forEach(function(a){ want[a.label+'|'+a.name+'|'+a.detail]=1; });
+      Object.keys(have).forEach(function(k){ if(!want[k]){ leave(have[k]); delete have[k]; } });
+
+      if (!d.acts.length){
+        if (!box.querySelector('.act-none')){
+          var p=document.createElement('div'); p.className='row act-none';
+          p.innerHTML='<span class="ico">😴</span><div class="rw"><b>とくに なにもしてない。</b></div>';
+          box.appendChild(p);
+        }
+        return;
+      }
+      var none=box.querySelector('.act-none'); if(none) none.remove();
+
+      var prev=null;
+      d.acts.forEach(function(a){
+        var k=a.label+'|'+a.name+'|'+a.detail, sig=[a.img,a.url,a.start,a.end].join('|');
+        var el=have[k];
+        if(el){ if(el.dataset.sig!==sig){ el.innerHTML=inner(a); el.dataset.sig=sig; } }
+        else{
+          el=document.createElement('div'); el.className='row act in';
+          el.dataset.k=k; el.dataset.sig=sig; el.innerHTML=inner(a);
+          setTimeout(function(){ el.classList.remove('in'); },30);
+        }
+        if(prev) prev.after(el); else box.insertBefore(el, box.firstChild);
+        prev=el;
+      });
+    });
+    bars();
+  });
+})();
+</script>
+</body>
+</html>

@@ -39,6 +39,12 @@ https://poo123.com/
 ├── style.css        見た目ぜんぶ（紙・テープ・風・アニメーション）
 ├── script.js        Discord 連携・日替わり文・スクロール演出・飛んでくるもの
 ├── 404.html         ページが ないときの紙
+├── other/           おなじ中身の べつの見た目
+│   ├── live.js        Discord のようすと 日替わりの一行（4ページで つかいまわす）
+│   ├── windows/       Windows 設定画面ふう
+│   ├── mac/           macOS システム設定ふう
+│   ├── cloudflare/    Cloudflare パネルふう
+│   └── instagram/     Instagram プロフィールふう
 ├── photo/           画像（アイコン / 埋め込み用 / OGP / favicon）
 ├── wrangler.jsonc   Cloudflare Workers の設定
 ├── .assetsignore    配信しないファイルの一覧
@@ -92,6 +98,23 @@ https://poo123.com/
 - 画像は PNG / GIF / JPEG / WebP / AVIF
 
 X や LINE に貼ったときは、`og:image` に指定した `photo/ogp.jpg`（1200×630）が出る。
+
+---
+
+## おなじ中身の べつの見た目
+
+同じ中身を、ぜんぜんちがう見た目で 作りなおしたもの。
+
+| ところ | 見た目 |
+| --- | --- |
+| `/other/windows/` | Windows 11 の 設定画面。左にナビ、右にカード、トグルつき |
+| `/other/mac/` | macOS。メニューバー・信号機ボタン・すりガラスの窓・Dock |
+| `/other/cloudflare/` | Cloudflare のダッシュボード。統計タイルと 表 |
+| `/other/instagram/` | Instagram のプロフィール。丸いアイコン・ハイライト・3列グリッド |
+
+どれも 1ファイルずつの HTML で、見た目は その中に 書いてある。
+Discord のようすと 日替わりの一行だけ `other/live.js` を 4ページで つかいまわしている
+（つなぐのは 1本、見た目は それぞれが 決める）。
 
 ---
 

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>設定 — Pooのくそさいと</title>
+<meta name="description" content="Pooのくそさいと の Windows 設定画面ふう。">
+<meta name="theme-color" content="#f3f3f3">
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="/photo/favicon.ico" type="image/x-icon">
+<style>
+:root{
+  --bg:#f3f3f3; --side:#eaeaea; --card:#fbfbfb; --line:#e5e5e5;
+  --ink:#1b1b1b; --ink2:#5d5d5d; --acc:#0067c0; --acc-soft:#e8f1fa;
+  --ok:#3fa34d; --warn:#c9a227; --dnd:#c42b1c; --off:#8a8886;
+  --radius:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#202020; --side:#272727; --card:#2b2b2b; --line:#3a3a3a;
+    --ink:#f1f1f1; --ink2:#a9a9a9; --acc:#4cc2ff; --acc-soft:#1f3a4d;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Segoe UI Variable Text","Segoe UI","Yu Gothic UI",system-ui,sans-serif;
+  font-size:14px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+
+/* ===== まど ===== */
+.win{display:flex;flex-direction:column;height:100vh;height:100svh}
+.titlebar{
+  display:flex;align-items:center;gap:12px;flex:none;height:44px;padding:0 0 0 14px;
+  background:var(--side);border-bottom:1px solid var(--line);
+}
+.tb-back{
+  width:32px;height:32px;border:none;background:transparent;color:var(--ink);
+  border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:15px;text-decoration:none;flex:none;
+}
+.tb-back:hover{background:rgba(127,127,127,.18)}
+.tb-title{font-size:12px;font-weight:600;letter-spacing:.01em}
+.tb-ctrl{margin-left:auto;display:flex;height:44px}
+.tb-ctrl span{
+  width:46px;display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--ink2);user-select:none;
+}
+.tb-ctrl span:hover{background:rgba(127,127,127,.18)}
+.tb-ctrl span:last-child:hover{background:#c42b1c;color:#fff}
+
+.body{display:flex;flex:1;min-height:0}
+
+/* ===== ひだり ===== */
+.side{
+  width:288px;flex:none;background:var(--side);padding:6px 10px 20px;overflow-y:auto;
+  border-right:1px solid transparent;
+}
+.me{display:flex;align-items:center;gap:12px;padding:14px 10px 18px}
+.me-face{
+  width:48px;height:48px;border-radius:50%;flex:none;position:relative;
+  background:linear-gradient(135deg,#7b8cff,#c76aff);overflow:hidden;
+}
+.me-face img{width:100%;height:100%;object-fit:cover;display:block}
+.me-dot{
+  position:absolute;right:-1px;bottom:-1px;width:15px;height:15px;border-radius:50%;
+  background:var(--off);border:2.5px solid var(--side);
+}
+.me-dot.online{background:var(--ok)} .me-dot.idle{background:var(--warn)}
+.me-dot.dnd{background:var(--dnd)} .me-dot.offline{background:var(--off)}
+.me-name{font-weight:600;font-size:14px;line-height:1.3}
+.me-sub{font-size:12px;color:var(--ink2)}
+
+.search{
+  display:flex;align-items:center;gap:8px;margin:0 10px 14px;padding:7px 11px;
+  background:var(--card);border:1px solid var(--line);border-radius:4px;
+  font-size:12.5px;color:var(--ink2);
+}
+.nav{list-style:none;display:flex;flex-direction:column;gap:2px}
+.nav a{
+  display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:5px;
+  text-decoration:none;color:var(--ink);font-size:13.5px;position:relative;
+}
+.nav a:hover{background:rgba(127,127,127,.13)}
+.nav a.on{background:rgba(127,127,127,.17);font-weight:600}
+.nav a.on::before{
+  content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);
+  width:3px;height:16px;border-radius:2px;background:var(--acc);
+}
+.nav em{font-style:normal;width:18px;text-align:center;font-size:15px;opacity:.85}
+
+/* ===== みぎ ===== */
+.main{flex:1;min-width:0;overflow-y:auto;padding:10px 32px 64px}
+.crumb{font-size:12.5px;color:var(--ink2);margin:8px 0 4px}
+h1{font-size:30px;font-weight:600;letter-spacing:-.01em;margin-bottom:4px}
+.lead{color:var(--ink2);font-size:13px;margin-bottom:26px}
+h2{font-size:14px;font-weight:600;margin:30px 0 10px}
+
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;
+}
+.row{
+  display:flex;align-items:center;gap:15px;padding:14px 16px;
+  border-bottom:1px solid var(--line);
+}
+.row:last-child{border-bottom:none}
+.row.link{text-decoration:none;color:inherit;transition:background .12s}
+.row.link:hover{background:rgba(127,127,127,.08)}
+.ico{
+  width:34px;height:34px;flex:none;border-radius:6px;display:flex;
+  align-items:center;justify-content:center;font-size:16px;
+  background:var(--acc-soft);color:var(--acc);
+}
+.ico img{width:100%;height:100%;object-fit:cover;border-radius:6px;display:block}
+.rw{flex:1;min-width:0}
+.rw b{display:block;font-weight:600;font-size:13.5px;line-height:1.45;overflow:hidden;text-overflow:ellipsis}
+.rw span{display:block;font-size:12px;color:var(--ink2);line-height:1.5;word-break:break-word}
+.chev{color:var(--ink2);font-size:12px;flex:none}
+.pill{
+  flex:none;font-size:11.5px;padding:3px 10px;border-radius:999px;
+  background:var(--acc-soft);color:var(--acc);font-weight:600;white-space:nowrap;
+}
+
+/* トグル */
+.sw{width:40px;height:20px;border-radius:999px;background:var(--acc);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:50%;right:4px;transform:translateY(-50%);
+  width:12px;height:12px;border-radius:50%;background:#fff}
+.sw.off{background:transparent;border:1px solid var(--ink2)}
+.sw.off::after{right:auto;left:4px;background:var(--ink2)}
+
+/* いま */
+.acts{display:flex;flex-direction:column;transition:height .42s cubic-bezier(.22,1,.36,1)}
+.acts.moving{overflow:hidden}
+.act{transition:opacity .3s,transform .34s cubic-bezier(.22,1,.36,1)}
+.act.in{opacity:0;transform:translateY(10px)}
+.act.out{position:absolute;left:0;right:0;opacity:0;transform:translateY(-8px);pointer-events:none}
+.bar{height:3px;border-radius:2px;background:rgba(127,127,127,.28);margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);transition:width 1s linear}
+.times{display:flex;justify-content:space-between;font-size:11px;color:var(--ink2);margin-top:3px;font-variant-numeric:tabular-nums}
+
+/* しよう */
+.spec .row{padding:11px 16px}
+.spec .k{width:180px;flex:none;color:var(--ink2);font-size:12.5px}
+.spec .v{font-size:13px}
+
+/* しつもん */
+details{border-bottom:1px solid var(--line)}
+details:last-child{border-bottom:none}
+summary{
+  list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;gap:12px;
+  font-size:13.5px;font-weight:600;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"⌄";margin-left:auto;color:var(--ink2);transition:transform .25s}
+details[open] summary::after{transform:rotate(180deg)}
+details p{padding:0 16px 16px 61px;color:var(--ink2);font-size:13px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:16px}
+.chip{
+  font-size:12.5px;padding:5px 13px;border-radius:999px;
+  background:var(--acc-soft);color:var(--acc);border:1px solid transparent;
+}
+
+.foot{margin-top:34px;color:var(--ink2);font-size:12px;display:flex;gap:14px;flex-wrap:wrap}
+.foot a{color:var(--acc);text-decoration:none}
+.foot a:hover{text-decoration:underline}
+
+@media (max-width:880px){
+  .side{display:none}
+  .main{padding:10px 18px 60px}
+  h1{font-size:24px}
+  .spec .k{width:120px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="win">
+  <div class="titlebar">
+    <a class="tb-back" href="/" title="もどる">←</a>
+    <div class="tb-title">設定</div>
+    <div class="tb-ctrl"><span>─</span><span>▢</span><span>✕</span></div>
+  </div>
+
+  <div class="body">
+    <aside class="side">
+      <div class="me">
+        <span class="me-face">
+          <img id="side-face" alt="">
+          <span class="me-dot offline" id="side-dot"></span>
+        </span>
+        <div>
+          <div class="me-name" id="side-name">Poo</div>
+          <div class="me-sub" id="side-sub">poo.pptx</div>
+        </div>
+      </div>
+
+      <div class="search">🔍 設定の検索（つかえません）</div>
+
+      <ul class="nav">
+        <li><a href="#me" class="on"><em>🏠</em>じぶん</a></li>
+        <li><a href="#now"><em>🟢</em>いま</a></li>
+        <li><a href="#likes"><em>🧩</em>さわったやつ</a></li>
+        <li><a href="#gohan"><em>🍜</em>すきな ごはん</a></li>
+        <li><a href="#spec"><em>💻</em>デバイスの仕様</a></li>
+        <li><a href="#faq"><em>❓</em>よくある しつもん</a></li>
+        <li><a href="#links"><em>🔗</em>りんく</a></li>
+      </ul>
+    </aside>
+
+    <main class="main">
+      <p class="crumb">ホーム &nbsp;›&nbsp; Pooのくそさいと</p>
+      <h1 id="me">じぶん</h1>
+      <p class="lead" id="hitokoto">きょうの ひとこと</p>
+
+      <div class="card">
+        <div class="row">
+          <span class="ico" style="background:#fdeaea;color:#c42b1c">👤</span>
+          <div class="rw">
+            <b>なにもない。</b>
+            <span>むだに買ったドメインの使い道がなくて、なんとなく置いてあるだけの場所。深い意味はないし、たぶんこれからもない。</span>
+          </div>
+        </div>
+        <div class="row"><span class="ico">📍</span><div class="rw"><b>東京に住んでる</b><span>だいたい 家にいる</span></div><span class="sw"></span></div>
+        <div class="row"><span class="ico">🍚</span><div class="rw"><b>ドカ食いが好き</b><span>反省は していない</span></div><span class="sw"></span></div>
+        <div class="row"><span class="ico">🔄</span><div class="rw"><b>更新は 気まぐれ</b><span>気は だいたい 向かない</span></div><span class="sw off"></span></div>
+        <div class="row"><span class="ico">📦</span><div class="rw"><b>中身は 期待しないでください</b><span>ぜんぶ どうでもいい</span></div><span class="sw"></span></div>
+      </div>
+
+      <h2 id="now">いま</h2>
+      <div class="card">
+        <div class="row">
+          <span class="ico" style="background:#e7e9fd;color:#5865f2">💬</span>
+          <div class="rw">
+            <b id="now-name">Poo</b>
+            <span id="now-state">つないでいます…</span>
+          </div>
+          <span class="pill" id="now-pill">—</span>
+        </div>
+        <div class="row" style="display:block;padding:0" id="acts-row">
+          <div class="acts" id="acts"></div>
+        </div>
+      </div>
+
+      <h2 id="likes">さわったことある やつ</h2>
+      <div class="card">
+        <div class="chips">
+          <span class="chip">Python</span><span class="chip">JavaScript</span><span class="chip">PHP</span>
+          <span class="chip">VBA</span><span class="chip">Java</span><span class="chip">HTML</span>
+          <span class="chip">CSS</span><span class="chip">C</span><span class="chip">Kotlin</span>
+        </div>
+        <div class="row"><span class="ico">📊</span><div class="rw"><b>習熟度</b><span>どれも そこそこ</span></div></div>
+      </div>
+
+      <h2 id="gohan">すきな ごはん</h2>
+      <div class="card spec">
+        <div class="row"><span class="k">1</span><span class="v">とんこつラーメン</span></div>
+        <div class="row"><span class="k">2</span><span class="v">すし</span></div>
+        <div class="row"><span class="k">3</span><span class="v">ハムカツ</span></div>
+        <div class="row"><span class="k">4</span><span class="v">麻婆豆腐</span></div>
+        <div class="row"><span class="k">5</span><span class="v">マック</span></div>
+        <div class="row"><span class="k">6</span><span class="v">ポテサラ</span></div>
+        <div class="row"><span class="k">ごうけい</span><span class="v">6 てん ／ おあずかり いのち ／ おつり なし</span></div>
+      </div>
+
+      <h2 id="spec">デバイスの仕様</h2>
+      <div class="card spec">
+        <div class="row"><span class="k">デバイス名</span><span class="v">MAIN-PC</span></div>
+        <div class="row"><span class="k">プロセッサ</span><span class="v">Core i7-14700F　20 コア / 28 スレッド</span></div>
+        <div class="row"><span class="k">グラフィックス</span><span class="v">GeForce RTX 4070 SUPER</span></div>
+        <div class="row"><span class="k">実装 RAM</span><span class="v">32.0 GB</span></div>
+        <div class="row"><span class="k">ストレージ</span><span class="v">ぜんぶで 7 TB</span></div>
+        <div class="row"><span class="k">エディション</span><span class="v">Windows 11 Pro</span></div>
+        <div class="row"><span class="k">状態</span><span class="v">せいのうを いかしきれていません</span></div>
+      </div>
+
+      <h2 id="faq">よくある しつもん</h2>
+      <div class="card">
+        <details><summary><span class="ico">❓</span>なにができるサイト？</summary><p>なにもできない。見るだけ。</p></details>
+        <details><summary><span class="ico">❓</span>なんで このドメインにしたの？</summary><p>勢い。もう少し考えればよかった。</p></details>
+        <details><summary><span class="ico">❓</span>「いま」のところは なに？</summary><p>うんちさんが 起きてるかどうか。遊んでるときは 遊んでるものが出ます。</p></details>
+        <details><summary><span class="ico">❓</span>更新はするの？</summary><p>気が向いたら。気は だいたい 向かない。</p></details>
+        <details><summary><span class="ico">❓</span>連絡したいときは？</summary><p>したの りんく から どうぞ。返事は 期待しないでください。</p></details>
+      </div>
+
+      <h2 id="links">りんく</h2>
+      <div class="card">
+        <a class="row link" href="https://discord.com/users/339360580886593536" target="_blank" rel="noopener"><span class="ico" style="background:#e7e9fd;color:#5865f2">💬</span><div class="rw"><b>Discord</b><span>poo.pptx</span></div><span class="chev">↗</span></a>
+        <a class="row link" href="https://x.com/_poo_main" target="_blank" rel="noopener"><span class="ico" style="background:#e9e9e9;color:#111">✕</span><div class="rw"><b>X</b><span>@_poo_main</span></div><span class="chev">↗</span></a>
+        <a class="row link" href="https://www.instagram.com/poo._.abc/" target="_blank" rel="noopener"><span class="ico" style="background:#fdeaf3;color:#d62976">📷</span><div class="rw"><b>Instagram</b><span>poo._.abc</span></div><span class="chev">↗</span></a>
+        <a class="row link" href="https://open.spotify.com/user/9diufth0yxkusydwr2rt1vpbb" target="_blank" rel="noopener"><span class="ico" style="background:#e6f6ec;color:#1db954">🎵</span><div class="rw"><b>Spotify</b><span>Poo</span></div><span class="chev">↗</span></a>
+        <a class="row link" href="https://github.com/poo0123" target="_blank" rel="noopener"><span class="ico" style="background:#eeeeee;color:#24292f">🐙</span><div class="rw"><b>GitHub</b><span>poo0123</span></div><span class="chev">↗</span></a>
+        <a class="row link" href="https://steamcommunity.com/id/Poo0123/" target="_blank" rel="noopener"><span class="ico" style="background:#e8edf5;color:#1b2838">🎮</span><div class="rw"><b>Steam</b><span>Poo0123</span></div><span class="chev">↗</span></a>
+      </div>
+
+      <p class="foot">
+        <a href="/">← Pooのくそさいと にもどる</a>
+        <span>Windows 設定画面ふう</span>
+      </p>
+    </main>
+  </div>
+</div>
+
+<script src="/other/live.js"></script>
+<script>
+(function(){
+  var L = window.PooLive;
+  document.getElementById('hitokoto').textContent = L.hitokoto();
+
+  var box = document.getElementById('acts');
+  var tmr = null, hTmr = null;
+
+  function smooth(fn){
+    var a = box.offsetHeight;
+    fn();
+    box.style.height = '';
+    var b = box.offsetHeight;
+    if (a === b) return;
+    box.style.height = a + 'px';
+    box.classList.add('moving');
+    void box.offsetHeight;
+    box.style.height = b + 'px';
+    clearTimeout(hTmr);
+    hTmr = setTimeout(function(){ box.style.height=''; box.classList.remove('moving'); }, 440);
+  }
+
+  function leave(el){
+    el.style.top = el.offsetTop + 'px';
+    el.style.height = el.offsetHeight + 'px';
+    el.removeAttribute('data-k');
+    el.classList.add('out');
+    setTimeout(function(){ el.remove(); }, 380);
+  }
+
+  function inner(a){
+    var bar = '';
+    if (a.start && a.end && a.end > a.start){
+      bar = '<div class="bar" data-s="'+a.start+'" data-e="'+a.end+'"><i></i></div>' +
+            '<div class="times"><span class="t-now">0:00</span><span>'+L.mmss(a.end-a.start)+'</span></div>';
+    }
+    var el = a.start && !bar ? L.since(a.start) : '';
+    return '<span class="ico">'+(a.img?'<img src="'+L.esc(a.img)+'" alt="" loading="lazy">':'🎮')+'</span>'+
+      '<div class="rw">'+
+        '<b>'+(a.url?'<a href="'+L.esc(a.url)+'" target="_blank" rel="noopener" style="color:var(--acc);text-decoration:none">'+L.esc(a.name)+'</a>':L.esc(a.name))+'</b>'+
+        '<span>'+L.esc(a.label)+(el?' ・ '+L.esc(el):'')+(a.detail?'<br>'+L.esc(a.detail):'')+'</span>'+
+        bar+
+      '</div>';
+  }
+
+  function bars(){
+    if (tmr) clearInterval(tmr);
+    var run = function(){
+      var live = false;
+      box.querySelectorAll('.bar[data-s]').forEach(function(b){
+        var s = +b.dataset.s, e = +b.dataset.e, total = e - s, done = Date.now() - s;
+        var fill = b.querySelector('i'), now = b.parentNode.querySelector('.t-now');
+        if (total > 0 && fill){
+          fill.style.width = Math.min(Math.max(done/total,0)*100,100) + '%';
+          if (now) now.textContent = L.mmss(Math.max(Math.min(done,total),0));
+        }
+        if (done < total) live = true;
+      });
+      if (!live) clearInterval(tmr);
+    };
+    run();
+    tmr = setInterval(run, 1000);
+  }
+
+  L.subscribe(function(d){
+    if (!d) return;
+
+    var face = document.getElementById('side-face');
+    if (d.avatar) face.src = d.avatar;
+    document.getElementById('side-dot').className = 'me-dot ' + d.status;
+    document.getElementById('side-name').textContent = d.name;
+    document.getElementById('side-sub').textContent = '@' + d.username;
+    document.getElementById('now-name').textContent = d.name + (d.guild ? '　' + d.guild.tag : '');
+    document.getElementById('now-state').textContent = d.statusEn + ' ・ ' + d.statusLabel;
+    document.getElementById('now-pill').textContent = d.statusLabel;
+
+    smooth(function(){
+      var have = {};
+      box.querySelectorAll('.act:not(.out)').forEach(function(el){ have[el.dataset.k] = el; });
+
+      var want = {};
+      d.acts.forEach(function(a){ want[a.label+'|'+a.name+'|'+a.detail] = 1; });
+      Object.keys(have).forEach(function(k){ if (!want[k]){ leave(have[k]); delete have[k]; } });
+
+      if (!d.acts.length){
+        if (!box.querySelector('.act-none')){
+          var p = document.createElement('div');
+          p.className = 'row act-none';
+          p.innerHTML = '<span class="ico">😴</span><div class="rw"><b>とくに なにもしてない。</b><span>アプリは 起動していません</span></div>';
+          box.appendChild(p);
+        }
+        return;
+      }
+      var none = box.querySelector('.act-none');
+      if (none) none.remove();
+
+      var prev = null;
+      d.acts.forEach(function(a){
+        var k = a.label+'|'+a.name+'|'+a.detail;
+        var sig = [a.img,a.url,a.start,a.end].join('|');
+        var el = have[k];
+        if (el){
+          if (el.dataset.sig !== sig){ el.innerHTML = inner(a); el.dataset.sig = sig; }
+        } else {
+          el = document.createElement('div');
+          el.className = 'row act in';
+          el.dataset.k = k; el.dataset.sig = sig;
+          el.innerHTML = inner(a);
+          setTimeout(function(){ el.classList.remove('in'); }, 30);
+        }
+        if (prev) prev.after(el); else box.insertBefore(el, box.firstChild);
+        prev = el;
+      });
+    });
+
+    bars();
+  });
+})();
+</script>
+</body>
+</html>
