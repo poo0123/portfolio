@@ -38,9 +38,19 @@ body.dark-mode::before {
     position: fixed; inset: 0; z-index: -1;
     pointer-events: none;
     background:
-        radial-gradient(58vw 42vw at 11% -8%, rgba(158,196,255,0.17), rgba(0,0,0,0) 62%),
-        radial-gradient(34vw 26vw at 11% -8%, rgba(206,228,255,0.14), rgba(0,0,0,0) 58%),
+        radial-gradient(62vw 46vw at 12% -5%, rgba(150,192,255,0.22), rgba(0,0,0,0) 64%),
+        radial-gradient(32vw 25vw at 12% -5%, rgba(198,224,255,0.20), rgba(0,0,0,0) 60%),
+        radial-gradient(13vw 11vw at 12% -5%, rgba(232,244,255,0.22), rgba(0,0,0,0) 62%),
         radial-gradient(96vw 62vw at 86% 112%, rgba(46,68,142,0.24), rgba(0,0,0,0) 70%);
+    /* 月が ゆっくり 息をする */
+    animation: moon-breathe 23s ease-in-out infinite;
+}
+@keyframes moon-breathe {
+    0%, 100% { opacity: 0.8; }
+    50%      { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.dark-mode::before { animation: none; opacity: 1; }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1612,4 +1622,38 @@ body.dark-mode .minibar { box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
 
 @media (prefers-reduced-motion: reduce) {
     #fireflies { display: none; }
+}
+
+
+/* =========================================================
+   よるだけ ― 月を よこぎる 雲
+   ========================================================= */
+#clouds {
+    position: fixed; inset: 0; z-index: 0;
+    overflow: hidden; pointer-events: none;
+}
+/* かたまりを 3つ ずらして 重ねて、まるい ふちを くずす。
+   まんなかは 月より 暗く、そとは 空より すこし 明るい。
+   これだけで 空では 雲に 見えて、月の上では かげに なる。 */
+.cloud {
+    position: absolute;
+    left: 100%;
+    width: var(--w, 70vw);
+    height: var(--h, 24vh);
+    background:
+        radial-gradient(40% 44% at 26% 56%, rgba(19, 28, 66, 0.52), rgba(0,0,0,0) 72%),
+        radial-gradient(36% 54% at 52% 42%, rgba(23, 34, 78, 0.52), rgba(0,0,0,0) 74%),
+        radial-gradient(34% 40% at 76% 58%, rgba(17, 25, 60, 0.48), rgba(0,0,0,0) 72%),
+        radial-gradient(30% 34% at 40% 66%, rgba(21, 31, 72, 0.40), rgba(0,0,0,0) 76%),
+        radial-gradient(64% 56% at 50% 50%, rgba(44, 68, 136, 0.20), rgba(0,0,0,0) 82%);
+    will-change: transform;
+    animation: cloud-drift var(--d, 190s) linear infinite;
+    animation-delay: var(--dl, 0s);
+}
+@keyframes cloud-drift {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(calc(-100vw - var(--w, 70vw)), 0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+    #clouds { display: none; }
 }

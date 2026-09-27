@@ -486,8 +486,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- あかるさ ---------- */
 
-    // よる/ひるが 切りかわったら 知らせる（あとで 蛍が つかう）
-    let onTheme = null;
+    // よる/ひるが 切りかわったら 知らせる（蛍と 雲が つかう）
+    const themeHooks = [];
+    const onThemeChange = (fn) => {
+        themeHooks.push(fn);
+        fn(document.body.classList.contains('dark-mode'));
+    };
 
     const applyTheme = (dark) => {
         document.body.classList.toggle('dark-mode', dark);
@@ -495,7 +499,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (themeBtn) themeBtn.textContent = dark ? 'ひる' : 'よる';
         const meta = document.querySelector('meta[name="theme-color"]');
         if (meta) meta.setAttribute('content', dark ? '#070b1c' : '#dc6969');
-        if (onTheme) onTheme(dark);
+        themeHooks.forEach((fn) => fn(dark));
     };
 
     let saved = null;
@@ -828,8 +832,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const out = () => { ffBox.textContent = ''; };
 
-        onTheme = (dark) => { if (dark) light(); else out(); };
-        onTheme(document.body.classList.contains('dark-mode'));
+        onThemeChange((dark) => { if (dark) light(); else out(); });
+    }
+
+    /* ---------- よるの 雲 ---------- */
+
+    const cloudBox = document.getElementById('clouds');
+
+    if (cloudBox && !calm) {
+        const rnd = (a, b) => a + Math.random() * (b - a);
+
+        const gather = () => {
+            if (cloudBox.childElementCount) return;
+            const many = window.innerWidth < 720 ? 3 : 5;
+            for (let i = 0; i < many; i++) {
+                const el = document.createElement('div');
+                el.className = 'cloud';
+                const w = rnd(52, 94);
+                const dur = rnd(150, 280);
+                el.style.top = rnd(-8, 58).toFixed(1) + 'vh';
+                el.style.setProperty('--w', w.toFixed(1) + 'vw');
+                el.style.setProperty('--h', rnd(16, 34).toFixed(1) + 'vh');
+                el.style.setProperty('--d', dur.toFixed(0) + 's');
+                // はじめから ちらばって 見えるように 途中から 流す
+                el.style.setProperty('--dl', (-rnd(0, dur)).toFixed(0) + 's');
+                cloudBox.appendChild(el);
+            }
+        };
+
+        const clear = () => { cloudBox.textContent = ''; };
+
+        onThemeChange((dark) => { if (dark) gather(); else clear(); });
     }
 
     /* ---------- 写真に さわると ぬるっと まっすぐ ---------- */

@@ -33,6 +33,7 @@
 <body class="light-mode">
 
     <div class="grain" aria-hidden="true"></div>
+    <div id="clouds" aria-hidden="true"></div>
     <div id="fireflies" aria-hidden="true"></div>
 
     <div class="page nf-page">
@@ -66,6 +67,22 @@
             if (!dark || calm || !box) return;
 
             function rnd(a, b) { return a + Math.random() * (b - a); }
+
+            var clouds = document.getElementById('clouds');
+            if (clouds) {
+                var many = window.innerWidth < 720 ? 3 : 5;
+                for (var c = 0; c < many; c++) {
+                    var cl = document.createElement('div');
+                    cl.className = 'cloud';
+                    var w = rnd(52, 94), dur = rnd(150, 280);
+                    cl.style.top = rnd(-8, 58).toFixed(1) + 'vh';
+                    cl.style.setProperty('--w', w.toFixed(1) + 'vw');
+                    cl.style.setProperty('--h', rnd(16, 34).toFixed(1) + 'vh');
+                    cl.style.setProperty('--d', dur.toFixed(0) + 's');
+                    cl.style.setProperty('--dl', (-rnd(0, dur)).toFixed(0) + 's');
+                    clouds.appendChild(cl);
+                }
+            }
 
             var n = window.innerWidth < 720 ? 8 : 13;
             for (var i = 0; i < n; i++) {
