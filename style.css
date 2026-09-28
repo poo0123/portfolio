@@ -546,7 +546,7 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
     position: absolute; top: -13px; left: 32px; width: 15px; height: 34px;
     border: 3px solid #b6aea0; border-radius: 9px; background: transparent; transform: rotate(-9deg);
 }
-body.dark-mode .clip { border-color: #6c6456; }
+body.dark-mode .clip { border-color: #5b6a99; }
 .slip-label { font-family: 'Yomogi', cursive; font-size: 0.72rem; letter-spacing: 0.14em; color: var(--ink-2); }
 .slip-text { font-family: 'Yomogi', cursive; font-size: 1.05rem; line-height: 1.7; margin-top: 4px; min-height: 1.7em; }
 .slip-text::after {
@@ -1063,7 +1063,17 @@ a.polaroid:focus-visible { outline: 2px solid var(--red); outline-offset: 6px; }
         conic-gradient(from 135deg at top, #0000, #000 1deg 89deg, #0000 90deg) top / var(--zig) var(--zig) repeat-x,
         linear-gradient(#000 0 0) center / 100% calc(100% - var(--zig) * 2) no-repeat;
 }
-body.dark-mode .receipt { background: #e9e3d6; color: #33302b; }
+/* よるは レシートも 夜の紙に。すぐ となりの しよう板より
+   ほんの すこし 明るくして、べつの 紙だと わかるようにする。 */
+body.dark-mode .receipt {
+    background: #16204a;
+    color: #ccd6f5;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
+}
+body.dark-mode .r-rule { border-top-color: rgba(186, 206, 255, 0.30); }
+body.dark-mode .r-items li::after,
+body.dark-mode .r-line::after { border-bottom-color: rgba(186, 206, 255, 0.26); }
+body.dark-mode .r-stamp { border-color: #ff96a8; color: #ff96a8; opacity: 0.72; }
 .receipt.reveal.active { transform: translateY(0) rotate(0.9deg); }
 
 .r-head { text-align: center; font-size: 0.95rem; letter-spacing: 0.24em; font-weight: 700; }
