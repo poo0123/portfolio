@@ -1130,6 +1130,15 @@ body.dark-mode .r-stamp { border-color: #ff96a8; color: #ff96a8; opacity: 0.72; 
     font-size: 0.6rem; opacity: 0.5; letter-spacing: 0.1em;
 }
 
+/* ほしいもの の 短冊。札の ことばは 手がきの 字で */
+.wish { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+.wish li { display: flex; gap: 12px; align-items: baseline; }
+.wish li span { width: 4.2em; flex: none; opacity: 0.55; }
+.wish li b {
+    font-weight: 400; font-family: 'Yomogi', cursive; font-size: 0.9rem;
+    line-height: 1.5;
+}
+
 .spec-rows { list-style: none; display: flex; flex-direction: column; gap: 8px; }
 .spec-rows li { display: flex; gap: 12px; align-items: baseline; }
 .spec-rows li span { width: 6.2em; flex: none; opacity: 0.55; }
