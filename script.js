@@ -895,8 +895,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const soraBox = document.getElementById('sora');
 
     if (soraBox) {
-        // 新宿
-        const LAT = 35.6938, LON = 139.7036;
+        // Open-Meteo は 0.0625度の 格子に まるめる ので、細かく 書いても 結果は 同じ
+        const LAT = 35.7, LON = 139.7;
         const rnd = (a, b) => a + Math.random() * (b - a);
 
         // WMO の コードを 4つに まとめる
