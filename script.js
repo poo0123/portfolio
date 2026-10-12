@@ -754,7 +754,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         ];
 
-        const pool = () => document.body.classList.contains('dark-mode') ? NIGHT : DAY;
+        // いまの 天気（そらの ぶんが つけた しるしを 読むだけ）
+        const wxNow = () => {
+            const c = document.body.classList;
+            return c.contains('wx-rain')   ? 'rain'
+                 : c.contains('wx-snow')   ? 'snow'
+                 : c.contains('wx-cloudy') ? 'cloudy'
+                 : 'clear';
+        };
+        const wet = () => { const w = wxNow(); return w === 'rain' || w === 'snow'; };
+
+        const pool = () => {
+            const night = document.body.classList.contains('dark-mode');
+            const all = night ? NIGHT : DAY;
+            let list = all;
+            // あめと ゆきの日に 風船と しゃぼん玉は うかばない
+            if (wet()) list = list.filter((f) => f.cls !== 'f-balloon' && f.cls !== 'f-bubble');
+            // 雲が あるときは 流れ星は 見えない
+            if (wxNow() !== 'clear') list = list.filter((f) => f.cls !== 'f-star');
+            return list.length ? list : all;
+        };
 
         const rand = (a, b) => a + Math.random() * (b - a);
         const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -772,7 +791,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => spawn(f), Math.round(i * rand(260, 900)));
             }
 
-            plan(rand(9000, 18000));
+            // ふる日は すこし まばらに
+            plan(rand(9000, 18000) * (wet() ? 1.6 : 1));
         }
 
         function spawn(f) {
