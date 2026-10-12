@@ -1693,3 +1693,63 @@ body.dark-mode .minibar { box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
 @media (prefers-reduced-motion: reduce) {
     #clouds { display: none; }
 }
+
+
+/* =========================================================
+   そら ― 新宿の 本当の 天気が 背景に 出る
+   ========================================================= */
+#sora {
+    position: fixed; inset: 0; z-index: 0;
+    overflow: hidden; pointer-events: none;
+}
+
+/* あめ */
+.drop {
+    position: absolute; top: -12%;
+    width: 1px; height: 46px;
+    background: linear-gradient(rgba(118,148,198,0), rgba(118,148,198,0.45));
+    animation: wx-fall linear infinite;
+    will-change: transform;
+}
+body.dark-mode .drop {
+    background: linear-gradient(rgba(150,180,235,0), rgba(150,180,235,0.55));
+}
+@keyframes wx-fall { to { transform: translate3d(-26px, 122vh, 0); } }
+
+/* ゆき */
+.flake {
+    position: absolute; top: -4%;
+    border-radius: 50%;
+    background: rgba(188,204,232,0.75);
+    animation: wx-drift linear infinite;
+    will-change: transform;
+}
+body.dark-mode .flake { background: rgba(255,255,255,0.8); }
+@keyframes wx-drift {
+    0%   { transform: translate3d(0, 0, 0); }
+    50%  { transform: translate3d(22px, 56vh, 0); }
+    100% { transform: translate3d(-14px, 116vh, 0); }
+}
+
+/* くもり・はれ ― よるは 雲の こさ、ひるは 空の 色みで 出す */
+body.wx-cloudy #clouds .cloud { opacity: 1; }
+body.wx-clear  #clouds .cloud { opacity: 0.35; }
+body.light-mode.wx-cloudy #sora {
+    background: linear-gradient(180deg, rgba(116,126,148,0.08), rgba(0,0,0,0) 46%);
+}
+body.light-mode.wx-clear #sora {
+    background: linear-gradient(180deg, rgba(228,196,122,0.10), rgba(0,0,0,0) 38%);
+}
+
+/* 見出しの したの 一行 */
+.sora-line {
+    font-family: 'Yomogi', cursive; font-size: 0.82rem;
+    color: var(--ink-2); opacity: 0; margin-top: 6px;
+    transition: opacity 0.7s ease;
+}
+.sora-line.on { opacity: 0.78; }
+.sora-line i { font-style: normal; color: var(--red); }
+
+@media (prefers-reduced-motion: reduce) {
+    #sora .drop, #sora .flake { display: none; }
+}

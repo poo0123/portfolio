@@ -835,6 +835,76 @@ document.addEventListener('DOMContentLoaded', () => {
         onThemeChange((dark) => { if (dark) light(); else out(); });
     }
 
+    /* ---------- そら（新宿の 本当の 天気） ---------- */
+
+    const soraBox  = document.getElementById('sora');
+    const soraLine = document.getElementById('sora-line');
+
+    if (soraBox) {
+        // 新宿
+        const LAT = 35.6938, LON = 139.7036;
+        const rnd = (a, b) => a + Math.random() * (b - a);
+
+        // WMO の コードを 4つに まとめる
+        const kindOf = (c) => {
+            if ((c >= 71 && c <= 77) || c === 85 || c === 86) return 'snow';
+            if ((c >= 51 && c <= 67) || (c >= 80 && c <= 82) || c >= 95) return 'rain';
+            if ((c >= 45 && c <= 48) || (c >= 2 && c <= 3)) return 'cloudy';
+            return 'clear';
+        };
+        const LABEL = { snow: 'ゆき', rain: 'あめ', cloudy: 'くもり', clear: 'はれ' };
+
+        const paint = (kind) => {
+            soraBox.textContent = '';
+            document.body.classList.remove('wx-snow', 'wx-rain', 'wx-cloudy', 'wx-clear');
+            document.body.classList.add('wx-' + kind);
+            if (calm) return;
+
+            if (kind === 'rain') {
+                for (let i = 0; i < 70; i++) {
+                    const d = document.createElement('i');
+                    d.className = 'drop';
+                    d.style.left = rnd(-4, 104).toFixed(1) + 'vw';
+                    d.style.height = rnd(28, 62).toFixed(0) + 'px';
+                    d.style.animationDuration = rnd(0.6, 1.15).toFixed(2) + 's';
+                    d.style.animationDelay = (-rnd(0, 1.2)).toFixed(2) + 's';
+                    soraBox.appendChild(d);
+                }
+            } else if (kind === 'snow') {
+                for (let i = 0; i < 60; i++) {
+                    const f = document.createElement('i');
+                    f.className = 'flake';
+                    const s = rnd(2.5, 5.5).toFixed(1);
+                    f.style.left = rnd(-4, 104).toFixed(1) + 'vw';
+                    f.style.width = f.style.height = s + 'px';
+                    f.style.opacity = rnd(0.35, 0.85).toFixed(2);
+                    f.style.animationDuration = rnd(9, 18).toFixed(1) + 's';
+                    f.style.animationDelay = (-rnd(0, 18)).toFixed(1) + 's';
+                    soraBox.appendChild(f);
+                }
+            }
+        };
+
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=' + LAT + '&longitude=' + LON +
+              '&current=temperature_2m,weather_code,is_day&timezone=Asia%2FTokyo&forecast_days=1')
+            .then((r) => r.json())
+            .then((j) => {
+                const c = j.current;
+                if (!c) return;
+                paint(kindOf(c.weather_code));
+
+                if (soraLine) {
+                    soraLine.innerHTML = 'いま 新宿は <i>' + LABEL[kindOf(c.weather_code)] +
+                                         '</i>　' + c.temperature_2m + '℃';
+                    soraLine.classList.add('on');
+                }
+
+                // 自分で えらんでいない人 だけ、そとの 明るさに あわせる
+                if (!saved) applyTheme(!c.is_day);
+            })
+            .catch(() => {});
+    }
+
     /* ---------- よるの 雲 ---------- */
 
     const cloudBox = document.getElementById('clouds');
