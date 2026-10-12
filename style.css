@@ -1778,8 +1778,10 @@ body.api-locked {
        スクロールは 中の .api-body が 受けもつ */
     overflow: visible;
     position: fixed; inset: 0; margin: auto;
-    display: flex;
 }
+/* display は 開いている ときだけ。基底に 書くと、とじている dialog に
+   かかる ブラウザ既定の display:none を 打ち消して しまう */
+.api-dlg[open] { display: flex; }
 .api-body {
     flex: 1 1 auto; min-height: 0; min-width: 0;
     overflow: auto;
