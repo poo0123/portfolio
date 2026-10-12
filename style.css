@@ -1197,7 +1197,8 @@ body.dark-mode .r-stamp { border-color: #ff96a8; color: #ff96a8; opacity: 0.72; 
 .pair > .receipt,
 .pair > .spec { flex: 1 1 0; width: auto; max-width: none; min-width: 0; }
 .spec { display: flex; flex-direction: column; }
-.spec .barcode { margin-top: auto; }
+/* バーコードを やめたので、下端は 管理番号が ささえる */
+.spec .barcode, .spec .spec-code { margin-top: auto; }
 
 @media (max-width: 720px) {
     .pair > .receipt,
