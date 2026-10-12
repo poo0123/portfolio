@@ -885,7 +885,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!document.body.classList.contains('api-locked')) return;
         document.body.classList.remove('api-locked');
         document.body.style.top = '';
+        // html に scroll-behavior: smooth が かかっているので、
+        // そのまま もどすと 上から 下へ すべって 見える。ここだけ 切る
+        const root = document.documentElement;
+        const keep = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
         window.scrollTo(0, apiLockY);
+        root.style.scrollBehavior = keep;
     };
 
     // close イベントは 環境によって 飛んでこない ので、

@@ -428,7 +428,8 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
     .dots-list {
         list-style: none;
         position: absolute; right: 3px; bottom: 60px;
-        display: flex; flex-direction: column-reverse; align-items: center; gap: 9px;
+        /* 上から ページの 順に ならべる（じぶん → … → うえ） */
+        display: flex; flex-direction: column; align-items: center; gap: 9px;
         pointer-events: none;
     }
     .dots.open .dots-list { pointer-events: auto; }
@@ -451,7 +452,7 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
     .dots.open .dots-list li:nth-child(odd)  a { opacity: 1; transform: translateY(0) scale(1) rotate(-4deg); }
     .dots.open .dots-list li:nth-child(even) a { opacity: 1; transform: translateY(0) scale(1) rotate(3deg); }
 
-    /* 下から じゅんばんに */
+    /* ボタンに 近い 下のほうから じゅんばんに 出る */
     .dots.open .dots-list li:nth-child(7) a { transition-delay: 0.00s; }
     .dots.open .dots-list li:nth-child(6) a { transition-delay: 0.04s; }
     .dots.open .dots-list li:nth-child(5) a { transition-delay: 0.08s; }
