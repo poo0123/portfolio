@@ -532,6 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 : 300;
         };
         const onScrollMini = () => {
+            // 紙を 開いて うしろを 止めている あいだは さわらない
+            if (document.body.classList.contains('api-locked')) return;
             minibar.classList.toggle('show', window.scrollY > mastBottom);
         };
         const remeasure = () => { measureMast(); onScrollMini(); };
@@ -872,7 +874,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const apiOpen  = document.getElementById('api-open');
     const apiClose = document.getElementById('api-close');
 
+    // 開いている あいだは うしろを 止めて、とじたら もとの 位置に もどす
+    let apiLockY = 0;
+    const apiLock = () => {
+        apiLockY = window.scrollY || window.pageYOffset || 0;
+        document.body.style.top = (-apiLockY) + 'px';
+        document.body.classList.add('api-locked');
+    };
+    const apiUnlock = () => {
+        if (!document.body.classList.contains('api-locked')) return;
+        document.body.classList.remove('api-locked');
+        document.body.style.top = '';
+        window.scrollTo(0, apiLockY);
+    };
+
+    // close イベントは 環境によって 飛んでこない ので、
+    // とじる道すじ ひとつひとつで 直に もどす（二重に 呼んでも 害は ない）
+    const apiShut = () => {
+        if (apiDlg && apiDlg.open) apiDlg.close();
+        apiUnlock();
+    };
+
     if (apiDlg && apiOpen) {
+        apiDlg.addEventListener('close', apiUnlock);
+        apiDlg.addEventListener('cancel', apiUnlock);   // Esc
+
         apiOpen.addEventListener('click', () => {
             // 開くたびに いまの 状態を 反映しなおす
             Object.keys(apiState).forEach((id) => {
@@ -882,12 +908,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     el.classList.add(apiState[id] ? 'on' : 'off');
                 }
             });
+            apiLock();
             if (apiDlg.showModal) apiDlg.showModal();
             else apiDlg.setAttribute('open', '');
         });
-        if (apiClose) apiClose.addEventListener('click', () => apiDlg.close());
+        if (apiClose) apiClose.addEventListener('click', apiShut);
         // 外がわを 押しても とじる
-        apiDlg.addEventListener('click', (e) => { if (e.target === apiDlg) apiDlg.close(); });
+        apiDlg.addEventListener('click', (e) => { if (e.target === apiDlg) apiShut(); });
     }
 
     /* ---------- そら（新宿の 本当の 天気） ---------- */

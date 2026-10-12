@@ -1749,6 +1749,13 @@ body.light-mode.wx-clear #sora {
 /* =========================================================
    つかっているもの ― 奥付から 出る 紙
    ========================================================= */
+/* 紙が 開いている あいだ、うしろの ページを 止める */
+body.api-locked {
+    position: fixed;
+    left: 0; right: 0; width: 100%;
+    overflow-y: scroll;
+}
+
 .api-open {
     font-family: 'Yomogi', cursive; font-size: 0.8rem;
     color: var(--ink-2); background: none; border: none; cursor: pointer;
@@ -1760,6 +1767,10 @@ body.light-mode.wx-clear #sora {
 .api-dlg {
     width: min(92vw, 660px);
     max-height: min(84vh, 760px);
+    /* スマホは ツールバーの 出し入れで vh が ずれる。dvh が つかえるなら そちらを つかう */
+    max-height: min(84dvh, 760px);
+    /* 中を 下まで ふっても うしろの ページを 動かさない */
+    overscroll-behavior: contain;
     padding: 32px 30px 26px;
     border: 1px solid var(--rule);
     background: var(--card);
