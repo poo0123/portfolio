@@ -1741,15 +1741,97 @@ body.light-mode.wx-clear #sora {
     background: linear-gradient(180deg, rgba(228,196,122,0.10), rgba(0,0,0,0) 38%);
 }
 
-/* 見出しの したの 一行 */
-.sora-line {
-    font-family: 'Yomogi', cursive; font-size: 0.82rem;
-    color: var(--ink-2); opacity: 0; margin-top: 6px;
-    transition: opacity 0.7s ease;
-}
-.sora-line.on { opacity: 0.78; }
-.sora-line i { font-style: normal; color: var(--red); }
-
 @media (prefers-reduced-motion: reduce) {
     #sora .drop, #sora .flake { display: none; }
+}
+
+
+/* =========================================================
+   つかっているもの ― 奥付から 出る 紙
+   ========================================================= */
+.api-open {
+    font-family: 'Yomogi', cursive; font-size: 0.8rem;
+    color: var(--ink-2); background: none; border: none; cursor: pointer;
+    border-bottom: 1px dotted var(--rule); padding: 0 2px 2px;
+    transition: color 0.2s, border-color 0.2s;
+}
+.api-open:hover { color: var(--red); border-bottom-color: var(--red); }
+
+.api-dlg {
+    width: min(92vw, 560px);
+    max-height: min(84vh, 760px);
+    padding: 32px 30px 26px;
+    border: 1px solid var(--rule);
+    background: var(--card);
+    color: var(--ink);
+    box-shadow: 0 24px 60px rgba(70,55,35,0.34);
+    overflow: auto;
+    position: fixed; inset: 0; margin: auto;
+}
+body.dark-mode .api-dlg { box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+.api-dlg::backdrop { background: rgba(40,33,26,0.46); backdrop-filter: blur(2px); }
+body.dark-mode .api-dlg::backdrop { background: rgba(4,7,20,0.62); }
+.api-dlg[open] { animation: api-in 0.34s cubic-bezier(0.22,1,0.36,1); }
+@keyframes api-in {
+    from { opacity: 0; transform: translateY(14px) rotate(-0.8deg); }
+    to   { opacity: 1; transform: none; }
+}
+
+.api-lead { font-size: 0.82rem; color: var(--ink-2); margin-bottom: 20px; }
+.api-cap {
+    font-family: 'Yomogi', cursive; font-size: 0.76rem;
+    letter-spacing: 0.16em; color: var(--ink-2); opacity: 0.7;
+    margin: 20px 0 9px; padding-bottom: 5px;
+    border-bottom: 1px dashed var(--rule);
+}
+.api-cap:first-of-type { margin-top: 0; }
+
+.api-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.api-list li { position: relative; padding-left: 17px; }
+.api-list b { font-family: 'Yomogi', cursive; font-weight: 400; font-size: 0.95rem; }
+.api-list b a { color: inherit; text-decoration: none; border-bottom: 1px solid var(--rule); }
+.api-list b a:hover { color: var(--red); border-bottom-color: var(--red); }
+.api-list em {
+    display: block; font-style: normal; font-size: 0.78rem;
+    line-height: 1.65; color: var(--ink-2); margin-top: 2px;
+}
+.api-list code {
+    display: inline-block; margin-top: 5px;
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+    font-size: 0.66rem; letter-spacing: 0.02em;
+    color: var(--ink-2); background: var(--paper-2);
+    border: 1px solid var(--rule); border-radius: 3px; padding: 2px 8px;
+}
+
+/* つながっているか の ●（本当の 状態） */
+.api-dot {
+    position: absolute; left: 0; top: 8px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--rule);
+    box-shadow: 0 0 0 0 rgba(141,195,154,0.45);
+}
+.api-dot.on { background: #8dc39a; animation: api-pulse 2.4s ease-in-out infinite; }
+.api-dot.off { background: var(--red); opacity: 0.7; }
+@keyframes api-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(141,195,154,0.45); }
+    50%      { box-shadow: 0 0 0 5px rgba(141,195,154,0); }
+}
+
+.api-foot {
+    font-size: 0.72rem; color: var(--ink-2); opacity: 0.7;
+    margin-top: 22px; padding-top: 14px; border-top: 1px dashed var(--rule);
+}
+.api-close {
+    display: block; margin: 16px auto 0;
+    font-family: 'Yomogi', cursive; font-size: 0.8rem; cursor: pointer;
+    color: var(--ink); background: var(--paper-2);
+    border: 1px dashed var(--rule); border-radius: 3px; padding: 8px 22px;
+    transition: border-color 0.2s, color 0.2s, border-style 0.2s;
+}
+.api-close:hover { border-style: solid; border-color: var(--red); color: var(--red); }
+
+@media (max-width: 640px) { .api-dlg { padding: 26px 20px 20px; } }
+@media (prefers-reduced-motion: reduce) {
+    .api-dlg[open] { animation: none; }
+    .api-dot.on { animation: none; }
 }

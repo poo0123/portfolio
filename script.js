@@ -466,7 +466,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const connect = () => {
         socket = new WebSocket('wss://api.lanyard.rest/socket');
 
-        socket.onopen = () => socket.send(JSON.stringify({ op: 2, d: { subscribe_to_id: USER_ID } }));
+        socket.onopen = () => {
+            mark('api-dot-lanyard', true);
+            socket.send(JSON.stringify({ op: 2, d: { subscribe_to_id: USER_ID } }));
+        };
 
         socket.onmessage = (event) => {
             const msg = JSON.parse(event.data);
@@ -481,7 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         socket.onclose = () => { clearInterval(heartbeat); setTimeout(connect, 3000); };
-        socket.onerror = () => hideLoader();
+        socket.onerror = () => { mark('api-dot-lanyard', false); hideLoader(); };
     };
 
     /* ---------- あかるさ ---------- */
@@ -855,10 +858,41 @@ document.addEventListener('DOMContentLoaded', () => {
         onThemeChange((dark) => { if (dark) light(); else out(); });
     }
 
+    /* ---------- つかっているもの（奥付の 紙） ---------- */
+
+    // つながったか どうかを ●に 書きとめる。あとから 開いても 残る
+    const apiState = {};
+    const mark = (id, ok) => {
+        apiState[id] = ok;
+        const el = document.getElementById(id);
+        if (el) el.classList.add(ok ? 'on' : 'off');
+    };
+
+    const apiDlg   = document.getElementById('api-dlg');
+    const apiOpen  = document.getElementById('api-open');
+    const apiClose = document.getElementById('api-close');
+
+    if (apiDlg && apiOpen) {
+        apiOpen.addEventListener('click', () => {
+            // 開くたびに いまの 状態を 反映しなおす
+            Object.keys(apiState).forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.remove('on', 'off');
+                    el.classList.add(apiState[id] ? 'on' : 'off');
+                }
+            });
+            if (apiDlg.showModal) apiDlg.showModal();
+            else apiDlg.setAttribute('open', '');
+        });
+        if (apiClose) apiClose.addEventListener('click', () => apiDlg.close());
+        // 外がわを 押しても とじる
+        apiDlg.addEventListener('click', (e) => { if (e.target === apiDlg) apiDlg.close(); });
+    }
+
     /* ---------- そら（新宿の 本当の 天気） ---------- */
 
-    const soraBox  = document.getElementById('sora');
-    const soraLine = document.getElementById('sora-line');
+    const soraBox = document.getElementById('sora');
 
     if (soraBox) {
         // 新宿
@@ -872,8 +906,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if ((c >= 45 && c <= 48) || (c >= 2 && c <= 3)) return 'cloudy';
             return 'clear';
         };
-        const LABEL = { snow: 'ゆき', rain: 'あめ', cloudy: 'くもり', clear: 'はれ' };
-
         const paint = (kind) => {
             soraBox.textContent = '';
             document.body.classList.remove('wx-snow', 'wx-rain', 'wx-cloudy', 'wx-clear');
@@ -912,17 +944,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const c = j.current;
                 if (!c) return;
                 paint(kindOf(c.weather_code));
-
-                if (soraLine) {
-                    soraLine.innerHTML = 'いま 新宿は <i>' + LABEL[kindOf(c.weather_code)] +
-                                         '</i>　' + c.temperature_2m + '℃';
-                    soraLine.classList.add('on');
-                }
+                mark('api-dot-meteo', true);
 
                 // 自分で えらんでいない人 だけ、そとの 明るさに あわせる
                 if (!saved) applyTheme(!c.is_day);
             })
-            .catch(() => {});
+            .catch(() => mark('api-dot-meteo', false));
     }
 
     /* ---------- よるの 雲 ---------- */
