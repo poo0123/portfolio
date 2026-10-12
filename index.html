@@ -275,7 +275,7 @@
                 <path pathLength="500" d="M24 80 C 98 56 168 106 238 76 C 298 50 344 70 382 58"/>
                 <path pathLength="500" d="M14 114 C 86 96 148 130 212 108 C 264 90 304 104 340 96"/>
             </svg>
-            <p class="slip-label">きょうの ひとこと</p>
+            <h3 class="slip-label">きょうの ひとこと</h3>
             <p class="slip-text" id="hitokoto-text"></p>
         </section>
 
@@ -299,7 +299,7 @@
 
         <div class="pair">
             <section id="gohan" class="receipt reveal">
-            <p class="r-head">すきな ごはん</p>
+            <h3 class="r-head">すきな ごはん</h3>
             <span class="r-date" id="r-date"></span>
             <div class="r-rule"></div>
             <ul class="r-items">
@@ -317,7 +317,7 @@
             <span class="r-stamp" aria-hidden="true">ドカ食い<br>認定</span>
             </section>
             <section id="wish" class="spec reveal">
-                <p class="spec-head">ほしいもの <em>WISHLIST</em></p>
+                <h3 class="spec-head">ほしいもの <em>WISHLIST</em></h3>
                 <ul class="wish">
                     <li><span>いま</span><b>メモリ、飲みもの</b></li>
                     <li><span>いつか</span><b>Eufy</b></li>
@@ -399,64 +399,66 @@
 
     <dialog class="api-dlg" id="api-dlg" aria-labelledby="api-title">
         <span class="tape tape-tc" aria-hidden="true"></span>
-        <h3 class="hand-title small" id="api-title">つかっているもの</h3>
-        <p class="api-lead">外から もらっているもの。</p>
+        <div class="api-body">
+            <h3 class="hand-title small" id="api-title">つかっているもの</h3>
+            <p class="api-lead">外から もらっているもの。</p>
 
-        <p class="api-cap">うごいている データ</p>
-        <ul class="api-list">
-            <li>
-                <span class="api-dot" id="api-dot-lanyard" aria-hidden="true"></span>
-                <b><a href="https://github.com/Phineas/lanyard" target="_blank" rel="noopener">Lanyard</a></b>
-                <em>Discord の ようすを 取得</em>
-                <code>wss://api.lanyard.rest/socket</code>
-            </li>
-            <li>
-                <span class="api-dot" id="api-dot-meteo" aria-hidden="true"></span>
-                <b><a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></b>
-                <em>新宿の 天気を 取得</em>
-                <code>api.open-meteo.com</code>
-            </li>
-        </ul>
+            <p class="api-cap">うごいている データ</p>
+            <ul class="api-list">
+                <li>
+                    <span class="api-dot" id="api-dot-lanyard" aria-hidden="true"></span>
+                    <b><a href="https://github.com/Phineas/lanyard" target="_blank" rel="noopener">Lanyard</a></b>
+                    <em>Discord の ようすを 取得</em>
+                    <code>wss://api.lanyard.rest/socket</code>
+                </li>
+                <li>
+                    <span class="api-dot" id="api-dot-meteo" aria-hidden="true"></span>
+                    <b><a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></b>
+                    <em>新宿の 天気を 取得</em>
+                    <code>api.open-meteo.com</code>
+                </li>
+            </ul>
 
-        <p class="api-cap">見た目</p>
-        <ul class="api-list">
-            <li>
-                <b><a href="https://discord.com/" target="_blank" rel="noopener">Discord CDN</a></b>
-                <em>Discord の 画像を 配信</em>
-                <code>cdn.discordapp.com</code>
-            </li>
-            <li>
-                <b><a href="https://discord.com/" target="_blank" rel="noopener">Discord Media</a></b>
-                <em>外の 画像を 中継</em>
-                <code>media.discordapp.net</code>
-            </li>
-            <li>
-                <b><a href="https://fonts.google.com/" target="_blank" rel="noopener">Google Fonts</a></b>
-                <em>書体を 配信</em>
-                <code>fonts.googleapis.com / gstatic.com</code>
-            </li>
-            <li>
-                <b><a href="https://fontawesome.com/" target="_blank" rel="noopener">Font Awesome</a></b>
-                <em>アイコンを 配信</em>
-                <code>cdnjs.cloudflare.com</code>
-            </li>
-        </ul>
+            <p class="api-cap">見た目</p>
+            <ul class="api-list">
+                <li>
+                    <b><a href="https://discord.com/" target="_blank" rel="noopener">Discord CDN</a></b>
+                    <em>Discord の 画像を 配信</em>
+                    <code>cdn.discordapp.com</code>
+                </li>
+                <li>
+                    <b><a href="https://discord.com/" target="_blank" rel="noopener">Discord Media</a></b>
+                    <em>外の 画像を 中継</em>
+                    <code>media.discordapp.net</code>
+                </li>
+                <li>
+                    <b><a href="https://fonts.google.com/" target="_blank" rel="noopener">Google Fonts</a></b>
+                    <em>書体を 配信</em>
+                    <code>fonts.googleapis.com / gstatic.com</code>
+                </li>
+                <li>
+                    <b><a href="https://fontawesome.com/" target="_blank" rel="noopener">Font Awesome</a></b>
+                    <em>アイコンを 配信</em>
+                    <code>cdnjs.cloudflare.com</code>
+                </li>
+            </ul>
 
-        <p class="api-cap">置き場</p>
-        <ul class="api-list">
-            <li>
-                <b><a href="https://developers.cloudflare.com/workers/static-assets/" target="_blank" rel="noopener">Cloudflare Workers</a></b>
-                <em>ページを 配信</em>
-                <code>poo123.com</code>
-            </li>
-            <li>
-                <b><a href="https://github.com/poo0123/portfolio" target="_blank" rel="noopener">GitHub</a></b>
-                <em>コードを 格納</em>
-                <code>poo0123/portfolio</code>
-            </li>
-        </ul>
+            <p class="api-cap">置き場</p>
+            <ul class="api-list">
+                <li>
+                    <b><a href="https://developers.cloudflare.com/workers/static-assets/" target="_blank" rel="noopener">Cloudflare Workers</a></b>
+                    <em>ページを 配信</em>
+                    <code>poo123.com</code>
+                </li>
+                <li>
+                    <b><a href="https://github.com/poo0123/portfolio" target="_blank" rel="noopener">GitHub</a></b>
+                    <em>コードを 格納</em>
+                    <code>poo0123/portfolio</code>
+                </li>
+            </ul>
 
-        <button type="button" class="api-close" id="api-close">とじる</button>
+            <button type="button" class="api-close" id="api-close">とじる</button>
+        </div>
     </dialog>
 
     <a href="#top" id="back-to-top" class="totop">↑ うえ</a>
