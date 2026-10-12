@@ -1146,15 +1146,13 @@ body.dark-mode .r-stamp { border-color: #ff96a8; color: #ff96a8; opacity: 0.72; 
 
 /* ほしいもの の 一覧へ とぶ 札 */
 .wish-go {
-    display: inline-flex; align-items: center; gap: 8px;
-    /* おや は たて並びの flex なので、ほうっておくと よこに のびる */
-    align-self: flex-start;
-    margin-top: 16px;
-    font-family: 'Yomogi', cursive; font-size: 0.8rem;
+    display: flex; align-items: center; gap: 9px;
+    margin-top: 14px;
+    font-family: 'Yomogi', cursive; font-size: 0.82rem;
     text-decoration: none; color: var(--ink);
     background: var(--paper-2);
     border: 1px dashed var(--rule); border-radius: 3px;
-    padding: 7px 14px;
+    padding: 10px 16px;
     transition: border-color 0.2s, color 0.2s, border-style 0.2s;
 }
 .wish-go:hover { border-style: solid; border-color: var(--red); color: var(--red); }
