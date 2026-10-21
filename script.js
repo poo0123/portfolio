@@ -334,6 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 同じ内容が重複して届くことがあるので ひとつにまとめる
         const seen = new Set();
+        acts = acts.map(a => ({ ...a, start: Number.isFinite(a.start) ? a.start : null, end: Number.isFinite(a.end) ? a.end : null }));
         acts = acts.filter(a => {
             const id = a.label + '|' + a.name + '|' + a.detail;
             if (seen.has(id)) return false;
@@ -1046,3 +1047,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     connect();
 });
+
