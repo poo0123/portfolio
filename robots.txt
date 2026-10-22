@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://poo123.com/sitemap.xml

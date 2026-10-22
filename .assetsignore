@@ -7,3 +7,12 @@
 README.md
 wrangler.jsonc
 node_modules
+
+# Build configuration and Worker source are not public assets
+.node-version
+.wrangler
+.wrangler/**
+src
+src/**
+work
+work/**

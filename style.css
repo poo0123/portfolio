@@ -1868,3 +1868,11 @@ body.dark-mode .api-dlg::backdrop { background: rgba(4,7,20,0.62); }
     .api-dlg[open] { animation: none; }
     .api-dot.on { animation: none; }
 }
+
+/* 紙の見出しに添える短い説明 */
+.section-note {
+    color: var(--ink-2);
+    font-size: 0.88rem;
+    line-height: 1.8;
+    margin: 0 0 16px;
+}
