@@ -1511,6 +1511,63 @@ body.dark-mode .scrap-photo { background: #e9e2d4; }
     animation-duration: 0.9s, 21s;
 }
 
+/* 左 まんなか ― 切手。ふちを ギザギザに 抜く */
+.scrap-stamp {
+    left: min(-10px, calc(50vw - 648px)); top: 44%;
+    width: 104px; height: 124px;
+    transform: rotate(-9deg);
+    padding: 9px;
+    border: none;
+    /* まわりの 紙と 同じ色だと ギザギザが 見えないので すこし 色を つける */
+    background: linear-gradient(160deg, rgba(200, 160, 110, 0.22), rgba(190, 120, 120, 0.16)), var(--card);
+    animation-delay: 0.75s, 7.2s;
+    animation-duration: 0.9s, 18s;
+    --pf: 7px;
+    -webkit-mask:
+        radial-gradient(circle at 50% 0,    #0000 3.4px, #000 3.6px) top    / var(--pf) var(--pf) repeat-x,
+        radial-gradient(circle at 50% 100%, #0000 3.4px, #000 3.6px) bottom / var(--pf) var(--pf) repeat-x,
+        radial-gradient(circle at 0 50%,    #0000 3.4px, #000 3.6px) left   / var(--pf) var(--pf) repeat-y,
+        radial-gradient(circle at 100% 50%, #0000 3.4px, #000 3.6px) right  / var(--pf) var(--pf) repeat-y,
+        linear-gradient(#000 0 0) center / calc(100% - var(--pf) * 2) calc(100% - var(--pf) * 2) no-repeat;
+    mask:
+        radial-gradient(circle at 50% 0,    #0000 3.4px, #000 3.6px) top    / var(--pf) var(--pf) repeat-x,
+        radial-gradient(circle at 50% 100%, #0000 3.4px, #000 3.6px) bottom / var(--pf) var(--pf) repeat-x,
+        radial-gradient(circle at 0 50%,    #0000 3.4px, #000 3.6px) left   / var(--pf) var(--pf) repeat-y,
+        radial-gradient(circle at 100% 50%, #0000 3.4px, #000 3.6px) right  / var(--pf) var(--pf) repeat-y,
+        linear-gradient(#000 0 0) center / calc(100% - var(--pf) * 2) calc(100% - var(--pf) * 2) no-repeat;
+}
+.scrap-stamp i {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; height: 100%;
+    border: 1px dashed rgba(120, 100, 70, 0.30);
+    font-style: normal; font-size: 1.5rem; letter-spacing: 0.1em;
+}
+
+/* 左した ― 角が めくれた メモ。書きかけの 罫線だけ 置く */
+.scrap-fold {
+    left: min(-14px, calc(50vw - 626px)); bottom: 32%;
+    width: 150px; height: 92px;
+    transform: rotate(4deg);
+    --fold-line: rgba(120, 100, 70, 0.22);
+    animation-delay: 0.9s, 9.4s;
+    animation-duration: 0.9s, 20s;
+}
+/* めくれた 角。ページの 色で 三角に 抜いて 影を 落とす */
+.scrap-fold::before {
+    content: ''; position: absolute; right: 0; bottom: 0;
+    border: 17px solid transparent;
+    border-right-color: var(--paper);
+    border-bottom-color: var(--paper);
+    filter: drop-shadow(-2px -2px 3px rgba(0, 0, 0, 0.22));
+}
+/* 罫線。角の 三角には かからない ように 内がわで とめる */
+.scrap-fold::after {
+    content: ''; position: absolute; left: 23px; right: 23px; top: 14px; bottom: 10px;
+    background: repeating-linear-gradient(180deg,
+        transparent 0 17px, var(--fold-line) 17px 18px);
+}
+
+
 @keyframes scrap-in { to { opacity: 1; } }
 @keyframes scrap-sway {
     0%, 100% { translate: 0 0; }
@@ -1528,6 +1585,11 @@ body.dark-mode .scrap {
 body.dark-mode .scrap-memo { background: #1a2350; }
 body.dark-mode .scrap-photo { background: #e9e2d4; }
 body.dark-mode .scrap-ticket::before { border-left-color: rgba(190, 205, 240, 0.16); }
+body.dark-mode .scrap-stamp {
+    background: linear-gradient(160deg, rgba(150, 175, 235, 0.16), rgba(120, 140, 215, 0.10)), #0c1230;
+}
+body.dark-mode .scrap-stamp i { border-color: rgba(150, 175, 235, 0.22); }
+body.dark-mode .scrap-fold { --fold-line: rgba(150, 175, 235, 0.20); }
 
 /* せまい画面では じゃまなので ぜんぶ しまう */
 @media (max-width: 1180px) {
