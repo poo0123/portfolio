@@ -1044,5 +1044,66 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /* ---------- ポインタが 近づくと 紙きれが 逃げる ---------- */
+
+    // 指で さわる 画面では やらない。紙きれ自体 せまい画面では しまってある
+    const fine = window.matchMedia &&
+        window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    if (!calm && fine) {
+        // style.css で つけている かたむき。逃げる ときも これを 土台に する
+        const TILT = {
+            'scrap-ticket':  -7,
+            'scrap-receipt':  5,
+            'scrap-photo':    6,
+            'scrap-memo':    -4,
+            'scrap-stamp':   -9,
+            'scrap-fold':     4
+        };
+        const REACH = 340;   // これより 遠いと なにも しない
+        const PUSH  = 30;    // いちばん 近いとき 逃げる 長さ
+
+        const papers = Object.keys(TILT)
+            .map((cls) => ({ el: document.querySelector('.' + cls), deg: TILT[cls] }))
+            .filter((p) => p.el);
+
+        if (papers.length) {
+            let px = -9999, py = -9999, waiting = false;
+
+            const shove = () => {
+                waiting = false;
+                papers.forEach((p) => {
+                    const b = p.el.getBoundingClientRect();
+                    // せまい画面では しまわれている
+                    if (!b.width) { p.el.style.removeProperty('transform'); return; }
+                    const dx = b.left + b.width / 2 - px;
+                    const dy = b.top + b.height / 2 - py;
+                    const far = Math.hypot(dx, dy) || 1;
+                    const near = Math.max(0, 1 - far / REACH);
+                    const k = near * near;   // 近いほど ぐっと 効く
+                    if (!k) { p.el.style.removeProperty('transform'); return; }
+                    const deg = p.deg + k * (dx < 0 ? 4.5 : -4.5);
+                    p.el.style.transform =
+                        'rotate(' + deg.toFixed(2) + 'deg) translate(' +
+                        (dx / far * k * PUSH).toFixed(1) + 'px, ' +
+                        (dy / far * k * PUSH).toFixed(1) + 'px)';
+                });
+            };
+
+            const aim = (e) => {
+                px = e.clientX; py = e.clientY;
+                if (waiting) return;
+                waiting = true;
+                requestAnimationFrame(shove);
+            };
+
+            const away = () => { px = -9999; py = -9999; shove(); };
+
+            window.addEventListener('pointermove', aim, { passive: true });
+            document.addEventListener('mouseleave', away);
+            window.addEventListener('blur', away);
+        }
+    }
+
     connect();
 });
