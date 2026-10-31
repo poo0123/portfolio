@@ -59,6 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastActs = "";
     let barTimer = null;
 
+    // 動く アイコンに 差しかえ ずみか。paint は Discord が 動くたびに
+    // 何度も 走るので、img の src では なく ここで おぼえておく
+    let bigMoving = false;
+    let smallMoving = false;
+
     // Discord が くれる activity の種類
     const ACT_LABEL = {
         0: 'やってる',
@@ -177,7 +182,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const avatar = document.getElementById('discord-avatar');
         const ph = document.getElementById('avatar-placeholder');
         if (avatar && data.discord_user && data.discord_user.avatar) {
-            avatar.src = 'https://cdn.discordapp.com/avatars/' + USER_ID + '/' + data.discord_user.avatar + '.webp?size=256';
+            // ハッシュが a_ で はじまるのは 動く アイコン。ふつうに .webp を
+            // たのむと Discord は 1枚だけ 返してくる（9.6KB）。animated=true を
+            // つけると 動くものが くる かわりに 重くなる（96px で 113KB、
+            // 160px で 312KB）。なので はじめは 止まったまま 置いておく。
+            const avaBase = 'https://cdn.discordapp.com/avatars/' + USER_ID + '/' + data.discord_user.avatar;
+            const avaMoves = !calm && data.discord_user.avatar.indexOf('a_') === 0;
+
+            avatar.src = (avaMoves && bigMoving)
+                ? avaBase + '.webp?size=160&animated=true' : avaBase + '.webp?size=256';
+
+            // 大きい ほうは さわった ときだけ 動かす。はなしても もどさない
+            // （もう 持っているので、もどしても 軽くは ならない）
+            if (avaMoves && !avatar.dataset.armed) {
+                avatar.dataset.armed = '1';
+                avatar.parentElement.addEventListener('pointerenter', () => {
+                    bigMoving = true;
+                    avatar.src = avaBase + '.webp?size=160&animated=true';
+                }, { once: true });
+            }
             avatar.style.display = 'block';
             if (ph) ph.style.display = 'none';
         }
@@ -189,7 +212,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const face = document.getElementById('deco-face');
             const ring = document.getElementById('deco-ring');
             if (u.avatar) {
-                face.src = 'https://cdn.discordapp.com/avatars/' + USER_ID + '/' + u.avatar + '.webp?size=160';
+                // 「いま」の ほうは 生きている ところなので、ページが
+                // 落ちついてから 小さい 動くやつ（96px・113KB）に 差しかえる
+                const faceBase = 'https://cdn.discordapp.com/avatars/' + USER_ID + '/' + u.avatar;
+                const faceMoves = !calm && u.avatar.indexOf('a_') === 0;
+
+                face.src = (faceMoves && smallMoving)
+                    ? faceBase + '.webp?size=96&animated=true' : faceBase + '.webp?size=160';
+
+                if (faceMoves && !smallMoving && !face.dataset.armed) {
+                    face.dataset.armed = '1';
+                    const later = () => setTimeout(() => {
+                        smallMoving = true;
+                        face.src = faceBase + '.webp?size=96&animated=true';
+                    }, 1200);
+                    if (document.readyState === 'complete') later();
+                    else window.addEventListener('load', later, { once: true });
+                }
             }
             const deco = u.avatar_decoration_data;
             if (deco && deco.asset) {
@@ -327,6 +366,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 name: a.name,
                 detail: [a.details, a.state].filter(Boolean).join(' / '),
                 img: img,
+                // 曲や 動画は details_url を 持っていることがある。
+                // 捨てていたので、いままで ただの 文字に なっていた
+                url: a.details_url || null,
                 start: (a.timestamps && a.timestamps.start) ? a.timestamps.start : null,
                 end:   (a.timestamps && a.timestamps.end)   ? a.timestamps.end   : null
             });
