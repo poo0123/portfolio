@@ -146,13 +146,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* ---------- 押したときの おと ---------- */
 
-    // 音の ファイルは 持たない。その場で サイン波を つくって 鳴らす。
-    // [たかさHz, ずらす秒, ながさ秒, おおきさ]
-    const NOTES = {
-        tap:    [[520, 0,     0.065, 0.022]],
-        open:   [[480, 0,     0.080, 0.023], [720, 0.035, 0.11, 0.016]],
-        close:  [[610, 0,     0.070, 0.020], [410, 0.025, 0.09, 0.014]],
-        toggle: [[660, 0,     0.090, 0.021], [990, 0.040, 0.12, 0.017]]
+    // ここは 紙の サイトなので、ピコピコでは なく 紙の 音に する。
+    // 紙の 音は サイン波では 出ない。ざらざらの 雑音を こして つくる。
+    //   type  こしかた      from -> to  こす高さの うごき（Hz）
+    //   q     とがり具合    atk  立ち上がり秒   len ながさ秒
+    //   vol   おおきさ      body 下に そえる どんの 高さ（0は なし）
+    const PAPER = {
+        // りんく・ボタン ― 指で 紙を はじく「ペッ」
+        tap:    { type: 'bandpass', from: 3400, to: 1600, q: 0.9, atk: 0.002, len: 0.055, vol: 0.20, body: 0 },
+        // ひらく ― 紙を めくる「サァッ」。高さが 上に のぼる
+        open:   { type: 'bandpass', from:  950, to: 3000, q: 0.6, atk: 0.020, len: 0.175, vol: 0.17, body: 0 },
+        // とじる ― 机に 置く「トスッ」。のぼった ぶん 下りる
+        close:  { type: 'bandpass', from: 2600, to:  700, q: 0.6, atk: 0.004, len: 0.130, vol: 0.16, body: 150 },
+        // よる/ひる ― スタンプを 押す「ポンッ」
+        toggle: { type: 'lowpass',  from: 2000, to:  430, q: 5.0, atk: 0.002, len: 0.105, vol: 0.17, body: 220 }
     };
 
     const SOUND_KEY = 'poo-sound';
@@ -160,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try { soundOn = localStorage.getItem(SOUND_KEY) !== 'off'; } catch (e) {}
 
     let actx = null;
+    let hiss = null;
     let lastTap = -Infinity;
 
     // ブラウザは さわる前の 音を とめる。さわった ついでに 起こしておく
@@ -174,35 +182,69 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     document.addEventListener('pointerdown', wake, { passive: true });
 
+    // ざらざらの もと。いちど つくって 使いまわす
+    const grain = () => {
+        if (hiss) return hiss;
+        const n = Math.floor(actx.sampleRate * 0.5);
+        hiss = actx.createBuffer(1, n, actx.sampleRate);
+        const d = hiss.getChannelData(0);
+        for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+        return hiss;
+    };
+
     const beep = (kind) => {
         if (!soundOn) return;
         wake();
         if (!actx) return;
         try {
+            const p = PAPER[kind] || PAPER.tap;
             const now = actx.currentTime;
             // 連打しても うるさく ならないように
             if (kind === 'tap') {
                 if (now - lastTap < 0.045) return;
                 lastTap = now;
             }
-            (NOTES[kind] || NOTES.tap).forEach((n) => {
-                const hz = n[0], wait = n[1], len = n[2], vol = n[3];
+
+            const src  = actx.createBufferSource();
+            const sift = actx.createBiquadFilter();
+            const amp  = actx.createGain();
+
+            src.buffer = grain();
+            // 毎回 ちがう ところを ちがう 速さで 鳴らす。おなじ音には ならない
+            src.playbackRate.value = 0.85 + Math.random() * 0.3;
+
+            sift.type = p.type;
+            sift.Q.value = p.q;
+            sift.frequency.setValueAtTime(p.from, now);
+            sift.frequency.exponentialRampToValueAtTime(p.to, now + p.len);
+
+            // 0 からでは 指数の カーブが ひけないので ごく小さい値から
+            amp.gain.setValueAtTime(0.0001, now);
+            amp.gain.exponentialRampToValueAtTime(p.vol, now + p.atk);
+            amp.gain.exponentialRampToValueAtTime(0.0001, now + p.len);
+
+            src.connect(sift);
+            sift.connect(amp);
+            amp.connect(actx.destination);
+            src.onended = () => { src.disconnect(); sift.disconnect(); amp.disconnect(); };
+            src.start(now, Math.random() * 0.35, p.len + 0.02);
+
+            // 紙が 机に あたる 低い どん。あるものだけ
+            if (p.body) {
                 const osc = actx.createOscillator();
-                const amp = actx.createGain();
-                const at = now + wait;
+                const low = actx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(hz, at);
-                osc.frequency.exponentialRampToValueAtTime(hz * 0.82, at + len);
-                // 0 からでは 指数の カーブが ひけないので ごく小さい値から
-                amp.gain.setValueAtTime(0.0001, at);
-                amp.gain.exponentialRampToValueAtTime(vol * 3, at + 0.006);
-                amp.gain.exponentialRampToValueAtTime(0.0001, at + len);
-                osc.connect(amp);
-                amp.connect(actx.destination);
-                osc.onended = () => { osc.disconnect(); amp.disconnect(); };
-                osc.start(at);
-                osc.stop(at + len + 0.01);
-            });
+                osc.frequency.setValueAtTime(p.body, now);
+                osc.frequency.exponentialRampToValueAtTime(p.body * 0.7, now + 0.08);
+                low.gain.setValueAtTime(0.0001, now);
+                low.gain.exponentialRampToValueAtTime(0.035, now + 0.004);
+                low.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+                osc.connect(low);
+                low.connect(actx.destination);
+                osc.onended = () => { osc.disconnect(); low.disconnect(); };
+                osc.start(now);
+                osc.stop(now + 0.09);
+            }
         } catch (e) {}
     };
 
