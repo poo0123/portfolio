@@ -144,6 +144,99 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     setTimeout(hideLoader, 3500);
 
+    /* ---------- 押したときの おと ---------- */
+
+    // 音の ファイルは 持たない。その場で サイン波を つくって 鳴らす。
+    // [たかさHz, ずらす秒, ながさ秒, おおきさ]
+    const NOTES = {
+        tap:    [[520, 0,     0.065, 0.022]],
+        open:   [[480, 0,     0.080, 0.023], [720, 0.035, 0.11, 0.016]],
+        close:  [[610, 0,     0.070, 0.020], [410, 0.025, 0.09, 0.014]],
+        toggle: [[660, 0,     0.090, 0.021], [990, 0.040, 0.12, 0.017]]
+    };
+
+    const SOUND_KEY = 'poo-sound';
+    let soundOn = true;
+    try { soundOn = localStorage.getItem(SOUND_KEY) !== 'off'; } catch (e) {}
+
+    let actx = null;
+    let lastTap = -Infinity;
+
+    // ブラウザは さわる前の 音を とめる。さわった ついでに 起こしておく
+    const wake = () => {
+        if (!soundOn) return;
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!Ctx) return;
+        try {
+            actx = actx || new Ctx();
+            if (actx.state === 'suspended') actx.resume();
+        } catch (e) {}
+    };
+    document.addEventListener('pointerdown', wake, { passive: true });
+
+    const beep = (kind) => {
+        if (!soundOn) return;
+        wake();
+        if (!actx) return;
+        try {
+            const now = actx.currentTime;
+            // 連打しても うるさく ならないように
+            if (kind === 'tap') {
+                if (now - lastTap < 0.045) return;
+                lastTap = now;
+            }
+            (NOTES[kind] || NOTES.tap).forEach((n) => {
+                const hz = n[0], wait = n[1], len = n[2], vol = n[3];
+                const osc = actx.createOscillator();
+                const amp = actx.createGain();
+                const at = now + wait;
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(hz, at);
+                osc.frequency.exponentialRampToValueAtTime(hz * 0.82, at + len);
+                // 0 からでは 指数の カーブが ひけないので ごく小さい値から
+                amp.gain.setValueAtTime(0.0001, at);
+                amp.gain.exponentialRampToValueAtTime(vol * 3, at + 0.006);
+                amp.gain.exponentialRampToValueAtTime(0.0001, at + len);
+                osc.connect(amp);
+                amp.connect(actx.destination);
+                osc.onended = () => { osc.disconnect(); amp.disconnect(); };
+                osc.start(at);
+                osc.stop(at + len + 0.01);
+            });
+        } catch (e) {}
+    };
+
+    // 押したものに あわせて 音を えらぶ
+    document.addEventListener('click', (e) => {
+        const t = e.target.closest && e.target.closest('a[href], button, summary');
+        if (!t) return;
+        if (t.id === 'api-open')  { beep('open');  return; }
+        if (t.id === 'api-close') { beep('close'); return; }
+        if (t.id === 'theme-toggle' || t.id === 'sound-toggle') { beep('toggle'); return; }
+        // summary は まだ ひらいて いないので、いまの 状態の 逆が これから
+        if (t.tagName === 'SUMMARY') {
+            beep(t.parentElement && t.parentElement.open ? 'close' : 'open');
+            return;
+        }
+        beep('tap');
+    });
+
+    const soundBtn = document.getElementById('sound-toggle');
+
+    if (soundBtn) {
+        const showSound = () => {
+            soundBtn.textContent = soundOn ? 'おと ある' : 'おと なし';
+            soundBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+        };
+        showSound();
+        // ここで 先に きりかえる。止めた ときは 上の click が 鳴らさない
+        soundBtn.addEventListener('click', () => {
+            soundOn = !soundOn;
+            try { localStorage.setItem(SOUND_KEY, soundOn ? 'on' : 'off'); } catch (e) {}
+            showSound();
+        });
+    }
+
     /* ---------- 終わりの時刻が わかるものの えんぴつ線 ---------- */
 
     const runBars = () => {
@@ -904,6 +997,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (apiDlg && apiOpen) {
         apiDlg.addEventListener('close', apiUnlock);
         apiDlg.addEventListener('cancel', apiUnlock);   // Esc
+        apiDlg.addEventListener('cancel', () => beep('close'));
 
         apiOpen.addEventListener('click', () => {
             // 開くたびに いまの 状態を 反映しなおす
@@ -920,7 +1014,9 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         if (apiClose) apiClose.addEventListener('click', apiShut);
         // 外がわを 押しても とじる
-        apiDlg.addEventListener('click', (e) => { if (e.target === apiDlg) apiShut(); });
+        apiDlg.addEventListener('click', (e) => {
+            if (e.target === apiDlg) { apiShut(); beep('close'); }
+        });
     }
 
     /* ---------- そら（新宿の 本当の 天気） ---------- */

@@ -1829,6 +1829,10 @@ body.api-locked {
 }
 .api-open:hover { color: var(--red); border-bottom-color: var(--red); }
 
+/* おとを 止めている あいだは うすく する */
+.api-open[aria-pressed="false"] { opacity: 0.5; }
+.colophon-sep { margin: 0 9px; opacity: 0.35; }
+
 .api-dlg {
     width: min(92vw, 660px);
     max-height: min(84vh, 760px);
