@@ -128,7 +128,8 @@ body.dark-mode .grain { mix-blend-mode: overlay; opacity: 0.22; }
 .paper-nav a {
     font-family: 'Yomogi', cursive; font-size: 0.95rem; color: var(--ink); text-decoration: none;
     border-bottom: 2px dotted var(--rule); padding-bottom: 2px;
-    transition: color 0.2s, border-color 0.2s, transform 0.2s;
+    transition: color 0.2s, border-color 0.2s, transform 0.2s,
+                scale 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
     display: inline-block;
 }
 .paper-nav a:hover { color: var(--red); border-bottom-color: var(--red); transform: rotate(-2deg); }
@@ -139,7 +140,8 @@ body.dark-mode .grain { mix-blend-mode: overlay; opacity: 0.22; }
     width: 58px; height: 58px; border-radius: 50%;
     border: 2px dashed var(--red); background: transparent; color: var(--red);
     font-family: 'Yomogi', cursive; font-size: 0.85rem; cursor: pointer;
-    transform: rotate(-11deg); transition: transform 0.25s, background 0.25s;
+    transform: rotate(-11deg);
+    transition: transform 0.25s, background 0.25s, scale 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 .stamp:hover { transform: rotate(4deg) scale(1.06); background: rgba(220,105,105,0.10); }
 
@@ -317,7 +319,8 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
 .cuts a {
     display: flex; align-items: baseline; gap: 9px; text-decoration: none; color: var(--ink);
     background: var(--paper-2); border: 1px dashed var(--rule); padding: 11px 14px;
-    transform: rotate(-0.7deg); transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    transform: rotate(-0.7deg);
+    transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s, scale 0.16s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .cuts li:nth-child(even) a { transform: rotate(0.8deg); }
 .cuts a:hover { transform: rotate(0deg) translateY(-3px); box-shadow: var(--shadow); border-color: var(--red); border-style: solid; }
@@ -389,7 +392,8 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
     font-family: 'Yomogi', cursive; font-size: 0.82rem; text-decoration: none;
     color: var(--ink); background: var(--card); border: 1px solid var(--rule);
     padding: 8px 13px; box-shadow: var(--shadow); transform: rotate(-3deg);
-    opacity: 0; visibility: hidden; transition: opacity 0.3s, visibility 0.3s, transform 0.3s;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s, transform 0.3s, scale 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s;
 }
 .totop.show { opacity: 1; visibility: visible; }
 .totop:hover { transform: rotate(0deg) translateY(-3px); color: var(--red); border-color: var(--red); }
@@ -416,7 +420,8 @@ body.dark-mode .bar-bg { background: rgba(255,255,255,0.18); }
         display: flex; align-items: center; justify-content: center;
         box-shadow: 0 5px 12px rgba(70,55,35,0.26);
         transform: rotate(-5deg);
-        transition: transform 0.28s, background 0.28s, border-color 0.28s, border-style 0.28s;
+        transition: transform 0.28s, background 0.28s, border-color 0.28s, border-style 0.28s,
+                    scale 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.22s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.22s;
     }
     .dots.open .dots-toggle {
         background: var(--note); border-style: solid; border-color: var(--red);
@@ -1154,7 +1159,8 @@ body.dark-mode .r-stamp { border-color: #ff96a8; color: #ff96a8; opacity: 0.72; 
     background: var(--paper-2);
     border: 1px dashed var(--rule); border-radius: 3px;
     padding: 10px 16px;
-    transition: border-color 0.2s, color 0.2s, border-style 0.2s;
+    transition: border-color 0.2s, color 0.2s, border-style 0.2s,
+                scale 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.22s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.22s;
 }
 .wish-go:hover { border-style: solid; border-color: var(--red); color: var(--red); }
 .wish-go i { color: var(--red); }
@@ -1667,7 +1673,7 @@ body.dark-mode .minibar { box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
     font-family: 'Yomogi', cursive; font-size: 0.8rem; color: var(--ink-2);
     text-decoration: none; white-space: nowrap;
     border-bottom: 2px dotted transparent; padding-bottom: 1px;
-    transition: color 0.2s, border-color 0.2s;
+    transition: color 0.2s, border-color 0.2s, scale 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 .minibar-nav a:hover { color: var(--red); border-bottom-color: var(--red); }
 
@@ -1849,7 +1855,7 @@ body.api-locked {
     font-family: 'Yomogi', cursive; font-size: 0.8rem;
     color: var(--ink-2); background: none; border: none; cursor: pointer;
     border-bottom: 1px dotted var(--rule); padding: 0 2px 2px;
-    transition: color 0.2s, border-color 0.2s;
+    transition: color 0.2s, border-color 0.2s, scale 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
 }
 .api-open:hover { color: var(--red); border-bottom-color: var(--red); }
 
@@ -1947,7 +1953,8 @@ body.dark-mode .api-dlg::backdrop { background: rgba(4,7,20,0.62); }
     font-family: 'Yomogi', cursive; font-size: 0.8rem; cursor: pointer;
     color: var(--ink); background: var(--paper-2);
     border: 1px dashed var(--rule); border-radius: 3px; padding: 8px 22px;
-    transition: border-color 0.2s, color 0.2s, border-style 0.2s;
+    transition: border-color 0.2s, color 0.2s, border-style 0.2s,
+                scale 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.22s cubic-bezier(0.34, 1.4, 0.64, 1), box-shadow 0.22s;
 }
 .api-close:hover { border-style: solid; border-color: var(--red); color: var(--red); }
 
@@ -1963,4 +1970,48 @@ body.dark-mode .api-dlg::backdrop { background: rgba(4,7,20,0.62); }
     font-size: 0.88rem;
     line-height: 1.8;
     margin: 0 0 16px;
+}
+
+/* =========================================================
+   ボタン ─ 押すと ぷにっと、さわると ふわっと
+   ========================================================= */
+
+/* 押している あいだ すこし 縮んで、はなすと はねて もどる。
+   scale は transform とは 別の 性質なので、もとの 傾き
+   （はんこ・りんく・うえへ）を こわさずに かさねられる。
+   うつる 時間は それぞれの transition に 足してある */
+.stamp:active, .wish-go:active, .api-open:active, .api-close:active,
+.cuts a:active, .totop:active, .paper-nav a:active, .minibar-nav a:active,
+.dots-toggle:active { scale: 0.93; }
+
+/* さわると すこし 浮く。りんくと うえへは もともと transform で
+   3px 上がるので、ここでは 足さない（二重に 上がって しまう） */
+.stamp:hover, .wish-go:hover, .api-open:hover, .api-close:hover,
+.paper-nav a:hover, .minibar-nav a:hover, .dots-toggle:hover { translate: 0 -3px; }
+
+/* かげは 紙の ある ボタンだけ。文字だけの ところや、すけている
+   はんこに かげを つけると 宙に 浮いて 見える */
+.wish-go:hover, .api-close:hover, .cuts a:hover, .totop:hover, .dots-toggle:hover {
+    box-shadow: 0 7px 16px rgba(70, 55, 35, 0.20);
+}
+body.dark-mode .wish-go:hover, body.dark-mode .api-close:hover,
+body.dark-mode .cuts a:hover, body.dark-mode .totop:hover,
+body.dark-mode .dots-toggle:hover { box-shadow: 0 7px 16px rgba(0, 0, 0, 0.42); }
+
+/* 浮いた ついでに いちど ゆれる。rotate だけの うごきなので、
+   transform で 傾けて ある ものとも ぶつからない */
+.stamp:hover, .wish-go:hover, .api-open:hover, .api-close:hover,
+.cuts a:hover, .totop:hover, .paper-nav a:hover, .minibar-nav a:hover,
+.dots-toggle:hover { animation: btn-wob 0.52s ease; }
+@keyframes btn-wob {
+    0%   { rotate: 0deg; }
+    28%  { rotate: -2.6deg; }
+    62%  { rotate: 1.5deg; }
+    100% { rotate: 0deg; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stamp:hover, .wish-go:hover, .api-open:hover, .api-close:hover,
+    .cuts a:hover, .totop:hover, .paper-nav a:hover, .minibar-nav a:hover,
+    .dots-toggle:hover { animation: none; }
 }
