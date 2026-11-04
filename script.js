@@ -1147,5 +1147,95 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /* ---------- 押すと 紙くずが 散る ---------- */
+
+    // 視差効果の 低減を えらんでいる 人には なにも しない。
+    // 置き場も 作らず、耳も 立てない
+    if (!calm) {
+        const fxLayer = document.createElement('div');
+        fxLayer.className = 'fx-layer';
+        fxLayer.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(fxLayer);
+
+        // 押した ものごとに 散りかたを 変える。
+        //   n 枚かず  size 大きさpx  spin まわる角度  far 飛ぶ長さpx
+        const FX_KIND = {
+            sticker: { n: 12, size: [4,  9], spin: 560, far: [36,  96] },
+            link:    { n: 10, size: [3,  7], spin: 420, far: [30,  80] },
+            scrap:   { n: 16, size: [4, 11], spin: 680, far: [44, 125] }
+        };
+        const FX_MAX = 140;   // 連打されても ふくれ上がらないように
+
+        const fxRnd = (a, b) => a + Math.random() * (b - a);
+
+        const scatter = (x, y, kind) => {
+            const k = FX_KIND[kind];
+            if (fxLayer.childElementCount + k.n > FX_MAX) return;
+
+            for (let i = 0; i < k.n; i++) {
+                const bit = document.createElement('i');
+                bit.className = 'fx-bit';
+                if (i % 3 === 0) bit.classList.add('is-ink');
+                bit.style.width  = fxRnd(k.size[0], k.size[1]).toFixed(1) + 'px';
+                bit.style.height = fxRnd(k.size[0], k.size[1]).toFixed(1) + 'px';
+                bit.style.left = x + 'px';
+                bit.style.top  = y + 'px';
+                fxLayer.appendChild(bit);
+
+                const ang = fxRnd(0, Math.PI * 2);
+                const far = fxRnd(k.far[0], k.far[1]);
+                const dx = Math.cos(ang) * far;
+                // 上に 行くぶんを すこし 足して、落ちてくる かんじを 出す
+                const dy = Math.sin(ang) * far - fxRnd(6, 26);
+                const life = fxRnd(520, 880);
+
+                // 勢いよく 出て、ゆっくり 止まる
+                const fly = bit.animate([
+                    { translate: '0 0', rotate: '0deg', scale: 1 },
+                    { translate: dx.toFixed(1) + 'px ' + dy.toFixed(1) + 'px',
+                      rotate: fxRnd(-k.spin, k.spin).toFixed(0) + 'deg', scale: 0.55 }
+                ], { duration: life, easing: 'cubic-bezier(0.1, 0.78, 0.3, 1)' });
+
+                // うすくなる ほうは 別の うごきに する。上の 曲線を 透明度にも
+                // かけると、飛びはじめた とたんに 消える（道のりの 半分で
+                // すでに 0.09 だった）。まっすぐ、しかも 後半まで 濃いまま
+                bit.animate([
+                    { opacity: 1, offset: 0 },
+                    { opacity: 1, offset: 0.55 },
+                    { opacity: 0, offset: 1 }
+                ], { duration: life, easing: 'linear' });
+
+                // 裏の タブなど、ブラウザが 絵を 描いていない あいだは
+                // onfinish が 呼ばれない。放っておくと 紙くずが たまり
+                // つづけるので、時間でも かならず 消す。
+                // remove は 二度 呼んでも なにも 起きない
+                const gone = () => bit.remove();
+                fly.onfinish = gone;
+                fly.oncancel = gone;
+                setTimeout(gone, life + 400);
+            }
+        };
+
+        document.addEventListener('click', (e) => {
+            const t = e.target;
+            if (!t || !t.closest) return;
+            const hit = t.closest('.sticker, .scrap, .cuts a');
+            if (!hit) return;
+
+            const b = hit.getBoundingClientRect();
+            if (!b.width || !b.height) return;   // せまい画面では しまってある
+
+            const kind = hit.classList.contains('sticker') ? 'sticker'
+                       : hit.classList.contains('scrap')   ? 'scrap' : 'link';
+
+            // 画面の 外に はみ出している 紙きれは、見えている ところから 出す
+            scatter(
+                Math.min(Math.max(b.left + b.width  / 2, 8), window.innerWidth  - 8),
+                Math.min(Math.max(b.top  + b.height / 2, 8), window.innerHeight - 8),
+                kind
+            );
+        });
+    }
+
     connect();
 });
