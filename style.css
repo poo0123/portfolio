@@ -2015,3 +2015,138 @@ body.dark-mode .dots-toggle:hover { box-shadow: 0 7px 16px rgba(0, 0, 0, 0.42); 
     .cuts a:hover, .totop:hover, .paper-nav a:hover, .minibar-nav a:hover,
     .dots-toggle:hover { animation: none; }
 }
+
+/* ============================================================
+   あとから 足した もの（ねふだ・きっぷ・こうしんきろく・えんぴつ・かくしコマンド・うごき）
+   ============================================================ */
+.x-row { display: flex; gap: 26px; align-items: flex-start; flex-wrap: wrap; margin: 46px 0 0; }
+.x-card {
+    position: relative; background: var(--card); border: 1px solid var(--rule);
+    box-shadow: var(--shadow); padding: 26px 22px 20px; min-width: 0; --xr: 0.7deg;
+}
+.x-card.reveal.active { transform: translateY(0) rotate(var(--xr)); }
+.x-note { font-size: 0.78rem; color: var(--ink-2); line-height: 1.6; }
+
+/* ---------- 6 ねふだ（ほしいもの から ぶらさがる） ---------- */
+#wish { overflow: visible; }
+.x-tag {
+    position: absolute; right: 22px; top: calc(100% + 26px); width: 132px; padding: 22px 10px 9px; text-align: center;
+    background: #f3e3b8; color: #3a2d1c; z-index: 3; font-family: 'Zen Kurenaido', sans-serif;
+    clip-path: polygon(24% 0, 76% 0, 100% 15%, 100% 100%, 0 100%, 0 15%);
+    transform-origin: 50% -26px; rotate: 5deg; animation: x-swing 5s ease-in-out infinite;
+}
+.x-tag:hover { animation-duration: 0.9s; }
+@keyframes x-swing { 0%, 100% { rotate: 5deg; } 50% { rotate: -4deg; } }
+.x-tag-string {
+    position: absolute; right: 87px; top: 100%; width: 1.5px; height: 36px; background: var(--ink-2); z-index: 2;
+    transform-origin: 50% 0; rotate: 5deg; animation: x-swing 5s ease-in-out infinite;
+}
+.x-tag-hole { position: absolute; top: 7px; left: 50%; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%; background: var(--paper); box-shadow: inset 0 1px 2px rgba(0,0,0,0.4); }
+.x-tag-label { font-size: 0.68rem; border-bottom: 1px dashed #a48f62; line-height: 1.5; }
+.x-tag-price b { font-family: 'Caveat', cursive; font-size: 1.9rem; color: #c0392b; line-height: 1.15; }
+.x-tag-price small { font-size: 0.7rem; margin-left: 2px; }
+.x-tag-sub { font-size: 0.62rem; line-height: 1.45; }
+@media (max-width: 720px) {
+    #wish { margin-bottom: 120px; }
+}
+
+/* ---------- 9 きっぷの りんく（もとの りんくを 着せ替える） ---------- */
+.cuts { counter-reset: tk; gap: 16px 14px; }
+.cuts a {
+    counter-increment: tk; position: relative; isolation: isolate;
+    background: none; border-color: transparent; color: #2f2823; padding-left: 68px;
+    filter: drop-shadow(0 3px 4px rgba(70,55,35,0.22)); box-shadow: none; --tk: #f5d9a0;
+}
+.cuts li:nth-child(4n+2) a { --tk: #cfe0c3; }
+.cuts li:nth-child(4n+3) a { --tk: #f1c9c4; }
+.cuts li:nth-child(4n) a   { --tk: #c9d8ec; }
+.cuts a:hover { border-color: transparent; box-shadow: none; }
+.cuts a::after {
+    content: ''; position: absolute; inset: 0 0 0 52px; z-index: -1; background: var(--tk);
+    -webkit-mask: radial-gradient(circle 7px at 100% 0, transparent 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 7px at 100% 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+            mask: radial-gradient(circle 7px at 100% 0, transparent 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 7px at 100% 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+}
+.cuts a::before {
+    content: 'No.\A' counter(tk, decimal-leading-zero); white-space: pre; text-align: center;
+    position: absolute; left: 0; top: 0; bottom: 0; width: 52px; z-index: -1;
+    display: grid; place-items: center; background: var(--tk); color: #2f2823;
+    font-family: 'Caveat', cursive; font-weight: 700; font-size: 0.95rem; line-height: 1.05;
+    border-right: 2px dashed rgba(47,40,35,0.45);
+    -webkit-mask: radial-gradient(circle 7px at 0 0, transparent 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 7px at 0 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+            mask: radial-gradient(circle 7px at 0 0, transparent 98%, #000) top / 100% 51% no-repeat, radial-gradient(circle 7px at 0 100%, transparent 98%, #000) bottom / 100% 51% no-repeat;
+    transform-origin: 100% 100%;
+    transition: rotate 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), translate 0.3s;
+}
+/* さわると 半券が ちぎれかける */
+.cuts a:hover::before { rotate: -10deg; translate: -5px -2px; }
+.cuts a:active::before { rotate: -24deg; translate: -12px 2px; }
+.cuts i { color: #b8433f; }
+.cuts em { color: #6b5f52; }
+/* 見えた ときに 1まいずつ 発券 される */
+#links.active .cuts li { animation: x-issue 0.5s cubic-bezier(0.2, 1.2, 0.4, 1) backwards; animation-delay: calc(var(--i, 0) * 80ms + 0.3s); }
+@keyframes x-issue { from { opacity: 0; translate: -26px 0; } }
+
+/* ---------- 10 こうしん きろく ---------- */
+.x-lib { flex: 0 1 560px; --xr: -0.8deg; padding-top: 22px; }
+.x-lib-title {
+    font-family: 'Yomogi', cursive; font-size: 1.05rem; border-bottom: 2px solid var(--red); padding-bottom: 2px;
+    display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
+}
+.x-lib-title span { font-family: 'Caveat', cursive; font-size: 0.95rem; color: var(--ink-2); }
+.x-lib-rows { list-style: none; }
+.x-lib-rows li { display: flex; gap: 10px; align-items: baseline; border-bottom: 1px solid var(--rule); padding: 6px 0 4px; font-size: 0.8rem; line-height: 1.5; }
+.x-lib-rows time {
+    flex-shrink: 0; font-family: 'Caveat', cursive; font-size: 1rem; color: var(--red);
+    border: 1.5px solid var(--red); border-radius: 3px; padding: 0 5px; line-height: 1.25; rotate: var(--tr, -3deg);
+}
+.x-lib-rows span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* 日付の はんこが 上から 順に どん、どん と 押される */
+.x-lib.active .x-lib-rows time { animation: x-thump 0.36s cubic-bezier(0.3, 1.5, 0.6, 1) backwards; animation-delay: calc(var(--i, 0) * 150ms + 0.5s); }
+@keyframes x-thump { from { opacity: 0; scale: 2.3; } }
+
+/* ---------- 12 えんぴつ（いちばん 上） ---------- */
+.x-year { max-width: 400px; margin: 0 auto 26px; text-align: center; }
+.x-pencil { display: flex; align-items: center; justify-content: center; height: 18px; margin-bottom: 6px; }
+.x-pc-eraser { width: 16px; height: 100%; background: #e59a9a; border-radius: 4px 0 0 4px; border-right: 5px solid #b9bcc4; flex-shrink: 0; }
+.x-pc-body { height: 100%; width: 88%; background: linear-gradient(#f2c230 0 33%, #e3ad10 33% 66%, #c9960a 66%); transition: width 2.2s 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.x-pc-tip { position: relative; width: 0; height: 0; border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-left: 20px solid #e8cfa3; flex-shrink: 0; }
+.x-pc-tip::after { content: ''; position: absolute; left: -8px; top: -3.5px; border-top: 3.5px solid transparent; border-bottom: 3.5px solid transparent; border-left: 8px solid #2f2823; }
+.x-year.active .x-pc-body { width: var(--left, 88%); }
+.x-year.reveal.active { transform: none; }
+/* けずりかす */
+.x-pc-dust { position: relative; width: 0; height: 0; }
+.x-pc-dust i { position: absolute; left: 6px; top: 0; width: 5px; height: 2px; background: #c9960a; opacity: 0; }
+.x-year.active .x-pc-dust i { animation: x-dust 0.9s ease-out 3; animation-delay: calc(var(--i) * 0.22s + 0.5s); }
+@keyframes x-dust { 0% { opacity: 1; translate: 0 0; rotate: 0deg; } 100% { opacity: 0; translate: var(--dx, 14px) 22px; rotate: 200deg; } }
+.x-year-text b { font-family: 'Caveat', cursive; font-size: 1.3rem; color: var(--red); }
+
+/* ---------- 13 かくし コマンド ---------- */
+#x-rain { position: fixed; inset: 0; z-index: 860; pointer-events: none; overflow: hidden; }
+#x-rain span { position: absolute; top: -50px; }
+
+/* ---------- 14〜16 もとから ある ものに 足す うごき ---------- */
+/* 14 チェックが 1つずつ 書かれる */
+#me:not(.active) .checklist li { opacity: 0; }
+#me.active .checklist li { animation: x-write 0.45s ease-out backwards; animation-delay: calc(var(--i, 0) * 0.28s + 0.7s); }
+#me.active .checklist li::before { animation: x-check 0.4s cubic-bezier(0.3, 1.8, 0.6, 1) backwards; animation-delay: calc(var(--i, 0) * 0.28s + 0.95s); }
+@keyframes x-write { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0 0 0 0); } }
+@keyframes x-check { from { opacity: 0; scale: 2.6; rotate: -30deg; } }
+
+/* 15 レシートが 1行ずつ 印字 される */
+#gohan:not(.active) :is(.r-items li, .r-line) { opacity: 0; }
+#gohan.active :is(.r-items li, .r-line) { animation: x-print 0.22s steps(4) backwards; animation-delay: calc(var(--i, 0) * 0.13s + 0.5s); }
+@keyframes x-print { from { opacity: 0; translate: 0 -7px; } }
+
+/* 16 シールが ぺた、ぺた と 貼られる */
+#likes:not(.active) .sticker { opacity: 0; }
+#likes.active .sticker { animation: x-peta 0.42s cubic-bezier(0.3, 1.7, 0.5, 1) backwards; animation-delay: calc(var(--i, 0) * 0.09s + 0.45s); }
+@keyframes x-peta { from { opacity: 0; scale: 1.35; rotate: 12deg; } }
+
+.cuts a b { color: #2f2823; }
+
+@media (prefers-reduced-motion: reduce) {
+    .x-pc-body { transition: none; }
+    .x-tag, .x-tag-string, .x-lib.active .x-lib-rows time, .x-year.active .x-pc-dust i,
+    #links.active .cuts li, #me.active .checklist li, #me.active .checklist li::before,
+    #gohan.active :is(.r-items li, .r-line), #likes.active .sticker { animation: none; }
+}

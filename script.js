@@ -1239,3 +1239,105 @@ document.addEventListener('DOMContentLoaded', () => {
 
     connect();
 });
+
+/* ============================================================
+   あとから 足した もの（ねふだ・こうしんきろく・えんぴつ・かくしコマンド・うごきの 順番）
+   ============================================================ */
+(() => {
+    'use strict';
+    const $ = (s) => document.querySelector(s);
+    const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+    const getJSON = (url) => fetch(url).then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); });
+    /* 日本時間の「いま」を、UTCの 入れ物に 入れて あつかう */
+    const jst = (ms) => new Date((ms === undefined ? Date.now() : ms) + 9 * 3600000);
+
+    /* 順番に 動かす ための 番号 */
+    ['#me .checklist li', '#gohan .r-items li, #gohan .r-line', '#likes .sticker', '#links .cuts li']
+        .forEach((sel) => document.querySelectorAll(sel).forEach((el, i) => el.style.setProperty('--i', i)));
+
+    /* ねふだ（きょうの 1ドル） */
+    if ($('#x-tag-yen')) {
+        getJSON('https://api.frankfurter.dev/v1/latest?base=USD&symbols=JPY')
+            .then((j) => {
+                const yen = j.rates.JPY;
+                set('x-tag-yen', yen.toFixed(1));
+                set('x-tag-sub', 'うまい棒 やく ' + Math.floor(yen / 15) + 'ほん ぶん');
+            })
+            .catch(() => set('x-tag-sub', 'ねだんが わからない'));
+    }
+
+    /* こうしん きろく（GitHub。日付と 1行目 だけ 使う） */
+    const rows = $('#x-lib-rows');
+    if (rows) {
+        getJSON('https://api.github.com/repos/poo0123/portfolio/commits?per_page=5')
+            .then((list) => {
+                rows.textContent = '';
+                list.forEach((c, i) => {
+                    const d = jst(new Date(c.commit.committer.date).getTime());
+                    const li = document.createElement('li');
+                    const time = document.createElement('time');
+                    time.textContent = (d.getUTCMonth() + 1) + '/' + d.getUTCDate();
+                    time.style.setProperty('--i', i);
+                    time.style.setProperty('--tr', [-3, 2, -1.5, 3, -2][i % 5] + 'deg');
+                    const span = document.createElement('span');
+                    span.textContent = String(c.commit.message).split('\n')[0];
+                    li.append(time, span);
+                    rows.appendChild(li);
+                });
+            })
+            .catch(() => { rows.textContent = ''; const li = document.createElement('li'); li.textContent = 'きろくが よめなかった。'; rows.appendChild(li); });
+    }
+
+    /* ことしの えんぴつ */
+    const year = $('.x-year');
+    if (year) {
+        const now = jst();
+        const y = now.getUTCFullYear();
+        const start = Date.UTC(y, 0, 1), end = Date.UTC(y + 1, 0, 1);
+        const left = (end - now.getTime()) / (end - start);
+        year.style.setProperty('--left', (left * 88).toFixed(1) + '%');
+        const p = $('#x-year-text');
+        const b = document.createElement('b');
+        b.textContent = Math.ceil((end - now.getTime()) / 86400000);
+        p.textContent = '';
+        p.append(y + '年は あと ', b, ' にち。えんぴつ のこり ' + Math.round(left * 100) + '%。');
+    }
+
+    /* かくし コマンド（unko と 打つ か、サインを 5かい タップ） */
+    const layer = $('#x-rain');
+    if (layer) {
+        const rain = () => {
+            if (layer.childElementCount > 60) return;
+            for (let i = 0; i < 26; i++) {
+                const s = document.createElement('span');
+                s.textContent = '💩';
+                s.style.left = (Math.random() * 96) + '%';
+                s.style.fontSize = (18 + Math.random() * 22) + 'px';
+                layer.appendChild(s);
+                const dur = 1700 + Math.random() * 1500, delay = Math.random() * 900;
+                try {
+                    s.animate(
+                        [{ transform: 'translateY(0) rotate(0deg)' }, { transform: 'translateY(' + (window.innerHeight + 90) + 'px) rotate(' + (Math.random() * 720 - 360) + 'deg)' }],
+                        { duration: dur, delay: delay, easing: 'cubic-bezier(0.4, 0, 0.9, 0.6)', fill: 'both' }
+                    );
+                } catch (e) { /* 動かなくても 下の そうじで 消える */ }
+                setTimeout(() => s.remove(), dur + delay + 80);
+            }
+        };
+        let buf = '';
+        document.addEventListener('keydown', (e) => {
+            if (!e.key || e.key.length !== 1 || /^(INPUT|TEXTAREA)$/.test((e.target && e.target.tagName) || '')) return;
+            buf = (buf + e.key.toLowerCase()).slice(-4);
+            if (buf === 'unko') { buf = ''; rain(); }
+        });
+        const sign = $('.colophon .sign');
+        if (sign) {
+            let taps = 0, timer = 0;
+            sign.addEventListener('click', () => {
+                taps++; clearTimeout(timer);
+                timer = setTimeout(() => { taps = 0; }, 1600);
+                if (taps >= 5) { taps = 0; rain(); }
+            });
+        }
+    }
+})();
