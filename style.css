@@ -2087,7 +2087,7 @@ body.dark-mode .dots-toggle:hover { box-shadow: 0 7px 16px rgba(0, 0, 0, 0.42); 
 @keyframes x-issue { from { opacity: 0; translate: -26px 0; } }
 
 /* ---------- 10 こうしん きろく ---------- */
-.x-lib { flex: 0 1 560px; --xr: -0.8deg; padding-top: 22px; }
+.x-lib { flex: 1 1 100%; --xr: -0.8deg; padding-top: 22px; }
 .x-lib-title {
     font-family: 'Yomogi', cursive; font-size: 1.05rem; border-bottom: 2px solid var(--red); padding-bottom: 2px;
     display: flex; justify-content: space-between; align-items: baseline; gap: 8px;
@@ -2104,8 +2104,8 @@ body.dark-mode .dots-toggle:hover { box-shadow: 0 7px 16px rgba(0, 0, 0, 0.42); 
 .x-lib.active .x-lib-rows time { animation: x-thump 0.36s cubic-bezier(0.3, 1.5, 0.6, 1) backwards; animation-delay: calc(var(--i, 0) * 150ms + 0.5s); }
 @keyframes x-thump { from { opacity: 0; scale: 2.3; } }
 
-/* ---------- 12 えんぴつ（いちばん 上） ---------- */
-.x-year { max-width: 400px; margin: 0 auto 26px; text-align: center; }
+/* ---------- 12 えんぴつ（こうしんきろくの 下） ---------- */
+.x-year { max-width: 400px; margin: 44px auto 0; text-align: center; }
 .x-pencil { display: flex; align-items: center; justify-content: center; height: 18px; margin-bottom: 6px; }
 .x-pc-eraser { width: 16px; height: 100%; background: #e59a9a; border-radius: 4px 0 0 4px; border-right: 5px solid #b9bcc4; flex-shrink: 0; }
 .x-pc-body { height: 100%; width: 88%; background: linear-gradient(#f2c230 0 33%, #e3ad10 33% 66%, #c9960a 66%); transition: width 2.2s 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); }
