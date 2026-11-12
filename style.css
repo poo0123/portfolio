@@ -2149,3 +2149,13 @@ body.dark-mode .dots-toggle:hover { box-shadow: 0 7px 16px rgba(0, 0, 0, 0.42); 
     #links.active .cuts li, #me.active .checklist li, #me.active .checklist li::before,
     #gohan.active :is(.r-items li, .r-line), #likes.active .sticker { animation: none; }
 }
+
+/* ひるに 足した もの：ちょうちょ・とり・とんぼの はね */
+.f-fly svg { animation: moth-flap 0.24s ease-in-out infinite alternate; }
+.f-bird svg { animation: bird-flap 0.3s ease-in-out infinite alternate; }
+@keyframes bird-flap {
+    from { transform: scale(var(--sc, 1)) scaleY(1); }
+    to   { transform: scale(var(--sc, 1)) scaleY(-0.45); }
+}
+.f-dragon .w { animation: wing-blur 0.09s linear infinite alternate; }
+@keyframes wing-blur { from { opacity: 0.34; } to { opacity: 0.14; } }

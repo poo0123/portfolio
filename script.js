@@ -765,6 +765,48 @@ document.addEventListener('DOMContentLoaded', () => {
                      '<circle cx="9" cy="9" r="3.2" fill="currentColor" opacity="0.35"/>' +
                      '</svg>'
             }
+            ,{
+                cls: 'f-fly', min: 0, max: 0, count: [1, 2],
+                colors: ['#e0b23c', '#d98a6a', '#8fb0d8', '#b79ad6', '#e6a3b4'],
+                svg: '<svg width="30" height="24" viewBox="0 0 30 24" fill="none">' +
+                     '<path d="M15 12C12 2 4 0 2 4c-2 5 4 9 13 8z" fill="currentColor" opacity="0.8"/>' +
+                     '<path d="M15 12c3-10 11-12 13-8 2 5-4 9-13 8z" fill="currentColor" opacity="0.8"/>' +
+                     '<path d="M15 12c-3 6-8 8-9 4-1-3 4-5 9-4z" fill="currentColor" opacity="0.6"/>' +
+                     '<path d="M15 12c3 6 8 8 9 4 1-3-4-5-9-4z" fill="currentColor" opacity="0.6"/>' +
+                     '<ellipse cx="15" cy="12.5" rx="1.1" ry="5" fill="#5a4a3c"/>' +
+                     '<path d="M15 8l-2.4-4M15 8l2.4-4" stroke="#5a4a3c" stroke-width="0.8" stroke-linecap="round"/>' +
+                     '</svg>'
+            },
+            {
+                cls: 'f-fluff', min: 0, max: 0, count: [3, 6],
+                colors: ['#a59a88', '#b3a894', '#978c7c'],
+                svg: '<svg width="22" height="30" viewBox="0 0 22 30" fill="none" stroke="currentColor" stroke-linecap="round">' +
+                     '<path d="M11 13v12" stroke-width="0.8" opacity="0.8"/>' +
+                     '<path d="M11 13 3 5M11 13 6 2M11 13V1M11 13l5-11M11 13l8-8M11 13 1 9M11 13l10-4" stroke-width="0.7" opacity="0.6"/>' +
+                     '<ellipse cx="11" cy="27" rx="1.2" ry="2.4" fill="currentColor" stroke="none" opacity="0.9"/>' +
+                     '</svg>'
+            },
+            {
+                cls: 'f-bird', min: 0, max: 0, count: [2, 5],
+                colors: null,
+                svg: '<svg width="26" height="12" viewBox="0 0 26 12" fill="none">' +
+                     '<path d="M1 8Q7 1 13 7Q19 1 25 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>' +
+                     '</svg>'
+            },
+            {
+                cls: 'f-dragon', min: 0, max: 0, count: [1, 2],
+                colors: ['#c05a48', '#b8693f', '#a9503f'],
+                svg: '<svg width="40" height="22" viewBox="0 0 40 22" fill="none">' +
+                     '<g class="w" fill="currentColor" opacity="0.3">' +
+                     '<ellipse cx="23" cy="5" rx="9" ry="2.4" transform="rotate(-14 23 5)"/>' +
+                     '<ellipse cx="23" cy="17" rx="9" ry="2.4" transform="rotate(14 23 17)"/>' +
+                     '<ellipse cx="17" cy="6" rx="8" ry="2.1" transform="rotate(12 17 6)"/>' +
+                     '<ellipse cx="17" cy="16" rx="8" ry="2.1" transform="rotate(-12 17 16)"/></g>' +
+                     '<path d="M3 11h24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' +
+                     '<path d="M22 11h8" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>' +
+                     '<circle cx="32.5" cy="11" r="2.4" fill="currentColor"/>' +
+                     '</svg>'
+            }
         ];
 
         // よるは 夜に 飛んでいそうなもの だけ
@@ -816,7 +858,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const all = night ? NIGHT : DAY;
             let list = all;
             // あめと ゆきの日に 風船と しゃぼん玉は うかばない
-            if (wet()) list = list.filter((f) => f.cls !== 'f-balloon' && f.cls !== 'f-bubble');
+            if (wet()) list = list.filter((f) => !/balloon|bubble|fly|fluff|dragon/.test(f.cls));
             // 雲が あるときは 流れ星は 見えない
             if (wxNow() !== 'clear') list = list.filter((f) => f.cls !== 'f-star');
             return list.length ? list : all;
@@ -839,7 +881,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // ふる日は すこし まばらに
-            plan(rand(9000, 18000) * (wet() ? 1.6 : 1));
+            // ひるは 少し にぎやかに
+            const day = !document.body.classList.contains('dark-mode');
+            plan((day ? rand(5000, 10000) : rand(9000, 18000)) * (wet() ? 1.6 : 1));
         }
 
         /* --- ほんものっぽい 軌道 ---
@@ -976,6 +1020,88 @@ document.addEventListener('DOMContentLoaded', () => {
                 return { dur: t * 1000, frames: out };
             },
 
+            // ちょうちょ：ふわふわ 上下しながら、よこへ わたっていく
+            'f-fly': () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const dir = Math.random() < 0.5 ? 1 : -1;
+                const base = (dir > 0 ? 0 : Math.PI) - dir * rand(-0.1, 0.28);
+                const turn = mkNoise(1.7), slow = mkNoise(0.35), pace = mkNoise(1.4);
+                const v0 = rand(60, 90), dt = 1 / 12, bf = rand(7, 10);
+                let x = dir > 0 ? -40 : w + 40, y = rand(0.25, 0.85) * h, t = 0;
+                const out = [];
+                while (x > -70 && x < w + 70 && y > -70 && y < h + 70 && t < 34) {
+                    const th = base + 0.85 * turn(t) + 0.5 * slow(t);
+                    const v = v0 * (1 + 0.5 * pace(t));
+                    out.push({ x, y: y + 7 * Math.sin(bf * t), r: (th + 1.5708) * 57.3 * 0.75, o: 0.92 });
+                    x += v * Math.cos(th) * dt; y += v * Math.sin(th) * dt; t += dt;
+                }
+                const n = out.length;
+                out.forEach((f, i) => { f.o *= clamp(Math.min(i / 8, (n - 1 - i) / 10), 0, 1); });
+                return { dur: t * 1000, frames: out };
+            },
+
+            // わたげ：風に のって よこへ。ふわっと 浮いたり しずんだり
+            'f-fluff': () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const wind = mkNoise(0.5), lift = mkNoise(0.33), sway = mkNoise(0.9);
+                const v0 = rand(48, 80), sink = rand(-4, 9), dt = 1 / 8;
+                let x = -30, y = rand(0.08, 0.8) * h, t = 0;
+                const out = [];
+                while (x < w + 40 && t < 45) {
+                    out.push({ x, y, r: 14 * sway(t), o: 0.85 * clamp(t / 1.2, 0, 1) });
+                    x += v0 * (1 + 0.45 * wind(t)) * dt;
+                    y += (sink + 22 * lift(t)) * dt;
+                    t += dt;
+                }
+                out.push({ x, y, r: 0, o: 0 });
+                return { dur: t * 1000, frames: out };
+            },
+
+            // とり：とおくを はやく まっすぐ。はばたきに あわせて すこし 上下
+            'f-bird': () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const dir = Math.random() < 0.5 ? 1 : -1;
+                const v = rand(150, 210) * clamp(w / 1100, 0.55, 1), slope = rand(-0.06, 0.03);
+                const y0 = rand(0.04, 0.3) * h, bob = mkNoise(2.2);
+                const dur = (w + 120) / v, N = Math.ceil(dur * 10);
+                const out = [];
+                for (let i = 0; i <= N; i++) {
+                    const u = i / N, d = (w + 120) * u;
+                    out.push({
+                        x: dir > 0 ? -60 + d : w + 60 - d,
+                        y: y0 + d * slope + 5 * bob(u * dur),
+                        r: dir * slope * 57.3, o: 0.8 * fadeIO(u, 1, 0.06, 0.06)
+                    });
+                }
+                return { dur: dur * 1000, frames: out };
+            },
+
+            // とんぼ：すっと 進んで、ぴたっと 止まる
+            'f-dragon': () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const dir = Math.random() < 0.5 ? 1 : -1, dt = 1 / 15;
+                const jit = mkNoise(9);
+                let x = dir > 0 ? -50 : w + 50, y = rand(0.2, 0.7) * h, t = 0;
+                const out = [];
+                const put = (px, py, r) => out.push({ x: px, y: py, r, sx: dir, sy: 1, o: 0.9 });
+                while (x > -60 && x < w + 60 && t < 30) {
+                    const dx = dir * rand(110, 300), dy = clamp(rand(-90, 90), 40 - y, h - 60 - y);
+                    const dd = rand(0.3, 0.55), tilt = Math.atan2(dy, Math.abs(dx)) * 57.3 * 0.6 * dir;
+                    for (let s = 0; s < dd; s += dt) {            // すっと
+                        const u = s / dd, e = u * u * (3 - 2 * u);
+                        put(x + dx * e, y + dy * e, tilt * (1 - u)); t += dt;
+                    }
+                    x += dx; y += dy;
+                    const hv = rand(0.5, 1.5);
+                    for (let s = 0; s < hv; s += dt) {            // ぴたっ
+                        put(x + 1.6 * jit(t), y + 1.6 * jit(t + 40), 0); t += dt;
+                    }
+                }
+                const n = out.length;
+                out.forEach((f, i) => { f.o *= clamp(Math.min(i / 4, (n - 1 - i) / 4), 0, 1); });
+                return { dur: t * 1000, frames: out };
+            },
+
             // 流れ星：まっすぐ、おなじ 速さで、一瞬
             'f-star': () => {
                 const w = window.innerWidth, h = window.innerHeight;
@@ -996,7 +1122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             el.style.color = f.colors
                 ? pick(f.colors)
                 : (getComputedStyle(document.body).getPropertyValue('--ink-2').trim() || '#6b5f52');
-            el.style.setProperty('--sc', rand(0.72, 1.14).toFixed(2));
+            el.style.setProperty('--sc', (f.cls === 'f-bird' ? rand(0.5, 0.85) : rand(0.72, 1.14)).toFixed(2));
 
             const night = document.body.classList.contains('dark-mode');
             const p = PATHS[f.cls](night);
