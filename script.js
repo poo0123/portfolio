@@ -842,6 +842,153 @@ document.addEventListener('DOMContentLoaded', () => {
             plan(rand(9000, 18000) * (wet() ? 1.6 : 1));
         }
 
+        /* --- ほんものっぽい 軌道 ---
+           1つずつ その場で 計算して、こまかい コマに して 流す。
+           おなじ 飛びかたは 二度と 出ない。 */
+
+        // なめらかな ゆらぎ（風）。-1〜1 くらい
+        const mkNoise = (base) => {
+            const p = [0, 1, 2].map((i) => [base * (0.55 + i * 0.75 + Math.random() * 0.4), Math.random() * 6.283, 1 / (i + 1)]);
+            return (t) => p.reduce((s, q) => s + q[2] * Math.sin(q[0] * t + q[1]), 0) / 1.83;
+        };
+        const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+        const fadeIO = (t, dur, a, b) => clamp(Math.min(t / a, (dur - t) / b), 0, 1);
+
+        const PATHS = {
+            // 紙ひこうき：揚力と 抗力の つりあい。上がると おそく、下がると はやい（フゴイド）
+            'f-plane': (night) => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const LD = rand(7.5, 11);                       // どれだけ よく 滑るか
+                const cycles = clamp(w / 520, 1.3, 3.2);        // 画面を よこぎる あいだの うねり
+                const X = cycles * 8.9;
+                const gust = mkNoise(0.8);
+                let v = rand(1.12, 1.5), g = rand(-0.06, 0.24), x = 0, y = 0, t = 0, k = 0;
+                const pts = [];
+                while (x < X && t < 90) {
+                    if (k++ % 8 === 0) pts.push([x, y, g]);
+                    const lift = v * v * (1 + 0.07 * gust(t));
+                    v = Math.max(0.3, v + (-Math.sin(g) - v * v / LD) * 0.02);
+                    g += ((lift - Math.cos(g)) / v) * 0.02;
+                    x += v * Math.cos(g) * 0.02; y += v * Math.sin(g) * 0.02; t += 0.02;
+                }
+                pts.push([x, y, g]);
+                const s = (w + 190) / X;
+                const y0 = h * rand(0.1, 0.52);
+                const dur = clamp(w / 105, 6.5, 14) * rand(0.9, 1.2) * (night ? 1.12 : 1);
+                const n = pts.length - 1;
+                return {
+                    dur: dur * 1000,
+                    frames: pts.map((p, i) => ({
+                        x: -95 + p[0] * s, y: y0 - p[1] * s,
+                        r: -p[2] * 57.3 + 11,
+                        o: fadeIO(i, n, n * 0.05, n * 0.07)
+                    }))
+                };
+            },
+
+            // 風船：浮力で ほぼ 一定に 上がり、風に おくれて 流される
+            'f-balloon': () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const dur = rand(17, 24), N = 150, dt = dur / N;
+                const wind = mkNoise(0.45), sway = mkNoise(1.3);
+                const drift = rand(-10, 10), vt = (h + 200) / (dur - 1.2);
+                let x = rand(0.06, 0.86) * w, vx = 0;
+                const out = [];
+                for (let i = 0; i <= N; i++) {
+                    const t = i * dt;
+                    const wv = drift + 30 * wind(t);
+                    vx += (wv - vx) * Math.min(1, dt / 0.9);
+                    x += vx * dt;
+                    const y = h + 20 - vt * (t - 1.2 * (1 - Math.exp(-t / 1.2)));
+                    out.push({ x, y, r: clamp(vx * 0.24, -10, 10) + 2.4 * sway(t), o: fadeIO(t, dur, 1.2, 1.6) });
+                }
+                return { dur: dur * 1000, frames: out };
+            },
+
+            // 木の葉：ひらひら 左右に すべるか、くるくる 回りながら 落ちる
+            'f-leaf': () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const dur = rand(12, 18), N = 170, dt = dur / N;
+                const wind = mkNoise(0.5);
+                const tumble = Math.random() < 0.35;
+                const x0 = rand(0.04, 0.9) * w, drift = rand(-14, 14), ph = rand(0, 6.283);
+                const om = rand(1.7, 2.5), A = rand(30, 64), r0 = rand(0, 360);
+                const spin = rand(150, 230) * (Math.random() < 0.5 ? -1 : 1);
+                const v = (h + 130) / dur;
+                const out = [];
+                for (let i = 0; i <= N; i++) {
+                    const t = i * dt, a = om * t + ph;
+                    let x = x0 + drift * t + 36 * wind(t), y = -50 + v * t, r;
+                    if (tumble) {
+                        const sa = spin * t * 0.01745 * 2;
+                        x += Math.sign(spin) * 9 * t + 6 * Math.sin(sa);
+                        y += 5 * Math.cos(sa);
+                        r = r0 + spin * t;
+                    } else {
+                        // はしで ふわっと 止まり、まんなかで すっと 落ちる
+                        const env = 0.7 + 0.3 * Math.sin(0.4 * t + ph);
+                        x += A * env * Math.sin(a);
+                        y += A * 0.24 * env * Math.sin(2 * a);
+                        r = r0 * 0.1 + 46 * env * Math.cos(a);
+                    }
+                    out.push({ x, y, r, o: fadeIO(t, dur, 1, 1.2) });
+                }
+                return { dur: dur * 1000, frames: out };
+            },
+
+            // しゃぼん玉：風に そのまま 流され、ぷるぷる ゆれて、どこかで はじける
+            'f-bubble': () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const dur = rand(11, 18), N = 150, dt = dur / N;
+                const wind = mkNoise(0.6), bob = mkNoise(1.6);
+                const reach = rand(0.45, 1.05) * (h + 110);    // はじける 高さ
+                const drift = rand(-9, 9), wf = rand(4.5, 6.5), ph = rand(0, 6.283);
+                let x = rand(0.05, 0.9) * w;
+                const out = [];
+                for (let i = 0; i <= N; i++) {
+                    const t = i * dt, u = t / dur;
+                    x += (drift + 34 * wind(t)) * dt;
+                    // ふきだした いきおいが だんだん ぬけて、ゆっくりに なる
+                    const y = h + 30 - reach * (1 - Math.pow(Math.max(0, 1 - u), 1.6)) + 7 * bob(t);
+                    const wob = 0.055 * Math.exp(-t / 5) * Math.sin(wf * t + ph) + 0.015 * Math.sin(wf * 0.6 * t);
+                    out.push({ x, y, r: 0, sx: 1 + wob, sy: 1 - wob, o: 0.9 * clamp(t / 1.2, 0, 1) });
+                }
+                const e = out[out.length - 1], q = out[out.length - 2];
+                q.sx = q.sy = 1.12;
+                e.sx = e.sy = 1.5; e.o = 0;                     // ぱちん
+                return { dur: dur * 1000, frames: out };
+            },
+
+            // 蛾：まっすぐ 飛べない。向きを こまかく 変えながら 上へ
+            'f-moth': () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const turn = mkNoise(2.6), slow = mkNoise(0.5), pace = mkNoise(1.9);
+                const v0 = rand(70, 105), dt = 1 / 12;
+                let x = rand(0.08, 0.88) * w, y = h + 30, t = 0;
+                const out = [];
+                while (y > -60 && t < 26) {
+                    const th = -1.5708 + 1.15 * turn(t) + 0.55 * slow(t);
+                    const v = v0 * (1 + 0.55 * pace(t));
+                    out.push({ x, y, r: (th + 1.5708) * 57.3 * 0.7, o: 0.9 * clamp(t / 1, 0, 1) });
+                    x += v * Math.cos(th) * dt; y += v * Math.sin(th) * dt; t += dt;
+                }
+                out.push({ x, y, r: 0, o: 0 });
+                return { dur: t * 1000, frames: out };
+            },
+
+            // 流れ星：まっすぐ、おなじ 速さで、一瞬
+            'f-star': () => {
+                const w = window.innerWidth, h = window.innerHeight;
+                const a = rand(16, 40) * 0.01745;
+                const dist = rand(0.32, 0.55) * Math.hypot(w, h);
+                const x0 = rand(0.5, 0.98) * w, y0 = rand(0.0, 0.24) * h;
+                const r = 195.2 - a * 57.3;                     // あたまを 進む向きに
+                const dur = rand(0.65, 1.15);
+                const at = (u, o, sc) => ({ x: x0 - 60 - Math.cos(a) * dist * u, y: y0 + Math.sin(a) * dist * u, r, o, sx: sc, sy: 1, off: u });
+                return { dur: dur * 1000, frames: [at(0, 0, 0.3), at(0.14, 1, 0.8), at(0.55, 1, 1), at(1, 0, 0.75)] };
+            }
+        };
+
         function spawn(f) {
             const el = document.createElement('div');
             el.className = 'floater ' + f.cls;
@@ -851,20 +998,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 : (getComputedStyle(document.body).getPropertyValue('--ink-2').trim() || '#6b5f52');
             el.style.setProperty('--sc', rand(0.72, 1.14).toFixed(2));
 
-            const dur = Math.round(rand(f.min, f.max));
-            el.style.animationDuration = dur + 'ms';
-            if (f.cls === 'f-plane') {
-                el.style.top = rand(10, 64).toFixed(1) + 'vh';
-            } else if (f.cls === 'f-star') {
-                // 流れ星は 右うえから
-                el.style.left = rand(52, 96).toFixed(1) + 'vw';
-                el.style.top = rand(2, 26).toFixed(1) + 'vh';
-            } else {
-                el.style.left = rand(4, 84).toFixed(1) + 'vw';
-            }
-
+            const night = document.body.classList.contains('dark-mode');
+            const p = PATHS[f.cls](night);
+            const tf = (k) => 'translate3d(' + k.x.toFixed(1) + 'px,' + k.y.toFixed(1) + 'px,0) rotate(' + k.r.toFixed(1) + 'deg)' +
+                (k.sx ? ' scale(' + k.sx.toFixed(3) + ',' + k.sy.toFixed(3) + ')' : '');
+            const frames = p.frames.map((k) => {
+                const o = { transform: tf(k), opacity: k.o.toFixed(2) };
+                if (k.off !== undefined) o.offset = k.off;
+                return o;
+            });
+            // 位置は ぜんぶ ここで 決める（CSS の 動きは 使わない）
+            el.style.cssText += ';left:0;top:0;bottom:auto;animation:none;opacity:0;';
             sky.appendChild(el);
-            setTimeout(() => el.remove(), dur + 900);
+
+            if (!el.animate) { el.remove(); return; }
+            const an = el.animate(frames, { duration: p.dur, easing: 'linear', fill: 'forwards' });
+            an.onfinish = () => el.remove();
+            setTimeout(() => el.remove(), p.dur + 1500);
         }
 
         plan(rand(3000, 9000));
@@ -891,9 +1041,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 el.style.setProperty('--d',  rnd(16, 30).toFixed(1) + 's');
                 el.style.setProperty('--b',  rnd(2.6, 5.4).toFixed(1) + 's');
                 // 出そろって しまわないよう ばらばらに ずらす
-                el.style.setProperty('--dd', (-rnd(0, 20)).toFixed(1) + 's');
                 el.style.setProperty('--bd', (-rnd(0, 6)).toFixed(1) + 's');
                 ffBox.appendChild(el);
+                // ふらふら さまよって、もとの 場所へ もどってくる 道すじ
+                if (el.animate) {
+                    const d = rnd(34, 60), N = 48, fr = [];
+                    const cs = [1, 2, 3, 5].map((k) => [k, rnd(0, 6.283), rnd(0, 6.283), rnd(0.5, 1) / k]);
+                    const ax = rnd(40, 110), ay = rnd(30, 80);
+                    for (let q = 0; q <= N; q++) {
+                        const u = q / N * 6.283;
+                        let x = 0, y = 0;
+                        cs.forEach((c) => { x += c[3] * Math.sin(c[0] * u + c[1]); y += c[3] * Math.sin(c[0] * u + c[2]); });
+                        fr.push({ transform: 'translate3d(' + (x * ax).toFixed(1) + 'px,' + (y * ay).toFixed(1) + 'px,0)' });
+                    }
+                    el.animate(fr, { duration: d * 1000, iterations: Infinity, easing: 'linear', delay: -rnd(0, d) * 1000 });
+                }
             }
         };
 
@@ -1008,6 +1170,20 @@ document.addEventListener('DOMContentLoaded', () => {
                     f.style.animationDuration = rnd(9, 18).toFixed(1) + 's';
                     f.style.animationDelay = (-rnd(0, 18)).toFixed(1) + 's';
                     soraBox.appendChild(f);
+                    if (f.animate) {
+                        // 大きい つぶは はやく まっすぐ、小さい つぶは おそく よく ゆれる
+                        const d = (22 - s * 2.6) * rnd(0.85, 1.2), N = 40, fr = [];
+                        const H = window.innerHeight * 1.16, A = rnd(10, 30) * (6 - s) / 3;
+                        const k1 = Math.round(rnd(2, 4)), k2 = Math.round(rnd(5, 8));
+                        const p1 = rnd(0, 6.283), p2 = rnd(0, 6.283), wd = rnd(-50, -5);
+                        for (let q = 0; q <= N; q++) {
+                            const u = q / N, a = u * 6.283;
+                            const x = wd * u + A * (Math.sin(k1 * a + p1) - Math.sin(p1)) + A * 0.35 * (Math.sin(k2 * a + p2) - Math.sin(p2));
+                            fr.push({ transform: 'translate3d(' + x.toFixed(1) + 'px,' + (H * u).toFixed(1) + 'px,0)' });
+                        }
+                        f.style.animation = 'none';
+                        f.animate(fr, { duration: d * 1000, iterations: Infinity, easing: 'linear', delay: -rnd(0, d) * 1000 });
+                    }
                 }
             }
         };

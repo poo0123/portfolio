@@ -1707,20 +1707,19 @@ body.dark-mode .minibar { box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
         0 0 18px 7px rgba(255,214,96,0.26);
     opacity: 0;
     will-change: transform, opacity;
-    animation:
-        ff-drift var(--d, 22s) ease-in-out infinite alternate,
-        ff-blink var(--b, 3.4s) ease-in-out infinite;
-    animation-delay: var(--dd, 0s), var(--bd, 0s);
+    animation: ff-blink var(--b, 3.4s) ease-in-out infinite;
+    animation-delay: var(--bd, 0s);
 }
 @keyframes ff-drift {
     from { transform: translate3d(0, 0, 0); }
     to   { transform: translate3d(var(--dx, 60px), var(--dy, -80px), 0); }
 }
+/* ぱっと ともって、ゆっくり 消えて、しばらく くらい */
 @keyframes ff-blink {
-    0%, 100% { opacity: 0; }
-    14%      { opacity: 0.22; }
-    50%      { opacity: 1; }
-    74%      { opacity: 0.3; }
+    0%, 42%, 100% { opacity: 0.04; }
+    52%      { opacity: 1; }
+    62%      { opacity: 0.85; }
+    84%      { opacity: 0.12; }
 }
 
 /* 蛾：はねを ふるわせながら 上へ */
@@ -1735,7 +1734,7 @@ body.dark-mode .minibar { box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
     92%  {                                                             opacity: 0.9; }
     100% { transform: translate3d(24px, -110vh, 0) rotate(5deg);       opacity: 0; }
 }
-.f-moth svg { animation: moth-flap 0.42s ease-in-out infinite alternate; }
+.f-moth svg { animation: moth-flap 0.17s ease-in-out infinite alternate; }
 @keyframes moth-flap {
     from { transform: scale(var(--sc, 1)) scaleX(1); }
     to   { transform: scale(var(--sc, 1)) scaleX(0.58); }
