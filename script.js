@@ -1226,14 +1226,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // close イベントは 環境によって 飛んでこない ので、
     // とじる道すじ ひとつひとつで 直に もどす（二重に 呼んでも 害は ない）
+    // とじる ときは 紙が ふわっと 下に おちて きえる
     const apiShut = () => {
-        if (apiDlg && apiDlg.open) apiDlg.close();
-        apiUnlock();
+        if (!apiDlg || !apiDlg.open) { apiUnlock(); return; }
+        if (apiDlg.classList.contains('closing')) return;
+        const done = () => { apiDlg.classList.remove('closing'); if (apiDlg.open) apiDlg.close(); apiUnlock(); };
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { done(); return; }
+        apiDlg.classList.add('closing');
+        const t = setTimeout(done, 400);
+        apiDlg.addEventListener('animationend', () => { clearTimeout(t); done(); }, { once: true });
     };
 
     if (apiDlg && apiOpen) {
         apiDlg.addEventListener('close', apiUnlock);
-        apiDlg.addEventListener('cancel', apiUnlock);   // Esc
+        apiDlg.addEventListener('cancel', (e) => { e.preventDefault(); apiShut(); });   // Esc
 
         apiOpen.addEventListener('click', () => {
             // 開くたびに いまの 状態を 反映しなおす

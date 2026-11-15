@@ -2161,3 +2161,9 @@ body.dark-mode .dots-toggle:hover { box-shadow: 0 7px 16px rgba(0, 0, 0, 0.42); 
 .title-link i { font-size: 0.7em; color: var(--red); margin-left: 4px; transition: translate 0.2s; }
 .title-link:hover { color: var(--red); }
 .title-link:hover i { translate: 4px 0; }
+
+/* とじる アニメーション */
+.api-dlg.closing { animation: api-out 0.3s cubic-bezier(0.55,0,0.75,0.4) forwards; }
+.api-dlg.closing::backdrop { animation: api-fade 0.3s forwards; }
+@keyframes api-out { to { opacity: 0; transform: translateY(26px) rotate(1.6deg) scale(0.96); } }
+@keyframes api-fade { to { opacity: 0; } }
