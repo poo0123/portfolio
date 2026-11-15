@@ -320,3 +320,17 @@ body.dark-mode .pf { background: #dfe6fa; }
   .pf-logo, .acct .tape, .sub-go i, .acct.rv.in .sub-svc i { animation: none; }
   .acct.rv .sub-lead, .acct.rv .sub-list li, .acct.rv .sub-nums > div { clip-path: none; opacity: 1; translate: none; }
 }
+
+/* GeoGuessr：ちず の マス と ピン が ぽとっ */
+.s-geo { --ac: #4d2fb0; }
+.s-geo .pf-ava .face { background: #d9d6f0; }
+.s-geo .pf-banner:not(.has-img) {
+  background-color: #4d2fb0 !important;
+  background-image: linear-gradient(rgba(255,255,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.12) 1px, transparent 1px) !important;
+  background-size: 28px 28px !important; background-repeat: repeat !important; animation: geo-pan 14s linear infinite !important; position: relative; overflow: hidden;
+}
+@keyframes geo-pan { to { background-position: 280px 140px; } }
+.s-geo .pf-banner::after { content: "📍"; position: absolute; top: 18px; left: 22%; font-size: 22px; animation: geo-pin 6s ease-in infinite; }
+.s-geo .pf-banner::before { content: "📍"; position: absolute; top: 40px; left: 66%; font-size: 18px; animation: geo-pin 6s ease-in -3s infinite; }
+@keyframes geo-pin { 0% { translate: 0 -60px; opacity: 0; } 12% { translate: 0 0; opacity: 1; } 16% { translate: 0 -6px; } 20%, 80% { translate: 0 0; opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .s-geo .pf-banner, .s-geo .pf-banner::before, .s-geo .pf-banner::after { animation: none !important; } }
