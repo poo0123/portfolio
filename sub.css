@@ -214,3 +214,10 @@ body.dark-mode .pf { background: #dfe6fa; }
     .lk-main .acct .sheet.sub { grid-template-columns: 1fr; }
     .lk-main .acct .sheet.sub > .sub-center { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 14px; }
 }
+
+/* すきまを つめる（れつごとに 上から つむ） */
+@media (min-width: 1100px) {
+    .lk-main { display: block; columns: 2; column-gap: 40px; }
+    .lk-main .acct { display: inline-block; width: 100%; break-inside: avoid; margin: 30px 0 56px; }
+    .lk-main .acct:nth-of-type(even) { margin-top: 30px; }
+}
