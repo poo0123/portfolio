@@ -64,6 +64,17 @@
         const rv = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); rv.unobserve(e.target); } }), { threshold: 0.12 });
         document.querySelectorAll('.acct').forEach((a) => { a.classList.add('rv'); rv.observe(a); });
     }
+    // 動く 背景は 見えて から 読む
+    document.querySelectorAll('video.lk-bgv[data-src]').forEach((v) => {
+        if (calm || !window.IntersectionObserver) return;
+        const io3 = new IntersectionObserver((es) => {
+            if (!es[0].isIntersecting) return;
+            io3.disconnect();
+            v.src = v.dataset.src;
+            const p = v.play(); if (p && p.catch) p.catch(() => {});
+        }, { rootMargin: '200px' });
+        io3.observe(v);
+    });
     const scope = (name) => {
         const root = document.querySelector('.acct[data-s="' + name + '"]');
         if (!root) return null;
