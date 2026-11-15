@@ -88,6 +88,11 @@
     const DID = '339360580886593536';
     const STATE = { online: 'オンライン', idle: 'りせき中', dnd: 'とりこみ中', offline: 'オフライン' };
     const sD = scope('discord'), sS = scope('spotify');
+    if (sD) jget('/api/card/discord').then((d) => {
+        if (d.banner) sD.banner(calm ? d.banner.replace('.gif', '.png') : d.banner);
+        else if (d.color) { const b = sD.k('banner'); if (b) b.style.backgroundColor = d.color; }
+        sD.bio(d.bio);
+    }).catch(() => {});
     if (sD || sS) jget('https://api.lanyard.rest/v1/users/' + DID).then((j) => {
         const d = j.data || {}, u = d.discord_user || {};
         if (sD) {
@@ -157,7 +162,7 @@
 
     const sY = scope('youtube');
     if (sY) jget('/api/card/youtube').then((d) => {
-        sY.img('ava', d.avatar); sY.text('name', d.name); sY.bio(d.bio);
+        sY.img('ava', d.avatar); sY.banner(d.banner); sY.text('name', d.name); sY.bio(d.bio);
         const list = sY.k('list');
         if (list && d.videos && d.videos.length) {
             list.textContent = '';

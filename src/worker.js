@@ -121,6 +121,13 @@ const CARDS = {
         return { name: txt(g('steamID'), 60), state: ['online', 'offline', 'in-game'].includes(g('onlineState')) ? g('onlineState') : 'offline',
             avatar: img(g('avatarFull'), ['steamstatic.com']) };
     },
+    discord: async () => {
+        const d = await (await fetch('https://dcdn.dstn.to/profile/339360580886593536', { headers: { 'User-Agent': UA_FETCH } })).json();
+        const u = d.user || {}, p = d.user_profile || {}, b = p.banner || u.banner;
+        const ok = typeof b === 'string' && /^(a_)?[0-9a-f]{32}$/.test(b);
+        return { banner: ok ? 'https://cdn.discordapp.com/banners/339360580886593536/' + b + (b.indexOf('a_') === 0 ? '.gif' : '.png') + '?size=600' : null,
+            color: /^#[0-9a-f]{6}$/i.test(u.banner_color || '') ? u.banner_color : null, bio: txt(p.bio || u.bio, 300) };
+    },
     youtube: async () => {
         const h = await (await fetch('https://www.youtube.com/@Poo_main', { headers: { 'User-Agent': UA_FETCH, 'Accept-Language': 'ja' } })).text();
         const og = (p) => { const m = h.match(new RegExp('<meta property="og:' + p + '" content="([^"]*)"')); return m ? unx(m[1]) : ''; };
@@ -131,7 +138,9 @@ const CARDS = {
             videos = [...f.matchAll(/<entry>[\s\S]*?<yt:videoId>([\w-]{6,20})<\/yt:videoId>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<published>([^<]+)<\/published>/g)]
                 .slice(0, 8).map((m) => ({ id: m[1], title: txt(unx(m[2]), 120), date: txt(m[3], 40) }));
         }
-        return { name: txt(og('title'), 60), bio: txt(og('description'), 300), avatar: img(og('image'), ['googleusercontent.com', 'ggpht.com']), videos };
+        const bn = (h.match(/https:\/\/yt3\.googleusercontent\.com\/[A-Za-z0-9_-]+=w\d+[^"\ ]*/) || [])[0];
+        return { name: txt(og('title'), 60), bio: txt(og('description'), 300), avatar: img(og('image'), ['googleusercontent.com', 'ggpht.com']),
+            banner: bn ? img(bn.replace(/=w\d+/, '=w1707'), ['googleusercontent.com']) : null, videos };
     }
 };
 async function profile(name, request, ctx) {
