@@ -15,3 +15,11 @@ CREATE TABLE IF NOT EXISTS fails (
     slot TEXT PRIMARY KEY,
     n    INTEGER NOT NULL
 );
+-- 種類ごとの 日別の 数（bot / nf(404) / browser / os / region）
+CREATE TABLE IF NOT EXISTS dims (
+    day  TEXT    NOT NULL,
+    kind TEXT    NOT NULL,
+    k    TEXT    NOT NULL,
+    n    INTEGER NOT NULL,
+    PRIMARY KEY (day, kind, k)
+);

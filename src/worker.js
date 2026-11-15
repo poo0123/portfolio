@@ -3,7 +3,7 @@
 // 中身は assets（リポジトリの ファイル）が 持っている。
 //
 // ついでに「どの ページが いつ 何回 見られたか」だけを D1 に 数える。
-// IP・ブラウザの 名前・ひとりひとりの 足どりは 残さない（数の 足し算だけ）。
+// IP・ブラウザの くわしい 名前・ひとりひとりの 足どりは 残さない（数の 足し算だけ）。
 // 見るための ページ（/kiroku）は、あいことば（ADMIN_KEY。ここには 書かない）を
 // 知っている 人だけ。あいことばが 未設定なら ページごと 無い ことに する。
 
@@ -43,26 +43,57 @@ async function authed(req, env) {
 }
 
 /* ---------- かぞえる ---------- */
-async function count(request, env, url) {
+// どれも「種類」に まるめてから 数える。もとの 文字列は 残さない
+const BOTS = [
+    ['Googlebot', /googlebot|google-inspectiontool|googleother/i], ['Bingbot', /bingbot|bingpreview/i],
+    ['GPTBot / ChatGPT', /gptbot|oai-searchbot|chatgpt/i], ['ClaudeBot', /claudebot|claude-web|anthropic/i],
+    ['PerplexityBot', /perplexity/i], ['Applebot', /applebot/i], ['Yandex', /yandex/i], ['Baidu', /baidu/i],
+    ['Bytespider', /bytespider/i], ['Ahrefs', /ahrefs/i], ['Semrush', /semrush/i], ['DuckDuckBot', /duckduck/i],
+    ['Discord（リンクプレビュー）', /discordbot/i], ['X（リンクプレビュー）', /twitterbot/i], ['Facebook', /facebook/i],
+    ['Slack', /slack/i], ['LINE', /line-poker|linespider/i], ['Cloudflare', /cloudflare/i],
+    ['スクリプト（curl など）', /curl|wget|python|go-http|node|axios|okhttp|java|libwww|ruby/i]
+];
+const botName = (ua) => { if (!ua) return 'UA なし'; const b = BOTS.find((x) => x[1].test(ua)); return b ? b[0] : 'その他のボット'; };
+const browserOf = (ua) => /Line\//i.test(ua) ? 'LINE アプリ内' : /Instagram/i.test(ua) ? 'Instagram アプリ内' : /Discord/i.test(ua) ? 'Discord アプリ内'
+    : /Edg/i.test(ua) ? 'Edge' : /OPR|Opera/i.test(ua) ? 'Opera' : /Firefox|FxiOS/i.test(ua) ? 'Firefox'
+    : /Chrome|CriOS/i.test(ua) ? 'Chrome' : /Safari/i.test(ua) ? 'Safari' : 'その他';
+const osOf = (ua) => /Windows/i.test(ua) ? 'Windows' : /Android/i.test(ua) ? 'Android' : /iPhone|iPad|iPod/i.test(ua) ? 'iOS'
+    : /Mac OS X|Macintosh/i.test(ua) ? 'macOS' : /CrOS/i.test(ua) ? 'ChromeOS' : /Linux/i.test(ua) ? 'Linux' : 'その他';
+
+async function count(request, env, url, status) {
     try {
         const ua = request.headers.get('User-Agent') || '';
-        if (!ua || BOT.test(ua)) return;
+        const bot = !ua || BOT.test(ua);
+        const { day, hour } = jst();
+        const st = [];
+        const dim = (kind, k) => st.push(env.LOG.prepare(
+            'INSERT INTO dims (day, kind, k, n) VALUES (?, ?, ?, 1) ON CONFLICT (day, kind, k) DO UPDATE SET n = n + 1'
+        ).bind(day, kind, String(k).slice(0, 80)));
+
+        if (bot) dim('bot', botName(ua));
+        if (status === 404 && !url.pathname.startsWith('/cdn-cgi/')) dim('nf', url.pathname);
+        if (bot || status === 404) { await env.LOG.batch(st); return; }
+
         if (/prefetch|prerender/i.test(request.headers.get('Sec-Purpose') || request.headers.get('Purpose') || '')) return;
         if (await authed(request, env)) return;             // じぶんは 数えない
 
-        let path = url.pathname.replace(/\/index(\.html)?$/, '/').replace(/\.html$/, '').slice(0, 80) || '/';
+        const path = url.pathname.replace(/\/index(\.html)?$/, '/').replace(/\.html$/, '').slice(0, 80) || '/';
         let ref = '';
         try {
             const r = new URL(request.headers.get('Referer') || '');
             if (r.hostname !== url.hostname) ref = r.hostname.slice(0, 60);
         } catch (e) {}
-        const country = (request.cf && request.cf.country) || '';
+        const cf = request.cf || {};
+        const country = cf.country || '';
         const device = /Mobi|Android|iPhone|iPad/i.test(ua) ? 'sp' : 'pc';
-        const { day, hour } = jst();
-        await env.LOG.prepare(
+        st.push(env.LOG.prepare(
             'INSERT INTO hits (day, hour, path, ref, country, device, n) VALUES (?, ?, ?, ?, ?, ?, 1) ' +
             'ON CONFLICT (day, hour, path, ref, country, device) DO UPDATE SET n = n + 1'
-        ).bind(day, hour, path, ref, country, device).run();
+        ).bind(day, hour, path, ref, country, device));
+        dim('browser', browserOf(ua));
+        dim('os', osOf(ua));
+        if (country === 'JP' && cf.region) dim('region', cf.region);
+        await env.LOG.batch(st);
     } catch (e) { /* 数えそこねても ページは 返す */ }
 }
 
@@ -76,116 +107,205 @@ const HEAD = {
     'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
 };
 const CSS =
-    ':root{--bg:#f4efe3;--panel:#fbf8f0;--sub:#eae2d2;--ink:#2f2823;--ink2:#6b5f52;--rule:#d9cfbc;--red:#dc6969;--blue:#3f5d9e}' +
-    '@media (prefers-color-scheme: dark){:root{--bg:#070b1c;--panel:#131c3c;--sub:#0e1530;--ink:#e3ebff;--ink2:#98a6d4;--rule:#2a3566;--red:#ff96a8;--blue:#8fb5ff}}' +
+    ':root{--bg:#f4efe3;--panel:#fbf8f0;--sub:#eae2d2;--ink:#2f2823;--ink2:#6b5f52;--rule:#d9cfbc;--red:#dc6969;--blue:#3f5d9e;--hm:220,105,105}' +
+    '@media (prefers-color-scheme: dark){:root{--bg:#070b1c;--panel:#131c3c;--sub:#0e1530;--ink:#e3ebff;--ink2:#98a6d4;--rule:#2a3566;--red:#ff96a8;--blue:#8fb5ff;--hm:255,150,168}}' +
     '*{box-sizing:border-box;margin:0;padding:0}' +
     'body{background:var(--bg);color:var(--ink);font:14px/1.6 system-ui,-apple-system,"Segoe UI","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;-webkit-text-size-adjust:100%}' +
-    '.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--panel);border-bottom:1px solid var(--rule)}' +
-    '.top h1{font-size:15px;font-weight:700;letter-spacing:.02em}.top h1 span{font-weight:400;color:var(--ink2);margin-left:8px;font-size:12px}' +
-    '.top .sp{flex:1}.top time{font-size:12px;color:var(--ink2)}' +
+    'a{color:inherit}' +
+    '.app{display:grid;grid-template-columns:208px minmax(0,1fr);min-height:100vh}' +
+    '.side{background:var(--panel);border-right:1px solid var(--rule);padding:18px 12px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:2px}' +
+    '.brand{font-size:15px;font-weight:700;padding:0 10px 2px}.brand+small{padding:0 10px 14px;color:var(--ink2);font-size:11px;display:block}' +
+    '.side a{display:block;padding:8px 10px;border-radius:7px;text-decoration:none;font-size:13px;color:var(--ink2)}' +
+    '.side a:hover{background:var(--sub);color:var(--ink)}.side a.on{background:var(--red);color:#fff;font-weight:700}' +
+    '.side hr{border:0;border-top:1px solid var(--rule);margin:10px 4px}.side .sp{flex:1}' +
+    '.main{padding:20px 24px 40px;min-width:0}' +
+    '.head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}.head h1{font-size:18px;margin-right:auto}' +
+    '.head time{font-size:12px;color:var(--ink2)}' +
+    '.seg{display:inline-flex;border:1px solid var(--rule);border-radius:7px;overflow:hidden}.seg a{padding:5px 12px;font-size:12px;text-decoration:none;background:var(--panel);color:var(--ink2);border-left:1px solid var(--rule)}' +
+    '.seg a:first-child{border-left:0}.seg a.on{background:var(--ink);color:var(--bg);font-weight:700}' +
     '.btn{font:inherit;font-size:12px;padding:6px 14px;border:1px solid var(--rule);border-radius:6px;background:var(--sub);color:var(--ink);text-decoration:none;cursor:pointer}' +
-    '.btn:hover{border-color:var(--red);color:var(--red)}.btn.pri{background:var(--red);border-color:var(--red);color:#fff}.btn.pri:hover{color:#fff;opacity:.9}' +
-    '.wrap{max-width:1080px;margin:0 auto;padding:20px}' +
-    '.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}' +
-    '.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}' +
-    '.kpi .card>span{display:block;font-size:12px;color:var(--ink2)}.kpi .card b{display:block;font-size:28px;line-height:1.25;font-variant-numeric:tabular-nums}' +
+    '.btn.pri{background:var(--red);border-color:var(--red);color:#fff}' +
+    '.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:16px}' +
+    '.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;min-width:0}' +
+    '.kpi .card>span{display:block;font-size:12px;color:var(--ink2)}.kpi .card b{display:block;font-size:26px;line-height:1.25;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     '.kpi .card small{font-size:11px;color:var(--ink2)}.up{color:var(--red)}' +
     '.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.wide{grid-column:1/-1}' +
-    '.card h2{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline}.card h2 small{font-weight:400;color:var(--ink2);font-size:11px}' +
+    '.card h2{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}.card h2 small{font-weight:400;color:var(--ink2);font-size:11px;text-align:right}' +
     '.bars{display:flex;align-items:flex-end;gap:3px;height:150px}.bars i{flex:1;min-width:0;background:var(--red);opacity:.8;border-radius:2px 2px 0 0;min-height:1px}' +
     '.bars.h i{background:var(--blue)}.bars i:hover{opacity:1}' +
-    '.axis{display:flex;gap:3px;margin-top:6px;font-size:10px;color:var(--ink2)}.axis span{flex:1;min-width:0;text-align:center;white-space:nowrap;overflow:visible}' +
+    '.axis{display:flex;gap:3px;margin-top:6px;font-size:10px;color:var(--ink2)}.axis span{flex:1;min-width:0;text-align:center;white-space:nowrap}' +
     'table{width:100%;border-collapse:collapse;font-size:13px}td{padding:6px 0;border-top:1px solid var(--rule);vertical-align:middle}tr:first-child td{border-top:0}' +
-    'td.k{max-width:0;width:46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:10px}td.n{width:52px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700}' +
+    'td.k{max-width:0;width:46%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:10px}td.n{width:56px;text-align:right;font-variant-numeric:tabular-nums;font-weight:700}' +
     'td.p{width:44px;text-align:right;color:var(--ink2);font-size:11px;font-variant-numeric:tabular-nums}' +
     'td.b i{display:block;height:8px;border-radius:4px;background:var(--red);opacity:.75;min-width:2px}' +
+    '.hm{display:grid;grid-template-columns:22px repeat(24,1fr);gap:2px;font-size:10px;color:var(--ink2);align-items:center}.hm i{display:block;aspect-ratio:1;border-radius:2px;background:rgba(var(--hm),var(--a));min-height:8px}' +
+    '.hm span{text-align:center}' +
     '.empty,.note{font-size:12px;color:var(--ink2)}.note{margin-top:16px;line-height:1.8}' +
     '.login{max-width:340px;margin:14vh auto 0;padding:0 20px}.login .card{padding:22px}.login h1{font-size:16px;margin-bottom:14px}' +
     '.login input{font:inherit;width:100%;padding:9px 11px;border:1px solid var(--rule);border-radius:6px;background:var(--bg);color:var(--ink);margin-bottom:12px}' +
     '.login .err{color:var(--red);font-size:12px;margin-bottom:10px}' +
-    '@media (max-width:720px){.grid{grid-template-columns:1fr}.wrap{padding:14px}.top{padding:10px 14px}.top time{display:none}.bars{height:110px;gap:2px}.axis{gap:2px}}';
+    '@media (max-width:820px){.app{display:block}.side{position:sticky;top:0;z-index:5;height:auto;flex-direction:row;align-items:center;overflow-x:auto;padding:8px 10px;border-right:0;border-bottom:1px solid var(--rule);gap:4px}' +
+    '.side a{white-space:nowrap;padding:6px 10px}.brand,.brand+small,.side hr,.side .sp{display:none}.main{padding:14px}.grid{grid-template-columns:1fr}.bars{height:110px;gap:2px}.axis{gap:2px}}';
 
-const shell = (body) => '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">' +
+const page = (body) => '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow">' +
     '<title>アクセス記録</title><style>' + CSS + '</style></head><body>' + body + '</body></html>';
 
-const loginPage = (msg) => shell(
+const loginPage = (msg) => page(
     '<div class="login"><div class="card"><h1>アクセス記録</h1>' +
     (msg ? '<p class="err">' + esc(msg) + '</p>' : '') +
     '<form method="post" action="' + ADMIN + '" autocomplete="off">' +
     '<input type="password" name="k" aria-label="合言葉" placeholder="合言葉" required autofocus>' +
     '<button class="btn pri" type="submit">ログイン</button></form></div></div>');
 
+const VIEWS = [['overview', '概要'], ['trend', '推移'], ['time', '時間帯・曜日'], ['pages', 'ページ'], ['refs', '参照元'],
+    ['geo', '地域'], ['env', '環境'], ['bots', 'ボット'], ['nf', '404'], ['system', 'システム']];
+const PERIODS = [['7', '7日'], ['30', '30日'], ['90', '90日'], ['all', '全期間']];
+const WD = ['日', '月', '火', '水', '木', '金', '土'];
+
+// ---- 部品 ----
 const table = (list, total, label) => {
     if (!list.length) return '<p class="empty">まだデータがありません。</p>';
     const max = Math.max(...list.map((r) => r.n));
+    const sum = total || list.reduce((s, r) => s + r.n, 0);
     return '<table>' + list.map((r) => '<tr><td class="k" title="' + esc(r.k) + '">' + esc(label ? label(r.k) : (r.k || '（不明）')) + '</td>' +
         '<td class="b"><i style="width:' + Math.max(1, Math.round(r.n / max * 100)) + '%"></i></td>' +
-        '<td class="n">' + r.n + '</td><td class="p">' + (total ? Math.round(r.n / total * 100) : 0) + '%</td></tr>').join('') + '</table>';
+        '<td class="n">' + r.n + '</td><td class="p">' + (sum ? Math.round(r.n / sum * 100) : 0) + '%</td></tr>').join('') + '</table>';
 };
+const bars = (items, cls, every) => {
+    const max = Math.max(1, ...items.map((x) => x.n));
+    return '<div class="bars' + (cls ? ' ' + cls : '') + '">' + items.map((x) => '<i title="' + esc(x.t) + '：' + x.n + '" style="height:' + Math.round(x.n / max * 100) + '%"></i>').join('') + '</div>' +
+        '<div class="axis">' + items.map((x, i) => '<span>' + (every(i) ? esc(x.l) : '') + '</span>').join('') + '</div>';
+};
+const kpi = (label, val, sub) => '<div class="card"><span>' + label + '</span><b>' + val + '</b><small>' + (sub || '&nbsp;') + '</small></div>';
+const card = (title, sub, inner, cls) => '<section class="card' + (cls ? ' ' + cls : '') + '"><h2>' + title + (sub ? '<small>' + sub + '</small>' : '') + '</h2>' + inner + '</section>';
+const md = (k) => Number(k.slice(5, 7)) + '/' + Number(k.slice(8));
 
-async function dashboard(env) {
+async function dashboard(env, view, per) {
     const now = Date.now();
     const d = (back) => jst(now - back * 86400e3).day;
-    const today = d(0), yest = d(1), d7 = d(6), d30 = d(29);
+    const nDays = per === 'all' ? 0 : Number(per);
+    const since = nDays ? d(nDays - 1) : '0000-00-00';
+    const perLabel = PERIODS.find((p) => p[0] === per)[1];
     const q = (sql, ...b) => env.LOG.prepare(sql).bind(...b);
-    const res = await env.LOG.batch([
-        q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day = ?', today),
-        q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day = ?', yest),
-        q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ?', d7),
-        q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ?', d30),
-        q('SELECT COALESCE(SUM(n),0) n, MIN(day) since FROM hits'),
-        q('SELECT day k, SUM(n) n FROM hits WHERE day >= ? GROUP BY day', d30),
-        q('SELECT hour k, SUM(n) n FROM hits WHERE day >= ? GROUP BY hour', d30),
-        q('SELECT path k, SUM(n) n FROM hits WHERE day >= ? GROUP BY path ORDER BY n DESC LIMIT 15', d30),
-        q('SELECT ref k, SUM(n) n FROM hits WHERE day >= ? AND ref != \'\' GROUP BY ref ORDER BY n DESC LIMIT 15', d30),
-        q('SELECT country k, SUM(n) n FROM hits WHERE day >= ? GROUP BY country ORDER BY n DESC LIMIT 12', d30),
-        q('SELECT device k, SUM(n) n FROM hits WHERE day >= ? GROUP BY device ORDER BY n DESC', d30),
-        q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ? AND ref = \'\'', d30)
-    ]);
-    const one = (i) => res[i].results[0].n;
-    const t30 = one(3), since = res[4].results[0].since;
+    const run = async (list) => (await env.LOG.batch(list)).map((r) => r.results);
+    const dimQ = (kind, limit) => q('SELECT k, SUM(n) n FROM dims WHERE kind = ? AND day >= ? GROUP BY k ORDER BY n DESC LIMIT ' + limit, kind, since);
+    const dayBars = (rows, span, cls) => {
+        const by = {}; rows.forEach((r) => { by[r.k] = r.n; });
+        const items = [];
+        for (let i = span - 1; i >= 0; i--) { const k = d(i); items.push({ t: k, l: md(k), n: by[k] || 0 }); }
+        const step = span > 60 ? 15 : span > 14 ? 5 : 1;
+        return bars(items, cls, (i) => (span - 1 - i) % step === 0);
+    };
+    const span = nDays || 90;       // 日別グラフは 最長 90日
+    let body = '';
 
-    // 日別：データのない日も 0 として並べる
-    const byDay = {};
-    res[5].results.forEach((r) => { byDay[r.k] = r.n; });
-    const days = [];
-    for (let i = 29; i >= 0; i--) { const k = d(i); days.push({ k, n: byDay[k] || 0 }); }
-    const dmax = Math.max(1, ...days.map((x) => x.n));
-    const hours = Array(24).fill(0);
-    res[6].results.forEach((r) => { hours[r.k] = r.n; });
-    const hmax = Math.max(1, ...hours);
-    const peak = hours.indexOf(Math.max(...hours));
-    const diff = one(0) - one(1);
-    const j = new Date(now + 9 * 3600e3);
-    const stamp = j.toISOString().slice(0, 16).replace('T', ' ');
+    if (view === 'overview') {
+        const [t0, t1, t7, t30, tall, days, pages, refs, bots] = await run([
+            q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day = ?', d(0)),
+            q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day = ?', d(1)),
+            q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ?', d(6)),
+            q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ?', d(29)),
+            q('SELECT COALESCE(SUM(n),0) n, MIN(day) s FROM hits'),
+            q('SELECT day k, SUM(n) n FROM hits WHERE day >= ? GROUP BY day', d(span - 1)),
+            q('SELECT path k, SUM(n) n FROM hits WHERE day >= ? GROUP BY path ORDER BY n DESC LIMIT 5', since),
+            q('SELECT ref k, SUM(n) n FROM hits WHERE day >= ? AND ref != \'\' GROUP BY ref ORDER BY n DESC LIMIT 5', since),
+            q('SELECT COALESCE(SUM(n),0) n FROM dims WHERE kind = \'bot\' AND day = ?', d(0))
+        ]);
+        const diff = t0[0].n - t1[0].n;
+        body = '<div class="kpi">' +
+            kpi('今日', t0[0].n, '前日比 <span class="' + (diff > 0 ? 'up' : '') + '">' + (diff > 0 ? '+' : '') + diff + '</span>') +
+            kpi('昨日', t1[0].n) + kpi('直近7日', t7[0].n, '1日平均 ' + (t7[0].n / 7).toFixed(1)) +
+            kpi('直近30日', t30[0].n, '1日平均 ' + (t30[0].n / 30).toFixed(1)) +
+            kpi('累計', tall[0].n, tall[0].s ? esc(tall[0].s) + ' から' : '') +
+            kpi('今日のボット', bots[0].n, '人のアクセスとは別集計') + '</div><div class="grid">' +
+            card('日別アクセス', '直近' + span + '日', dayBars(days, span), 'wide') +
+            card('よく見られたページ', perLabel, table(pages)) + card('おもな参照元', perLabel, table(refs)) + '</div>';
+    } else if (view === 'trend') {
+        const [days, months, best, tot] = await run([
+            q('SELECT day k, SUM(n) n FROM hits WHERE day >= ? GROUP BY day', d(span - 1)),
+            q('SELECT substr(day,1,7) k, SUM(n) n FROM hits GROUP BY k ORDER BY k DESC LIMIT 24'),
+            q('SELECT day k, SUM(n) n FROM hits GROUP BY day ORDER BY n DESC LIMIT 10'),
+            q('SELECT COALESCE(SUM(n),0) n, COUNT(DISTINCT day) c FROM hits WHERE day >= ?', since)
+        ]);
+        body = '<div class="kpi">' + kpi('期間の合計', tot[0].n, perLabel) + kpi('アクセスのあった日数', tot[0].c) +
+            kpi('1日平均', tot[0].c ? (tot[0].n / (nDays || tot[0].c)).toFixed(1) : '0') +
+            kpi('過去最多の日', best.length ? best[0].n : 0, best.length ? esc(best[0].k) : '') + '</div><div class="grid">' +
+            card('日別アクセス', '直近' + span + '日', dayBars(days, span), 'wide') +
+            card('月別', '全期間', table(months, 0, (k) => k.replace('-', '年') + '月')) +
+            card('多かった日 トップ10', '全期間', table(best)) + '</div>';
+    } else if (view === 'time') {
+        const [hm] = await run([q('SELECT CAST(strftime(\'%w\', day) AS INTEGER) w, hour h, SUM(n) n FROM hits WHERE day >= ? GROUP BY w, h', since)]);
+        const g = Array.from({ length: 7 }, () => Array(24).fill(0));
+        hm.forEach((r) => { g[r.w][r.h] = r.n; });
+        const hours = Array(24).fill(0).map((_, h) => g.reduce((s, row) => s + row[h], 0));
+        const wds = g.map((row) => row.reduce((s, n) => s + n, 0));
+        const max = Math.max(1, ...g.flat()), total = hours.reduce((s, n) => s + n, 0);
+        const peakH = hours.indexOf(Math.max(...hours)), peakW = wds.indexOf(Math.max(...wds));
+        body = '<div class="kpi">' + kpi('最も多い時間帯', total ? peakH + '時台' : '—', perLabel) + kpi('最も多い曜日', total ? WD[peakW] + '曜日' : '—') +
+            kpi('深夜（0〜5時）の割合', total ? Math.round(hours.slice(0, 6).reduce((s, n) => s + n, 0) / total * 100) + '%' : '—') +
+            kpi('土日の割合', total ? Math.round((wds[0] + wds[6]) / total * 100) + '%' : '—') + '</div><div class="grid">' +
+            card('時間帯別', perLabel + '・日本時間', bars(hours.map((n, i) => ({ t: i + '時', l: String(i), n })), 'h', (i) => i % 3 === 0), 'wide') +
+            card('曜日 × 時間帯', '色が濃いほど多い', '<div class="hm"><span></span>' + hours.map((_, i) => '<span>' + (i % 3 === 0 ? i : '') + '</span>').join('') +
+                g.map((row, w) => '<span>' + WD[w] + '</span>' + row.map((n, h) => '<i title="' + WD[w] + ' ' + h + '時：' + n + '" style="--a:' + (n ? (0.12 + 0.88 * n / max).toFixed(2) : 0.04) + '"></i>').join('')).join('') + '</div>', 'wide') +
+            card('曜日別', perLabel, table(wds.map((n, w) => ({ k: WD[w] + '曜日', n })), total), 'wide') + '</div>';
+    } else if (view === 'pages') {
+        const [rows, tot] = await run([
+            q('SELECT path k, SUM(n) n FROM hits WHERE day >= ? GROUP BY path ORDER BY n DESC LIMIT 100', since),
+            q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ?', since)]);
+        body = '<div class="kpi">' + kpi('ページ数', rows.length, perLabel) + kpi('合計', tot[0].n) + '</div>' + card('ページ別', perLabel, table(rows, tot[0].n));
+    } else if (view === 'refs') {
+        const [rows, tot, direct] = await run([
+            q('SELECT ref k, SUM(n) n FROM hits WHERE day >= ? AND ref != \'\' GROUP BY ref ORDER BY n DESC LIMIT 100', since),
+            q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ?', since),
+            q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ? AND ref = \'\'', since)]);
+        const ext = tot[0].n - direct[0].n;
+        body = '<div class="kpi">' + kpi('他サイトから', ext, tot[0].n ? Math.round(ext / tot[0].n * 100) + '%' : '') +
+            kpi('直接・サイト内', direct[0].n, 'URL 直打ち、ブックマーク、アプリ、サイト内の移動') + kpi('参照元の数', rows.length) + '</div>' +
+            card('参照元サイト', perLabel + '・他サイトからの ' + ext + ' 件の内訳', table(rows, ext));
+    } else if (view === 'geo') {
+        const [cs, rs] = await run([
+            q('SELECT country k, SUM(n) n FROM hits WHERE day >= ? GROUP BY country ORDER BY n DESC LIMIT 50', since), dimQ('region', 60)]);
+        body = '<div class="grid">' + card('国・地域', perLabel, table(cs)) + card('都道府県', perLabel + '・日本からのアクセスのみ', table(rs)) + '</div>';
+    } else if (view === 'env') {
+        const [dv, br, os] = await run([
+            q('SELECT device k, SUM(n) n FROM hits WHERE day >= ? GROUP BY device ORDER BY n DESC', since), dimQ('browser', 20), dimQ('os', 20)]);
+        body = '<div class="grid">' + card('デバイス', perLabel, table(dv, 0, (k) => (k === 'sp' ? 'スマートフォン' : 'PC')), 'wide') +
+            card('ブラウザ', perLabel, table(br)) + card('OS', perLabel, table(os)) + '</div>';
+    } else if (view === 'bots') {
+        const [names, days, tot] = await run([dimQ('bot', 40),
+            q('SELECT day k, SUM(n) n FROM dims WHERE kind = \'bot\' AND day >= ? GROUP BY day', d(span - 1)),
+            q('SELECT COALESCE(SUM(n),0) n FROM dims WHERE kind = \'bot\' AND day >= ?', since)]);
+        body = '<div class="kpi">' + kpi('ボットのアクセス', tot[0].n, perLabel) + kpi('種類', names.length) + '</div><div class="grid">' +
+            card('日別（ボット）', '直近' + span + '日', dayBars(days, span, 'h'), 'wide') + card('ボットの内訳', perLabel, table(names, tot[0].n), 'wide') + '</div>' +
+            '<p class="note">検索エンジンの巡回、SNS に URL を貼ったときのプレビュー取得、自動スクリプトなどです。人のアクセス数には含めていません。</p>';
+    } else if (view === 'nf') {
+        const [rows, tot] = await run([dimQ('nf', 100), q('SELECT COALESCE(SUM(n),0) n FROM dims WHERE kind = \'nf\' AND day >= ?', since)]);
+        body = '<div class="kpi">' + kpi('404 の回数', tot[0].n, perLabel) + kpi('パスの種類', rows.length) + '</div>' +
+            card('存在しないページへのアクセス', perLabel + '・人とボットの合計', table(rows, tot[0].n)) +
+            '<p class="note">リンク切れの発見に使えます。/wp-login.php や /.env などは、脆弱性を探す自動スキャンによるもので、このサイトには該当するものがないため害はありません。</p>';
+    } else {
+        const [h, dm, fl] = await run([
+            q('SELECT COUNT(*) c, MIN(day) a, MAX(day) b FROM hits'), q('SELECT kind k, COUNT(*) n FROM dims GROUP BY kind ORDER BY n DESC'),
+            q('SELECT slot k, n FROM fails ORDER BY slot DESC LIMIT 30')]);
+        const kn = { bot: 'ボット', nf: '404', browser: 'ブラウザ', os: 'OS', region: '都道府県' };
+        body = '<div class="kpi">' + kpi('記録の行数（アクセス）', h[0].c) + kpi('記録の行数（その他）', dm.reduce((s, r) => s + r.n, 0)) +
+            kpi('記録の開始日', h[0].a ? esc(h[0].a) : '—') + kpi('最新の記録日', h[0].b ? esc(h[0].b) : '—') + '</div><div class="grid">' +
+            card('ログイン失敗の履歴', '1時間ごとの回数・新しい順', fl.length ? table(fl, 0, (k) => k + '時台') : '<p class="empty">失敗はありません。</p>') +
+            card('その他の記録の内訳', '行数', table(dm, 0, (k) => kn[k] || k)) + '</div>' +
+            '<p class="note">ログインは 1 時間に ' + MAX_FAILS + ' 回失敗すると、その時間はロックされます。ログイン状態は 30 日間続きます。<br>' +
+            '保存しているのは「日付・時・ページ・参照元のサイト名・国・デバイス種別」ごとの件数と、ブラウザ／OS の種類・都道府県・ボットの種類・404 のパスごとの日別件数のみです。' +
+            'IP アドレス、ブラウザの詳細な識別情報、個別の訪問履歴は保存していません。</p>';
+    }
 
-    const kpi = (label, val, sub) => '<div class="card"><span>' + label + '</span><b>' + val + '</b><small>' + (sub || '&nbsp;') + '</small></div>';
-    const card = (title, sub, inner, cls) => '<section class="card' + (cls ? ' ' + cls : '') + '"><h2>' + title + (sub ? '<small>' + sub + '</small>' : '') + '</h2>' + inner + '</section>';
-
-    return shell(
-        '<header class="top"><h1>アクセス記録<span>poo123.com</span></h1><div class="sp"></div>' +
-        '<time>' + stamp + ' 更新</time><a class="btn" href="' + ADMIN + '">再読み込み</a><a class="btn" href="' + ADMIN + '/out">ログアウト</a></header>' +
-        '<main class="wrap"><div class="kpi">' +
-        kpi('今日', one(0), '前日比 <span class="' + (diff > 0 ? 'up' : '') + '">' + (diff > 0 ? '+' : '') + diff + '</span>') +
-        kpi('昨日', one(1)) +
-        kpi('直近7日', one(2), '1日平均 ' + (one(2) / 7).toFixed(1)) +
-        kpi('直近30日', t30, '1日平均 ' + (t30 / 30).toFixed(1)) +
-        kpi('累計', one(4), since ? esc(since) + ' から' : '') +
-        '</div><div class="grid">' +
-        card('日別アクセス', '直近30日',
-            '<div class="bars">' + days.map((x) => '<i title="' + x.k + '：' + x.n + '" style="height:' + Math.round(x.n / dmax * 100) + '%"></i>').join('') + '</div>' +
-            '<div class="axis">' + days.map((x, i) => '<span>' + (i % 5 === 4 || i === 0 ? Number(x.k.slice(5, 7)) + '/' + Number(x.k.slice(8)) : '') + '</span>').join('') + '</div>', 'wide') +
-        card('時間帯別', '直近30日・日本時間' + (t30 ? '・最多 ' + peak + '時台' : ''),
-            '<div class="bars h">' + hours.map((n, i) => '<i title="' + i + '時：' + n + '" style="height:' + Math.round(n / hmax * 100) + '%"></i>').join('') + '</div>' +
-            '<div class="axis">' + hours.map((_, i) => '<span>' + (i % 3 === 0 ? i : '') + '</span>').join('') + '</div>', 'wide') +
-        card('ページ別', '直近30日', table(res[7].results, t30)) +
-        card('参照元', '直近30日・直接アクセス ' + one(11) + ' 件を除く', table(res[8].results, t30)) +
-        card('国・地域', '直近30日', table(res[9].results, t30)) +
-        card('デバイス', '直近30日', table(res[10].results, t30, (k) => (k === 'sp' ? 'スマートフォン' : 'PC'))) +
-        '</div><p class="note">ページが開かれた回数を集計しています。ボットと、ログイン中のブラウザからのアクセスは含みません。<br>' +
-        '保存しているのは「日付・時・ページ・参照元のサイト名・国・デバイス種別」ごとの件数のみで、IP アドレスやブラウザ情報、個別の訪問履歴は保存していません。</p></main>'
-    );
+    const link = (v, p) => ADMIN + '?v=' + v + '&d=' + p;
+    const j = new Date(now + 9 * 3600e3).toISOString().slice(0, 16).replace('T', ' ');
+    return page('<div class="app"><nav class="side"><div class="brand">アクセス記録</div><small>poo123.com</small>' +
+        VIEWS.map((v) => '<a href="' + link(v[0], per) + '"' + (v[0] === view ? ' class="on"' : '') + '>' + v[1] + '</a>').join('') +
+        '<div class="sp"></div><hr><a href="/">サイトを開く</a><a href="' + ADMIN + '/out">ログアウト</a></nav>' +
+        '<main class="main"><div class="head"><h1>' + VIEWS.find((v) => v[0] === view)[1] + '</h1><time>' + j + ' 時点</time>' +
+        (view === 'system' ? '' : '<div class="seg">' + PERIODS.map((p) => '<a href="' + link(view, p[0]) + '"' + (p[0] === per ? ' class="on"' : '') + '>' + p[1] + '</a>').join('') + '</div>') +
+        '</div>' + body + '</main></div>');
 }
 
 async function admin(request, env, url) {
@@ -204,7 +324,7 @@ async function admin(request, env, url) {
         if (origin !== url.host) return html(loginPage('送信に失敗しました。もう一度お試しください。'), 403);
 
         const { day, hour } = jst();
-        const slot = day + ' ' + hour;
+        const slot = day + ' ' + String(hour).padStart(2, '0');
         const f = await env.LOG.prepare('SELECT n FROM fails WHERE slot = ?').bind(slot).first();
         if (f && f.n >= MAX_FAILS) return html(loginPage('失敗が続いたため、しばらくログインできません。'), 429);
 
@@ -220,8 +340,11 @@ async function admin(request, env, url) {
         return html(loginPage('合言葉が違います。'), 401);
     }
     if (request.method !== 'GET') return html('', 405);
-    if (await authed(request, env)) return html(await dashboard(env));
-    return html(loginPage(''));
+    if (!(await authed(request, env))) return html(loginPage(''));
+    const v = url.searchParams.get('v'), p = url.searchParams.get('d');
+    const view = VIEWS.some((x) => x[0] === v) ? v : 'overview';
+    const per = PERIODS.some((x) => x[0] === p) ? p : '30';
+    return html(await dashboard(env, view, per));
 }
 
 export default {
@@ -240,9 +363,9 @@ export default {
         }
 
         const res = await env.ASSETS.fetch(request);
-        if (env.LOG && request.method === 'GET' && res.status === 200 &&
+        if (env.LOG && request.method === 'GET' && (res.status === 200 || res.status === 404) &&
             (res.headers.get('Content-Type') || '').includes('text/html')) {
-            ctx.waitUntil(count(request, env, url));
+            ctx.waitUntil(count(request, env, url, res.status));
         }
         return res;
     }
