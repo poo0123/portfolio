@@ -266,3 +266,12 @@ body.dark-mode .pf { background: #dfe6fa; }
 }
 @keyframes gh-dots { to { background-position: 36px -36px, 54px -18px; } }
 @media (prefers-reduced-motion: reduce) { .s-github .pf-banner:not(.has-img) { animation: none !important; } }
+
+/* アイコンの わく：インスタ（ストーリーの わっか）と GitHub（ほし が まわる） */
+.s-instagram .pf-ava::before, .s-github .pf-ava::before, .s-github .pf-ava::after { content: ""; position: absolute; pointer-events: none; z-index: -1; }
+.s-instagram .pf-ava::before { inset: -6px; border-radius: 50%; background: conic-gradient(#feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5, #feda75); animation: av-spin 4s linear infinite; }
+.s-github .pf-ava::before { inset: -7px; border-radius: 50%; border: 3px dashed #c9f0b0; animation: av-spin 12s linear infinite; z-index: 1; }
+.s-github .pf-ava::after { content: "★"; z-index: 3; top: -10px; right: -6px; font-size: 22px; color: #ffd75e; text-shadow: 0 0 6px rgba(255,215,94,0.8); animation: av-twinkle 1.8s ease-in-out infinite; }
+@keyframes av-spin { to { rotate: 360deg; } }
+@keyframes av-twinkle { 0%, 100% { scale: 1; rotate: 0deg; } 50% { scale: 1.25; rotate: 20deg; } }
+@media (prefers-reduced-motion: reduce) { .s-instagram .pf-ava::before, .s-github .pf-ava::before, .s-github .pf-ava::after { animation: none; } }
