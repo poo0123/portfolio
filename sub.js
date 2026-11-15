@@ -184,9 +184,6 @@
     const sT = scope('steam');
     if (sT) jget('/api/card/steam').then((d) => {
         sT.img('ava', d.avatar); sT.text('name', d.name);
-        const on = d.state === 'online' || d.state === 'in-game';
-        const dot = sT.show('dot'); if (dot) dot.className = 'pf-dot ' + (on ? 'online' : 'offline');
-        sT.text('status', d.state === 'in-game' ? 'ゲーム中' : on ? 'オンライン' : 'オフライン');
     }).catch(() => {});
 
     /* ---------- GitHub ---------- */

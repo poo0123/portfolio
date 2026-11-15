@@ -289,3 +289,34 @@ body.dark-mode .pf { background: #dfe6fa; }
 .sp-eq i { flex: 1; height: 30%; background: #fff; border-radius: 2px 2px 0 0; animation: sp-eq ease-in-out infinite alternate; }
 @keyframes sp-eq { to { height: 100%; } }
 @media (prefers-reduced-motion: reduce) { .sp-note, .sp-eq i { animation: none; } }
+
+/* うごき いろいろ */
+/* ロゴ：ふわふわ */
+.pf-logo { animation: lk-bob 3.6s ease-in-out infinite; }
+.acct:nth-child(odd) .pf-logo { animation-delay: -1.8s; }
+@keyframes lk-bob { 0%, 100% { translate: 0 0; rotate: -4deg; } 50% { translate: 0 -5px; rotate: 4deg; } }
+/* テープ：ちょっと ゆれる */
+.acct .tape { animation: lk-tape 5s ease-in-out infinite; transform-origin: 50% 0; }
+@keyframes lk-tape { 0%, 100% { rotate: -6deg; } 50% { rotate: -2deg; } }
+/* ひらく ボタン：やじるしが つんつん、ふちが まわる */
+.sub-go i { display: inline-block; animation: lk-poke 1.6s ease-in-out infinite; }
+@keyframes lk-poke { 0%, 60%, 100% { translate: 0 0; } 75% { translate: 5px 0; } }
+.sub-go { transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+.sub-go:hover { transform: rotate(-3deg) scale(1.06); }
+/* サービス名の アイコン：あらわれる とき ぴょん */
+.acct.rv.in .sub-svc i { animation: lk-hop 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.5s both; }
+@keyframes lk-hop { 0% { scale: 0; rotate: -90deg; } 100% { scale: 1; rotate: 0deg; } }
+/* ひとこと：ペンで かく みたいに */
+.acct.rv .sub-lead { clip-path: inset(0 100% 0 0); }
+.acct.rv.in .sub-lead { clip-path: inset(0 0 0 0); transition: clip-path 0.9s steps(14) 0.6s; }
+/* りすと：じゅんばんに */
+.acct.rv .sub-list li, .acct.rv .sub-nums > div { opacity: 0; translate: 0 8px; }
+.acct.rv.in .sub-list li, .acct.rv.in .sub-nums > div { opacity: 1; translate: 0 0; transition: opacity 0.4s, translate 0.4s; }
+.acct.rv.in .sub-list li:nth-child(2), .acct.rv.in .sub-nums > div:nth-child(2) { transition-delay: 0.15s; }
+/* カードに さわると ちょっと うく */
+.acct { transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+.acct:hover { transform: translateY(-4px) rotate(-0.4deg); }
+@media (prefers-reduced-motion: reduce) {
+  .pf-logo, .acct .tape, .sub-go i, .acct.rv.in .sub-svc i { animation: none; }
+  .acct.rv .sub-lead, .acct.rv .sub-list li, .acct.rv .sub-nums > div { clip-path: none; opacity: 1; translate: none; }
+}
