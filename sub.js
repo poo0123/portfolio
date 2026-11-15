@@ -228,18 +228,3 @@
     }
 })();
 
-// GitHub の 背景：こうけん グラフ みたいに マスが ひかる
-(() => {
-    const b = document.querySelector('.s-github .pf-banner');
-    if (!b) return;
-    b.classList.add('gh-grid');
-    const g = document.createElement('div'); g.className = 'gh-cells'; g.setAttribute('aria-hidden', 'true');
-    for (let i = 0; i < 7 * 60; i++) {
-        const c = document.createElement('i');
-        c.style.setProperty('--l', (Math.random() ** 2 * 4 | 0));
-        c.style.animationDelay = (-Math.random() * 8).toFixed(2) + 's';
-        c.style.animationDuration = (4 + Math.random() * 6).toFixed(2) + 's';
-        g.appendChild(c);
-    }
-    b.appendChild(g);
-})();

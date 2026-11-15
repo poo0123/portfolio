@@ -258,12 +258,11 @@ body.dark-mode .pf { background: #dfe6fa; }
 /* とっぷへ もどる */
 .paper-nav .nav-top { color: var(--red); }
 
-/* GitHub：こうけん グラフ */
-.pf-banner.gh-grid { background: #0d1117 !important; animation: none !important; position: relative; overflow: hidden; }
-.gh-cells { position: absolute; inset: 8px; display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); grid-auto-columns: 13px; gap: 3px; }
-.gh-cells i { border-radius: 2px; background: #161b22; animation: gh-cell linear infinite; }
-.gh-cells i[style*="--l: 1"] { background: #0e4429; }
-.gh-cells i[style*="--l: 2"] { background: #006d32; }
-.gh-cells i[style*="--l: 3"] { background: #26a641; }
-@keyframes gh-cell { 0%, 70%, 100% { filter: none; } 80% { background: #39d353; filter: brightness(1.3); } }
-@media (prefers-reduced-motion: reduce) { .gh-cells i { animation: none; } }
+/* GitHub：ふわふわ 水玉 */
+.s-github .pf-banner:not(.has-img) {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.28) 0 5px, transparent 6px), radial-gradient(circle, rgba(255,255,255,0.16) 0 3px, transparent 4px) !important;
+  background-size: 36px 36px, 36px 36px !important; background-position: 0 0, 18px 18px; background-repeat: repeat !important;
+  animation: gh-dots 5s linear infinite !important;
+}
+@keyframes gh-dots { to { background-position: 36px -36px, 54px -18px; } }
+@media (prefers-reduced-motion: reduce) { .s-github .pf-banner:not(.has-img) { animation: none !important; } }
