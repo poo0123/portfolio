@@ -23,7 +23,7 @@
     });
 
     /* ---------- 下へ いったら 上に 小さい 見出し ---------- */
-    const mini = document.getElementById('minibar'), hero = document.querySelector('.lk-hero');
+    const mini = document.getElementById('minibar'), hero = document.querySelector('.masthead');
     if (mini && hero) {
         const f = () => mini.classList.toggle('show', window.scrollY > hero.offsetTop + hero.offsetHeight - 40);
         window.addEventListener('scroll', f, { passive: true }); f();
