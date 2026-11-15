@@ -462,6 +462,9 @@ async function admin(request, env, url) {
     return html(await dashboard(env, view, per));
 }
 
+// まえは アカウントごとに ページが あった。いまは 1ページ
+const MOVED = { '/discord': 'discord', '/discord-sub': 'discord-sub', '/x': 'x', '/instagram': 'instagram', '/youtube': 'youtube', '/spotify': 'spotify', '/github': 'github', '/steam': 'steam' };
+
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
@@ -479,6 +482,8 @@ export default {
 
         if (env.LOG && url.pathname === '/b' && request.method === 'POST') return beacon(request, env, url);
         if (url.pathname.startsWith('/api/card/')) return profile(url.pathname.slice(10), request, ctx);
+        const moved = MOVED[url.pathname.replace(/\.html$/, '')];
+        if (moved) return Response.redirect(url.origin + '/links#' + moved, 301);
 
         const res = await env.ASSETS.fetch(request);
         if (env.LOG && request.method === 'GET' && (res.status === 200 || res.status === 404) &&

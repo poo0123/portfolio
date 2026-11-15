@@ -79,3 +79,15 @@ body.dark-mode .pf { background: #dfe6fa; }
     .sub-dl { grid-template-columns: 1fr; gap: 0 0; }
     .sub-dl dd { margin-bottom: 10px; }
 }
+
+/* 1ページに まとめた りんく */
+.acct { margin: 0 0 64px; scroll-margin-top: 18px; }
+.acct .pf { margin-bottom: 20px; }
+.acct .pf-banner { height: 112px; }
+.acct .sheet.sub { margin-bottom: 0; padding-top: 24px; }
+.sub-svc { font-family: 'Yomogi', cursive; font-size: 1.05rem; margin-bottom: 8px; display: flex; align-items: center; gap: 9px; }
+.sub-svc i { color: var(--red); }
+.acct .sub-center { margin: 24px 0 2px; }
+.acct .sub-h3 { margin-top: 20px; }
+.sub-scroll { max-height: 300px; overflow-y: auto; padding-right: 6px; }
+@media (max-width: 640px) { .acct .pf-banner { height: 84px; } .acct { margin-bottom: 50px; } }
