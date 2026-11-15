@@ -247,6 +247,6 @@ body.dark-mode .pf { background: #dfe6fa; }
 
 /* しまもよう：つぎめが 見えない ように、1しま ぶん（28px÷sin45°）だけ ずらして くりかえす */
 .pf-banner:not(.has-img):not(.lk-tile) { background-size: auto; background-repeat: no-repeat; animation: pf-slide2 4s linear infinite; }
-@keyframes pf-slide2 { from { background-position: 0 0; } to { background-position: 39.598px 0; } }
+@keyframes pf-slide2 { from { background-position: -39.598px 0; } to { background-position: 0 0; } }
 .pf-banner:not(.has-img):not(.lk-tile) { background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.16) 0 14px, rgba(255,255,255,0) 14px 28px); background-size: calc(100% + 40px) 100%; background-repeat: no-repeat; }
 @media (prefers-reduced-motion: reduce) { .pf-banner:not(.has-img):not(.lk-tile) { animation: none; } }
