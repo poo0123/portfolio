@@ -235,8 +235,8 @@ body.dark-mode .pf { background: #dfe6fa; }
 /* サブの もよう・Steam の 動く 背景 */
 .pf-banner.lk-tile { background: url("photo/links/sub-bg.png") repeat; background-size: 56px 39px; animation: lk-tile 6s linear infinite; }
 @keyframes lk-tile { to { background-position: 56px 39px; } }
-.pf-banner.lk-steam { position: relative; overflow: hidden; background-size: cover; background-position: center 40%; }
-.lk-bgv { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
+.pf-banner.lk-steam { position: relative; overflow: hidden; background-size: cover; background-position: center 15%; }
+.lk-bgv { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 15%; }
 @media (prefers-reduced-motion: reduce) { .pf-banner.lk-tile { animation: none; } .lk-bgv { display: none; } }
 
 /* りんくの 見出しは メインと おなじ 形 */
