@@ -154,3 +154,33 @@ body.dark-mode .pf { background: #dfe6fa; }
 .pf-plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: right center; pointer-events: none; }
 .pf-row.has-plate::before { z-index: 1; }
 .pf-row .pf-id, .pf-row .pf-logo, .pf-row .pf-ava { z-index: 2; }
+
+/* ---------- りんくの ヘッダー ---------- */
+.lk-head { position: relative; margin-bottom: 40px; }
+.lk-head .stamp { top: -6px; }
+.lk-hero { position: relative; text-align: center; padding: 70px 0 30px; min-height: 340px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.lk-orbit { position: absolute; left: 50%; top: 50%; width: 300px; height: 300px; margin: -150px 0 0 -150px; border: 1.5px dashed var(--rule); border-radius: 50%;
+    animation: lk-spin 40s linear infinite; pointer-events: none; }
+.lk-orbit i { position: absolute; left: 50%; top: 50%; width: 38px; height: 38px; margin: -19px 0 0 -19px; display: grid; place-items: center;
+    font-size: 1.05rem; color: var(--red); background: var(--card); border: 1px solid var(--rule); border-radius: 50%; box-shadow: var(--shadow);
+    transform: rotate(calc(var(--n) * 51.43deg)) translate(150px) rotate(calc(var(--n) * -51.43deg)); }
+.lk-orbit i::before { display: block; animation: lk-spin 40s linear infinite reverse; }
+@keyframes lk-spin { to { rotate: 360deg; } }
+.lk-kicker { position: relative; font-family: 'Yomogi', cursive; font-size: 0.82rem; color: var(--ink-2); letter-spacing: 0.1em; animation: riseIn 0.7s 0.05s backwards ease-out; }
+.lk-logo { position: relative; font-size: 3.6rem; margin: 6px 0 10px; animation: riseIn 0.7s 0.15s backwards ease-out; }
+.lk-sub { position: relative; font-family: 'Yomogi', cursive; font-size: 0.9rem; color: var(--ink-2); animation: riseIn 0.7s 0.3s backwards ease-out; }
+.lk-sub b { font-family: 'Caveat', cursive; font-size: 1.4rem; color: var(--red); font-weight: 700; }
+.lk-scroll { position: relative; margin-top: 22px; font-size: 1.2rem; color: var(--red); animation: lk-bob 1.6s ease-in-out infinite; }
+@keyframes lk-bob { 50% { translate: 0 7px; } }
+@media (max-width: 640px) {
+    .lk-hero { min-height: 280px; padding-top: 50px; }
+    .lk-orbit { width: 240px; height: 240px; margin: -120px 0 0 -120px; }
+    .lk-orbit i { transform: rotate(calc(var(--n) * 51.43deg)) translate(120px) rotate(calc(var(--n) * -51.43deg)); width: 32px; height: 32px; margin: -16px 0 0 -16px; font-size: 0.9rem; }
+    .lk-logo { font-size: 2.8rem; }
+}
+@media (prefers-reduced-motion: reduce) { .lk-orbit, .lk-orbit i::before, .lk-scroll { animation: none; } }
+
+/* 角を まるく */
+.acct { border-radius: 14px; }
+.acct .pf-in { border-radius: 10px; }
+.acct .pf-banner { border-radius: 10px 10px 0 0; }
