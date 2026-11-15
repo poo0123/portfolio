@@ -197,13 +197,6 @@
             sG.nums([['リポジトリ', u.public_repos], ['フォロワー', u.followers]]);
             if (u.created_at) sG.text('note', ym(u.created_at) + ' から');
         }).catch(() => {});
-        jget('https://api.github.com/repos/poo0123/portfolio/commits?per_page=2').then((cs) => {
-            const list = sG.k('list'); if (!list || !cs.length) return;
-            list.textContent = '';
-            // 日づけと 1行目だけ。作者の 名前や メールは 使わない
-            cs.forEach((c) => list.appendChild(row(ymd(c.commit.committer.date), String(c.commit.message || '').split('\n')[0], c.html_url)));
-            sG.show('data3');
-        }).catch(() => {});
         jget('https://api.github.com/users/poo0123/repos?sort=updated&per_page=2').then((rs) => {
             const list = sG.k('list2'); if (!list || !rs.length) return;
             list.textContent = '';
