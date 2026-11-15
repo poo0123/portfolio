@@ -103,12 +103,11 @@ const HEAD = {
     'Cache-Control': 'no-store',
     'X-Robots-Tag': 'noindex, nofollow, noarchive',
     'Referrer-Policy': 'same-origin',
-    'X-Frame-Options': 'DENY',
-    'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
+    'X-Frame-Options': 'DENY'
 };
 const CSS =
     ':root{--bg:#f4efe3;--panel:#fbf8f0;--sub:#eae2d2;--ink:#2f2823;--ink2:#6b5f52;--rule:#d9cfbc;--red:#dc6969;--blue:#3f5d9e;--hm:220,105,105}' +
-    '@media (prefers-color-scheme: dark){:root{--bg:#070b1c;--panel:#131c3c;--sub:#0e1530;--ink:#e3ebff;--ink2:#98a6d4;--rule:#2a3566;--red:#ff96a8;--blue:#8fb5ff;--hm:255,150,168}}' +
+    ':root[data-theme=dark]{--bg:#070b1c;--panel:#131c3c;--sub:#0e1530;--ink:#e3ebff;--ink2:#98a6d4;--rule:#2a3566;--red:#ff96a8;--blue:#8fb5ff;--hm:255,150,168}' +
     '*{box-sizing:border-box;margin:0;padding:0}' +
     'body{background:var(--bg);color:var(--ink);font:14px/1.6 system-ui,-apple-system,"Segoe UI","Hiragino Sans","Yu Gothic UI",Meiryo,sans-serif;-webkit-text-size-adjust:100%}' +
     'a{color:inherit}' +
@@ -119,7 +118,12 @@ const CSS =
     '.side a:hover{background:var(--sub);color:var(--ink)}.side a.on{background:var(--red);color:#fff;font-weight:700}' +
     '.side hr{border:0;border-top:1px solid var(--rule);margin:10px 4px}.side .sp{flex:1}' +
     '.main{padding:20px 24px 40px;min-width:0}' +
-    '.head{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:16px}.head h1{font-size:18px;margin-right:auto}' +
+    '.head{position:sticky;top:0;z-index:4;display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:-20px -24px 16px;padding:16px 24px;background:var(--bg);border-bottom:1px solid transparent;transition:padding .2s,border-color .2s}' +
+    '.head h1{font-size:18px;margin-right:auto;transition:font-size .2s}' +
+    '.sc .head{padding:8px 24px;border-bottom-color:var(--rule)}.sc .head h1{font-size:14px}.sc .head time{display:none}' +
+    '.ic{width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--rule);border-radius:7px;background:var(--panel);color:var(--ink);cursor:pointer;padding:0}' +
+    '.ic:hover{border-color:var(--red);color:var(--red)}.ic svg{width:16px;height:16px}.ic .mo{display:none}[data-theme=dark] .ic .su{display:none}[data-theme=dark] .ic .mo{display:block}' +
+    '.login .ic{position:fixed;top:14px;right:14px}' +
     '.head time{font-size:12px;color:var(--ink2)}' +
     '.seg{display:inline-flex;border:1px solid var(--rule);border-radius:7px;overflow:hidden}.seg a{padding:5px 12px;font-size:12px;text-decoration:none;background:var(--panel);color:var(--ink2);border-left:1px solid var(--rule)}' +
     '.seg a:first-child{border-left:0}.seg a.on{background:var(--ink);color:var(--bg);font-weight:700}' +
@@ -145,14 +149,23 @@ const CSS =
     '.login input{font:inherit;width:100%;padding:9px 11px;border:1px solid var(--rule);border-radius:6px;background:var(--bg);color:var(--ink);margin-bottom:12px}' +
     '.login .err{color:var(--red);font-size:12px;margin-bottom:10px}' +
     '@media (max-width:820px){.app{display:block}.side{position:sticky;top:0;z-index:5;height:auto;flex-direction:row;align-items:center;overflow-x:auto;padding:8px 10px;border-right:0;border-bottom:1px solid var(--rule);gap:4px}' +
-    '.side a{white-space:nowrap;padding:6px 10px}.brand,.brand+small,.side hr,.side .sp{display:none}.main{padding:14px}.grid{grid-template-columns:1fr}.bars{height:110px;gap:2px}.axis{gap:2px}}';
+    '.side a{white-space:nowrap;padding:6px 10px}.brand,.brand+small,.side hr,.side .sp{display:none}.side{height:46px}.main{padding:14px}.head{top:46px;margin:-14px -14px 14px;padding:10px 14px}.sc .head{padding:6px 14px}.grid{grid-template-columns:1fr}.bars{height:110px;gap:2px}.axis{gap:2px}}';
 
-const page = (body) => '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">' +
+const THEME_BTN = '<button class="ic" id="th" type="button" aria-label="ライト／ダークの切り替え" title="ライト／ダークの切り替え">' +
+    '<svg class="su" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7 7 17M17 7l1.7-1.7"/></svg>' +
+    '<svg class="mo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg></button>';
+const page = (body, nonce) => '<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow">' +
-    '<title>アクセス記録</title><style>' + CSS + '</style></head><body>' + body + '</body></html>';
+    '<title>アクセス記録</title>' +
+    // 描く前に テーマを 決める（保存が なければ 端末の 設定）
+    '<script nonce="' + nonce + '">try{document.documentElement.dataset.theme=localStorage.getItem("kt")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light")}catch(e){}</script>' +
+    '<style>' + CSS + '</style></head><body>' + body +
+    '<script nonce="' + nonce + '">(function(){var r=document.documentElement,b=document.getElementById("th");' +
+    'if(b)b.onclick=function(){var t=r.dataset.theme==="dark"?"light":"dark";r.dataset.theme=t;try{localStorage.setItem("kt",t)}catch(e){}};' +
+    'var f=function(){r.classList.toggle("sc",window.scrollY>24)};addEventListener("scroll",f,{passive:true});f()})()</script></body></html>';
 
-const loginPage = (msg) => page(
-    '<div class="login"><div class="card"><h1>アクセス記録</h1>' +
+const loginPage = (msg) => (
+    '<div class="login">' + THEME_BTN + '<div class="card"><h1>アクセス記録</h1>' +
     (msg ? '<p class="err">' + esc(msg) + '</p>' : '') +
     '<form method="post" action="' + ADMIN + '" autocomplete="off">' +
     '<input type="password" name="k" aria-label="合言葉" placeholder="合言葉" required autofocus>' +
@@ -300,16 +313,18 @@ async function dashboard(env, view, per) {
 
     const link = (v, p) => ADMIN + '?v=' + v + '&d=' + p;
     const j = new Date(now + 9 * 3600e3).toISOString().slice(0, 16).replace('T', ' ');
-    return page('<div class="app"><nav class="side"><div class="brand">アクセス記録</div><small>poo123.com</small>' +
+    return ('<div class="app"><nav class="side"><div class="brand">アクセス記録</div><small>poo123.com</small>' +
         VIEWS.map((v) => '<a href="' + link(v[0], per) + '"' + (v[0] === view ? ' class="on"' : '') + '>' + v[1] + '</a>').join('') +
         '<div class="sp"></div><hr><a href="/">サイトを開く</a><a href="' + ADMIN + '/out">ログアウト</a></nav>' +
         '<main class="main"><div class="head"><h1>' + VIEWS.find((v) => v[0] === view)[1] + '</h1><time>' + j + ' 時点</time>' +
         (view === 'system' ? '' : '<div class="seg">' + PERIODS.map((p) => '<a href="' + link(view, p[0]) + '"' + (p[0] === per ? ' class="on"' : '') + '>' + p[1] + '</a>').join('') + '</div>') +
-        '</div>' + body + '</main></div>');
+        THEME_BTN + '</div>' + body + '</main></div>');
 }
 
 async function admin(request, env, url) {
-    const html = (body, status = 200, extra = {}) => new Response(body, { status, headers: { ...HEAD, ...extra } });
+    const nonce = hex(crypto.getRandomValues(new Uint8Array(12)));
+    const csp = "default-src 'none'; style-src 'unsafe-inline'; script-src 'nonce-" + nonce + "'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'";
+    const html = (body, status = 200) => new Response(body ? page(body, nonce) : '', { status, headers: { ...HEAD, 'Content-Security-Policy': csp } });
     const sub = url.pathname.slice(ADMIN.length);
 
     if (sub === '/out') {
