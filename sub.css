@@ -250,3 +250,7 @@ body.dark-mode .pf { background: #dfe6fa; }
 @keyframes pf-slide2 { from { background-position: -39.598px 0; } to { background-position: 0 0; } }
 .pf-banner:not(.has-img):not(.lk-tile) { background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.16) 0 14px, rgba(255,255,255,0) 14px 28px); background-size: calc(100% + 40px) 100%; background-repeat: no-repeat; }
 @media (prefers-reduced-motion: reduce) { .pf-banner:not(.has-img):not(.lk-tile) { animation: none; } }
+
+/* ひらく ボタンは いつも 右（アプリ名と ひとことの となり） */
+.lk-main .acct .sheet.sub, .acct .sheet.sub { grid-template-columns: minmax(0, 1fr) auto; }
+.lk-main .acct .sheet.sub > .sub-center, .acct .sheet.sub > .sub-center { grid-column: 2; grid-row: 1 / span 2; justify-self: end; align-self: center; margin: 0; }
