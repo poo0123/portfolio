@@ -16,3 +16,4 @@ src
 src/**
 work
 work/**
+.dev.vars

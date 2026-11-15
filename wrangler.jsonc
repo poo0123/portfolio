@@ -14,5 +14,12 @@
     "binding": "ASSETS",
     "run_worker_first": true
   },
+  "d1_databases": [
+    {
+      "binding": "LOG",
+      "database_name": "poo123-log",
+      "database_id": "71cc2e43-1a2e-47a9-9bb3-0c32571a1518"
+    }
+  ],
   "main": "src/worker.js"
 }
