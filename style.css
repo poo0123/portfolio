@@ -2122,3 +2122,6 @@ body.dark-mode .dots-toggle:hover { box-shadow: 0 7px 16px rgba(0, 0, 0, 0.42); 
 }
 .f-dragon .w { animation: wing-blur 0.09s linear infinite alternate; }
 @keyframes wing-blur { from { opacity: 0.34; } to { opacity: 0.14; } }
+
+.about-link { font-family: 'Yomogi', cursive; font-size: 0.8rem; color: var(--ink-2); text-decoration: none; border-bottom: 1px dashed var(--rule); }
+.about-link:hover { color: var(--red); border-color: var(--red); }

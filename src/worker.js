@@ -100,6 +100,53 @@ async function count(request, env, url, status) {
     } catch (e) { /* 数えそこねても ページは 返す */ }
 }
 
+/* ---------- アカウントの 表示用：よその 公開プロフィールを とってきて、要る ものだけ 返す ----------
+   名前・アイコン・自己紹介・数 だけ。本名や 場所の 欄は 読まない。15分 おぼえて おく。 */
+const UA_FETCH = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36';
+const img = (u, hosts) => { try { const x = new URL(u); return x.protocol === 'https:' && hosts.some((h) => x.hostname === h || x.hostname.endsWith('.' + h)) ? x.toString() : null; } catch (e) { return null; } };
+const txt = (s, n) => (typeof s === 'string' ? s.replace(/<[^>]*>/g, '').slice(0, n) : null);
+const unx = (s) => (s || '').replace(/<!\[CDATA\[(.*?)\]\]>/s, '$1').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+const CARDS = {
+    x: async () => {
+        const r = await fetch('https://api.fxtwitter.com/_poo_main', { headers: { 'User-Agent': UA_FETCH } });
+        const u = (await r.json()).user || {};
+        const n = (v) => (Number.isFinite(v) ? v : null);
+        return { name: txt(u.name, 60), bio: txt(u.description, 300), avatar: img((u.avatar_url || '').replace('_normal.', '_400x400.'), ['twimg.com']),
+            banner: u.banner_url ? img(u.banner_url + '/1500x500', ['twimg.com']) : null,
+            posts: n(u.tweets), following: n(u.following), followers: n(u.followers), likes: n(u.likes), joined: txt(u.joined, 40) };
+    },
+    steam: async () => {
+        const x = await (await fetch('https://steamcommunity.com/id/Poo0123/?xml=1', { headers: { 'User-Agent': UA_FETCH } })).text();
+        const g = (t) => { const m = x.match(new RegExp('<' + t + '>([\\s\\S]*?)</' + t + '>')); return m ? unx(m[1]) : ''; };
+        return { name: txt(g('steamID'), 60), state: ['online', 'offline', 'in-game'].includes(g('onlineState')) ? g('onlineState') : 'offline',
+            avatar: img(g('avatarFull'), ['steamstatic.com']) };
+    },
+    youtube: async () => {
+        const h = await (await fetch('https://www.youtube.com/@Poo_main', { headers: { 'User-Agent': UA_FETCH, 'Accept-Language': 'ja' } })).text();
+        const og = (p) => { const m = h.match(new RegExp('<meta property="og:' + p + '" content="([^"]*)"')); return m ? unx(m[1]) : ''; };
+        const cid = (h.match(/channel\/(UC[\w-]{22})/) || [])[1];
+        let videos = [];
+        if (cid) {
+            const f = await (await fetch('https://www.youtube.com/feeds/videos.xml?channel_id=' + cid)).text();
+            videos = [...f.matchAll(/<entry>[\s\S]*?<yt:videoId>([\w-]{6,20})<\/yt:videoId>[\s\S]*?<title>([\s\S]*?)<\/title>[\s\S]*?<published>([^<]+)<\/published>/g)]
+                .slice(0, 8).map((m) => ({ id: m[1], title: txt(unx(m[2]), 120), date: txt(m[3], 40) }));
+        }
+        return { name: txt(og('title'), 60), bio: txt(og('description'), 300), avatar: img(og('image'), ['googleusercontent.com', 'ggpht.com']), videos };
+    }
+};
+async function profile(name, request, ctx) {
+    const json = (data, age) => new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=' + age, 'X-Content-Type-Options': 'nosniff' } });
+    if (!CARDS[name] || request.method !== 'GET') return json({}, 60);
+    const key = new Request('https://poo123.com/api/card/' + name);
+    const cache = caches.default;
+    const hit = await cache.match(key);
+    if (hit) return hit;
+    let res;
+    try { res = json(await CARDS[name](), 900); } catch (e) { res = json({}, 60); }
+    ctx.waitUntil(cache.put(key, res.clone()));
+    return res;
+}
+
 /* ---------- ページの 中での 動き ----------
    サイト側から「何が 起きたか」だけが 送られてくる。決まった 種類しか 受けとらない。 */
 const STAY = ['10秒未満', '10〜30秒', '30秒〜1分', '1〜3分', '3〜10分', '10分以上'];
@@ -431,6 +478,7 @@ export default {
         }
 
         if (env.LOG && url.pathname === '/b' && request.method === 'POST') return beacon(request, env, url);
+        if (url.pathname.startsWith('/api/card/')) return profile(url.pathname.slice(10), request, ctx);
 
         const res = await env.ASSETS.fetch(request);
         if (env.LOG && request.method === 'GET' && (res.status === 200 || res.status === 404) &&
