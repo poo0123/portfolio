@@ -1562,7 +1562,23 @@ document.addEventListener('DOMContentLoaded', () => {
         getJSON('https://api.frankfurter.dev/v1/latest?base=USD&symbols=JPY')
             .then((j) => {
                 const yen = j.rates.JPY;
-                set('x-tag-yen', yen.toFixed(1));
+                // 見えた ときに 0 から かけあがる
+                const yEl = document.getElementById('x-tag-yen');
+                if (yEl && window.IntersectionObserver && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+                    yEl.textContent = '0.0';
+                    const io2 = new IntersectionObserver((es) => {
+                        if (!es[0].isIntersecting) return;
+                        io2.disconnect();
+                        const t0 = performance.now();
+                        const step = (t) => {
+                            const u = Math.min(1, (t - t0) / 1200), e = 1 - Math.pow(1 - u, 4);
+                            yEl.textContent = (yen * e).toFixed(1);
+                            if (u < 1) requestAnimationFrame(step);
+                        };
+                        requestAnimationFrame(step);
+                    }, { threshold: 0.6 });
+                    io2.observe(yEl);
+                } else set('x-tag-yen', yen.toFixed(1));
                 set('x-tag-sub', 'うまい棒 やく ' + Math.floor(yen / 15) + 'ほん ぶん');
             })
             .catch(() => set('x-tag-sub', 'ねだんが わからない'));
@@ -1691,4 +1707,17 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     document.addEventListener('visibilitychange', () => { if (document.hidden) { if (shown) { total += Date.now() - shown; shown = 0; } } else if (!sent) shown = Date.now(); });
     window.addEventListener('pagehide', leave);
+})();
+
+/* ---------- 写真が マウスの ほうへ 少し かたむく ---------- */
+(function () {
+    const p = document.querySelector('.polaroid'), box = p && p.querySelector('.polaroid-img');
+    if (!box || (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+    p.addEventListener('pointermove', (e) => {
+        const r = box.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        box.style.setProperty('--ty', (x * 16).toFixed(1) + 'deg');
+        box.style.setProperty('--tx', (-y * 16).toFixed(1) + 'deg');
+    });
+    p.addEventListener('pointerleave', () => { box.style.setProperty('--tx', '0deg'); box.style.setProperty('--ty', '0deg'); });
 })();

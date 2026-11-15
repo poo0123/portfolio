@@ -2125,3 +2125,35 @@ body.dark-mode .dots-toggle:hover { box-shadow: 0 7px 16px rgba(0, 0, 0, 0.42); 
 
 .about-link { font-family: 'Yomogi', cursive; font-size: 0.8rem; color: var(--ink-2); text-decoration: none; border-bottom: 1px dashed var(--rule); }
 .about-link:hover { color: var(--red); border-color: var(--red); }
+
+/* =========================================================
+   うごきを もう少し（りんくの ページと そろえる）
+   ========================================================= */
+/* 見出しは 書かれる ように 出る */
+.reveal.active .hand-title { animation: x-write 0.7s 0.2s backwards; }
+/* 写真が じわっと 浮かぶ（ポラロイドの 現像） */
+.sheet-me.reveal.active .polaroid-img img { animation: x-develop 1.8s 0.3s backwards ease-out; }
+@keyframes x-develop { from { filter: brightness(2.4) saturate(0) blur(3px); opacity: 0.4; } }
+/* 写真は 指や マウスの ほうへ 少し かたむく */
+.polaroid-img { transform: perspective(520px) rotateX(var(--tx, 0deg)) rotateY(var(--ty, 0deg)); transition: transform 0.25s ease-out; }
+/* りんくと こうしんきろくは 1つずつ */
+#links.active .cuts li { animation: x-row 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) backwards; animation-delay: calc(var(--i, 0) * 60ms + 0.25s); }
+.x-lib.active .x-lib-rows li { animation: x-row 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) backwards; }
+.x-lib.active .x-lib-rows li:nth-child(2) { animation-delay: 0.08s; }
+.x-lib.active .x-lib-rows li:nth-child(3) { animation-delay: 0.16s; }
+.x-lib.active .x-lib-rows li:nth-child(4) { animation-delay: 0.24s; }
+.x-lib.active .x-lib-rows li:nth-child(5) { animation-delay: 0.32s; }
+@keyframes x-row { from { opacity: 0; translate: -14px 0; } }
+/* ようすの 丸が 息を する */
+.status-dot { animation: x-pulse 2.6s ease-out infinite; }
+@keyframes x-pulse { 0% { box-shadow: 0 0 0 0 rgba(120,120,120,0.35); } 70%, 100% { box-shadow: 0 0 0 8px rgba(120,120,120,0); } }
+/* しつもんは 順に */
+#faq.active .faq-item, #faq.active details { animation: x-row 0.45s cubic-bezier(0.2, 0.9, 0.3, 1) backwards; }
+#faq.active :is(.faq-item, details):nth-child(2) { animation-delay: 0.08s; }
+#faq.active :is(.faq-item, details):nth-child(3) { animation-delay: 0.16s; }
+#faq.active :is(.faq-item, details):nth-child(4) { animation-delay: 0.24s; }
+#faq.active :is(.faq-item, details):nth-child(n+5) { animation-delay: 0.32s; }
+@media (prefers-reduced-motion: reduce) {
+    .reveal.active .hand-title, .polaroid-img img, #links.active .cuts li, .x-lib.active .x-lib-rows li, .status-dot, #faq.active :is(.faq-item, details) { animation: none !important; }
+    .polaroid-img { transform: none; }
+}

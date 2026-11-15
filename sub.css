@@ -149,3 +149,8 @@ body.dark-mode .pf { background: #dfe6fa; }
     .pf-banner, .pf-dot, .sub-list li, .sub-nums div { animation: none !important; }
     .acct.rv, .acct.rv * { opacity: 1 !important; translate: none !important; scale: none !important; clip-path: none !important; transition: none !important; }
 }
+
+/* 動く ネームプレート */
+.pf-plate { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: right center; pointer-events: none; }
+.pf-row.has-plate::before { z-index: 1; }
+.pf-row .pf-id, .pf-row .pf-logo, .pf-row .pf-ava { z-index: 2; }

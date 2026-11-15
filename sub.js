@@ -86,7 +86,7 @@
         if (sD) {
             if (u.avatar) sD.img('ava', 'https://cdn.discordapp.com/avatars/' + DID + '/' + u.avatar + '.webp?size=256' + (!calm && u.avatar.indexOf('a_') === 0 ? '&animated=true' : ''));
             const deco = u.avatar_decoration_data;
-            if (deco && deco.asset) sD.img('ring', 'https://cdn.discordapp.com/avatar-decoration-presets/' + deco.asset + '.png?size=240&passthrough=true');
+            if (deco && deco.asset) sD.img('ring', 'https://cdn.discordapp.com/avatar-decoration-presets/' + deco.asset + '.png?size=160&passthrough=true');
             sD.text('name', u.display_name || u.global_name || u.username);
             const dot = sD.show('dot'); if (dot) dot.className = 'pf-dot ' + (d.discord_status || 'offline');
             const pg = u.primary_guild, hasTag = pg && pg.identity_enabled && pg.tag;
@@ -96,7 +96,21 @@
                 sD.show('tag');
             }
             const np = u.collectibles && u.collectibles.nameplate, rowEl = sD.k('row');
-            if (np && np.asset && rowEl) { rowEl.style.backgroundImage = 'url("https://cdn.discordapp.com/assets/collectibles/' + np.asset + 'static.png")'; rowEl.classList.add('has-plate'); }
+            if (np && np.asset && rowEl) {
+                const base = 'https://cdn.discordapp.com/assets/collectibles/' + np.asset;
+                rowEl.style.backgroundImage = 'url("' + base + 'static.png")';
+                rowEl.classList.add('has-plate');
+                // 動く ほうが 流れはじめたら、下の 止まった 絵は どける
+                if (!calm) {
+                    const v = el('video', 'pf-plate');
+                    v.muted = true; v.loop = true; v.autoplay = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.setAttribute('aria-hidden', 'true');
+                    v.addEventListener('playing', () => { rowEl.style.backgroundImage = ''; }, { once: true });
+                    v.addEventListener('error', () => v.remove());
+                    v.src = base + 'asset.webm';
+                    rowEl.insertBefore(v, rowEl.firstChild);
+                    const p = v.play(); if (p && p.catch) p.catch(() => {});
+                }
+            }
             sD.text('status', STATE[d.discord_status] || '');
             const acts = d.activities || [], custom = acts.find((a) => a.type === 4), list = sD.k('list');
             if (list) {
