@@ -99,3 +99,10 @@ body.dark-mode .pf { background: #dfe6fa; }
 .acct .pf .tape { top: -26px; left: -36px; }
 .acct .sheet.sub { background: none; border: 0; box-shadow: none; rotate: 0deg; padding: 22px 14px 0; margin: 0; }
 @media (max-width: 640px) { .acct { padding: 8px 8px 18px; } .acct .sheet.sub { padding: 18px 8px 0; } }
+
+/* このサイトについて：ふつうの 文章 */
+.sub-text { font-family: system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif; font-size: 0.88rem; line-height: 1.9; }
+.sub-text + .sub-text { margin-top: 10px; }
+.s-about .sub-dl, .s-about .sub-list { font-family: system-ui, -apple-system, "Hiragino Sans", "Yu Gothic UI", Meiryo, sans-serif; }
+/* アイコンは いつも 画像の 上に かぶせる（行が 高く なっても） */
+@media (min-width: 641px) { .pf-ava { bottom: auto; top: -38px; } .pf-row { min-height: 78px; } }
