@@ -146,7 +146,7 @@ const CARDS = {
 async function profile(name, request, ctx) {
     const json = (data, age) => new Response(JSON.stringify(data), { headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'public, max-age=' + age, 'X-Content-Type-Options': 'nosniff' } });
     if (!CARDS[name] || request.method !== 'GET') return json({}, 60);
-    const key = new Request('https://poo123.com/api/card/' + name);
+    const key = new Request('https://poo123.com/api/card/v2/' + name);
     const cache = caches.default;
     const hit = await cache.match(key);
     if (hit) return hit;
