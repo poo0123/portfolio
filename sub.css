@@ -275,3 +275,7 @@ body.dark-mode .pf { background: #dfe6fa; }
 @keyframes av-spin { to { rotate: 360deg; } }
 @keyframes av-twinkle { 0%, 100% { scale: 1; rotate: 0deg; } 50% { scale: 1.25; rotate: 20deg; } }
 @media (prefers-reduced-motion: reduce) { .s-instagram .pf-ava::before, .s-github .pf-ava::before, .s-github .pf-ava::after { animation: none; } }
+
+/* Steam：わくに あわせて 四角い アイコン */
+.s-steam .pf-ava .face { border-radius: 4px; border-width: 3px; }
+.s-steam .pf-ava .ring { inset: -11%; width: 122%; height: 122%; }
