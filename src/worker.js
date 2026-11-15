@@ -93,8 +93,38 @@ async function count(request, env, url, status) {
         dim('browser', browserOf(ua));
         dim('os', osOf(ua));
         if (country === 'JP' && cf.region) dim('region', cf.region);
+        const lang = (request.headers.get('Accept-Language') || '').split(',')[0].trim().slice(0, 12);
+        if (/^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$/.test(lang)) dim('lang', lang);
+        if (cf.asOrganization) dim('isp', cf.asOrganization);
         await env.LOG.batch(st);
     } catch (e) { /* 数えそこねても ページは 返す */ }
+}
+
+/* ---------- ページの 中での 動き ----------
+   サイト側から「何が 起きたか」だけが 送られてくる。決まった 種類しか 受けとらない。 */
+const STAY = ['10秒未満', '10〜30秒', '30秒〜1分', '1〜3分', '3〜10分', '10分以上'];
+const REACH = ['25%まで', '25〜50%', '50〜75%', '75%以上'];
+const THEME = ['ひる（ライト）', 'よる（ダーク）'];
+const EVENTS = { click: null, egg: null, stay: STAY, scroll: REACH, theme: THEME };
+async function beacon(request, env, url) {
+    const done = new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } });
+    try {
+        const ua = request.headers.get('User-Agent') || '';
+        if (!ua || BOT.test(ua)) return done;
+        let origin = '';
+        try { origin = new URL(request.headers.get('Origin') || '').host; } catch (e) {}
+        if (origin !== url.host) return done;
+        if (await authed(request, env)) return done;
+        const text = (await request.text()).slice(0, 300);
+        const d = JSON.parse(text);
+        const list = EVENTS[d.k];
+        if (list === undefined) return done;
+        let v = list ? list[Number(d.v)] : String(d.v || '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, 60);
+        if (!v) return done;
+        await env.LOG.prepare('INSERT INTO dims (day, kind, k, n) VALUES (?, ?, ?, 1) ON CONFLICT (day, kind, k) DO UPDATE SET n = n + 1')
+            .bind(jst().day, 'ev_' + d.k, v).run();
+    } catch (e) {}
+    return done;
 }
 
 /* ---------- 見る ---------- */
@@ -171,7 +201,7 @@ const loginPage = (msg) => (
     '<input type="password" name="k" aria-label="合言葉" placeholder="合言葉" required autofocus>' +
     '<button class="btn pri" type="submit">ログイン</button></form></div></div>');
 
-const VIEWS = [['overview', '概要'], ['trend', '推移'], ['time', '時間帯・曜日'], ['pages', 'ページ'], ['refs', '参照元'],
+const VIEWS = [['overview', '概要'], ['trend', '推移'], ['time', '時間帯・曜日'], ['pages', 'ページ'], ['refs', '参照元'], ['act', '行動'],
     ['geo', '地域'], ['env', '環境'], ['bots', 'ボット'], ['nf', '404'], ['system', 'システム']];
 const PERIODS = [['7', '7日'], ['30', '30日'], ['90', '90日'], ['all', '全期間']];
 const WD = ['日', '月', '火', '水', '木', '金', '土'];
@@ -211,10 +241,13 @@ async function dashboard(env, view, per) {
         return bars(items, cls, (i) => (span - 1 - i) % step === 0);
     };
     const span = nDays || 90;       // 日別グラフは 最長 90日
+    const hourBars = (rows) => { const h = Array(24).fill(0); rows.forEach((r) => { h[r.k] = r.n; });
+        return bars(h.map((n, i) => ({ t: i + '時', l: String(i), n })), 'h', (i) => i % 3 === 0); };
+    const fixed = (rows, order) => { const by = {}; rows.forEach((r) => { by[r.k] = r.n; }); return order.map((k) => ({ k, n: by[k] || 0 })); };
     let body = '';
 
     if (view === 'overview') {
-        const [t0, t1, t7, t30, tall, days, pages, refs, bots] = await run([
+        const [t0, t1, t7, t30, tall, days, pages, refs, bots, hT, hY] = await run([
             q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day = ?', d(0)),
             q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day = ?', d(1)),
             q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ?', d(6)),
@@ -223,7 +256,9 @@ async function dashboard(env, view, per) {
             q('SELECT day k, SUM(n) n FROM hits WHERE day >= ? GROUP BY day', d(span - 1)),
             q('SELECT path k, SUM(n) n FROM hits WHERE day >= ? GROUP BY path ORDER BY n DESC LIMIT 5', since),
             q('SELECT ref k, SUM(n) n FROM hits WHERE day >= ? AND ref != \'\' GROUP BY ref ORDER BY n DESC LIMIT 5', since),
-            q('SELECT COALESCE(SUM(n),0) n FROM dims WHERE kind = \'bot\' AND day = ?', d(0))
+            q('SELECT COALESCE(SUM(n),0) n FROM dims WHERE kind = \'bot\' AND day = ?', d(0)),
+            q('SELECT hour k, SUM(n) n FROM hits WHERE day = ? GROUP BY hour', d(0)),
+            q('SELECT hour k, SUM(n) n FROM hits WHERE day = ? GROUP BY hour', d(1))
         ]);
         const diff = t0[0].n - t1[0].n;
         body = '<div class="kpi">' +
@@ -233,15 +268,20 @@ async function dashboard(env, view, per) {
             kpi('累計', tall[0].n, tall[0].s ? esc(tall[0].s) + ' から' : '') +
             kpi('今日のボット', bots[0].n, '人のアクセスとは別集計') + '</div><div class="grid">' +
             card('日別アクセス', '直近' + span + '日', dayBars(days, span), 'wide') +
+            card('今日の時間別', '日本時間・現在 ' + jst(now).hour + '時台', hourBars(hT)) + card('昨日の時間別', '日本時間', hourBars(hY)) +
             card('よく見られたページ', perLabel, table(pages)) + card('おもな参照元', perLabel, table(refs)) + '</div>';
     } else if (view === 'trend') {
-        const [days, months, best, tot] = await run([
+        const [days, months, best, tot, prev] = await run([
             q('SELECT day k, SUM(n) n FROM hits WHERE day >= ? GROUP BY day', d(span - 1)),
             q('SELECT substr(day,1,7) k, SUM(n) n FROM hits GROUP BY k ORDER BY k DESC LIMIT 24'),
             q('SELECT day k, SUM(n) n FROM hits GROUP BY day ORDER BY n DESC LIMIT 10'),
-            q('SELECT COALESCE(SUM(n),0) n, COUNT(DISTINCT day) c FROM hits WHERE day >= ?', since)
+            q('SELECT COALESCE(SUM(n),0) n, COUNT(DISTINCT day) c FROM hits WHERE day >= ?', since),
+            q('SELECT COALESCE(SUM(n),0) n FROM hits WHERE day >= ? AND day < ?', nDays ? d(nDays * 2 - 1) : '9', since)
         ]);
-        body = '<div class="kpi">' + kpi('期間の合計', tot[0].n, perLabel) + kpi('アクセスのあった日数', tot[0].c) +
+        const pv = prev[0].n, ch = pv ? Math.round((tot[0].n - pv) / pv * 100) : null;
+        body = '<div class="kpi">' + kpi('期間の合計', tot[0].n, perLabel) +
+            (nDays ? kpi('前の' + perLabel + 'との比較', ch === null ? '—' : (ch > 0 ? '+' : '') + ch + '%', '前の期間 ' + pv + ' 件') : '') +
+            kpi('アクセスのあった日数', tot[0].c) +
             kpi('1日平均', tot[0].c ? (tot[0].n / (nDays || tot[0].c)).toFixed(1) : '0') +
             kpi('過去最多の日', best.length ? best[0].n : 0, best.length ? esc(best[0].k) : '') + '</div><div class="grid">' +
             card('日別アクセス', '直近' + span + '日', dayBars(days, span), 'wide') +
@@ -276,15 +316,28 @@ async function dashboard(env, view, per) {
         body = '<div class="kpi">' + kpi('他サイトから', ext, tot[0].n ? Math.round(ext / tot[0].n * 100) + '%' : '') +
             kpi('直接・サイト内', direct[0].n, 'URL 直打ち、ブックマーク、アプリ、サイト内の移動') + kpi('参照元の数', rows.length) + '</div>' +
             card('参照元サイト', perLabel + '・他サイトからの ' + ext + ' 件の内訳', table(rows, ext));
+    } else if (view === 'act') {
+        const [ck, st, sc, th, eg] = await run([dimQ('ev_click', 50), dimQ('ev_stay', 10), dimQ('ev_scroll', 10), dimQ('ev_theme', 5), dimQ('ev_egg', 20)]);
+        const sum = (r) => r.reduce((a, x) => a + x.n, 0);
+        const stF = fixed(st, STAY), scF = fixed(sc, REACH), n = sum(stF);
+        const long = n ? Math.round((stF[3].n + stF[4].n + stF[5].n) / n * 100) + '%' : '—';
+        const deep = sum(scF) ? Math.round(scF[3].n / sum(scF) * 100) + '%' : '—';
+        body = '<div class="kpi">' + kpi('リンクが押された回数', sum(ck), perLabel) + kpi('1分以上 見た人の割合', long) +
+            kpi('最後まで読んだ割合', deep, 'ページの 75% 以上まで') + kpi('隠しコマンドの発動', sum(eg)) + '</div><div class="grid">' +
+            card('押されたリンク', perLabel, table(ck), 'wide') +
+            card('滞在時間', perLabel + '・ページを開いていた時間', table(stF)) + card('どこまでスクロールしたか', perLabel, table(scF)) +
+            card('表示モード', perLabel + '・開いたときの状態', table(fixed(th, THEME))) + card('隠しコマンド', perLabel, table(eg)) + '</div>' +
+            '<p class="note">サイトのページから、起きたことの種類だけを送って数えています（誰が、は記録しません）。この機能を入れる前の分はありません。</p>';
     } else if (view === 'geo') {
         const [cs, rs] = await run([
             q('SELECT country k, SUM(n) n FROM hits WHERE day >= ? GROUP BY country ORDER BY n DESC LIMIT 50', since), dimQ('region', 60)]);
         body = '<div class="grid">' + card('国・地域', perLabel, table(cs)) + card('都道府県', perLabel + '・日本からのアクセスのみ', table(rs)) + '</div>';
     } else if (view === 'env') {
-        const [dv, br, os] = await run([
-            q('SELECT device k, SUM(n) n FROM hits WHERE day >= ? GROUP BY device ORDER BY n DESC', since), dimQ('browser', 20), dimQ('os', 20)]);
+        const [dv, br, os, lg, isp] = await run([
+            q('SELECT device k, SUM(n) n FROM hits WHERE day >= ? GROUP BY device ORDER BY n DESC', since), dimQ('browser', 20), dimQ('os', 20), dimQ('lang', 20), dimQ('isp', 40)]);
         body = '<div class="grid">' + card('デバイス', perLabel, table(dv, 0, (k) => (k === 'sp' ? 'スマートフォン' : 'PC')), 'wide') +
-            card('ブラウザ', perLabel, table(br)) + card('OS', perLabel, table(os)) + '</div>';
+            card('ブラウザ', perLabel, table(br)) + card('OS', perLabel, table(os)) +
+            card('ブラウザの言語設定', perLabel, table(lg)) + card('回線・プロバイダ', perLabel + '・事業者名のみ', table(isp)) + '</div>';
     } else if (view === 'bots') {
         const [names, days, tot] = await run([dimQ('bot', 40),
             q('SELECT day k, SUM(n) n FROM dims WHERE kind = \'bot\' AND day >= ? GROUP BY day', d(span - 1)),
@@ -301,13 +354,13 @@ async function dashboard(env, view, per) {
         const [h, dm, fl] = await run([
             q('SELECT COUNT(*) c, MIN(day) a, MAX(day) b FROM hits'), q('SELECT kind k, COUNT(*) n FROM dims GROUP BY kind ORDER BY n DESC'),
             q('SELECT slot k, n FROM fails ORDER BY slot DESC LIMIT 30')]);
-        const kn = { bot: 'ボット', nf: '404', browser: 'ブラウザ', os: 'OS', region: '都道府県' };
+        const kn = { bot: 'ボット', nf: '404', browser: 'ブラウザ', os: 'OS', region: '都道府県', lang: '言語', isp: '回線', ev_click: 'リンクのクリック', ev_stay: '滞在時間', ev_scroll: 'スクロール', ev_theme: '表示モード', ev_egg: '隠しコマンド' };
         body = '<div class="kpi">' + kpi('記録の行数（アクセス）', h[0].c) + kpi('記録の行数（その他）', dm.reduce((s, r) => s + r.n, 0)) +
             kpi('記録の開始日', h[0].a ? esc(h[0].a) : '—') + kpi('最新の記録日', h[0].b ? esc(h[0].b) : '—') + '</div><div class="grid">' +
             card('ログイン失敗の履歴', '1時間ごとの回数・新しい順', fl.length ? table(fl, 0, (k) => k + '時台') : '<p class="empty">失敗はありません。</p>') +
             card('その他の記録の内訳', '行数', table(dm, 0, (k) => kn[k] || k)) + '</div>' +
             '<p class="note">ログインは 1 時間に ' + MAX_FAILS + ' 回失敗すると、その時間はロックされます。ログイン状態は 30 日間続きます。<br>' +
-            '保存しているのは「日付・時・ページ・参照元のサイト名・国・デバイス種別」ごとの件数と、ブラウザ／OS の種類・都道府県・ボットの種類・404 のパスごとの日別件数のみです。' +
+            '保存しているのは「日付・時・ページ・参照元のサイト名・国・デバイス種別」ごとの件数と、ブラウザ／OS の種類・言語・回線事業者・都道府県・ボットの種類・404 のパス・ページ内の行動（押されたリンク、滞在時間、スクロール、表示モード）ごとの日別件数のみです。' +
             'IP アドレス、ブラウザの詳細な識別情報、個別の訪問履歴は保存していません。</p>';
     }
 
@@ -376,6 +429,8 @@ export default {
             const r = await admin(request, env, url);
             if (r) return r;
         }
+
+        if (env.LOG && url.pathname === '/b' && request.method === 'POST') return beacon(request, env, url);
 
         const res = await env.ASSETS.fetch(request);
         if (env.LOG && request.method === 'GET' && (res.status === 200 || res.status === 404) &&

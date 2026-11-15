@@ -1643,3 +1643,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 })();
+
+/* ---------- なにが 起きたか だけを 数える ----------
+   押された りんく・どのくらい 見たか・どこまで 読んだか・ひる/よる・かくしコマンド。
+   送るのは 種類だけ。だれが、は 送らないし 残さない。 */
+(function () {
+    if (navigator.webdriver || !navigator.sendBeacon) return;
+    const send = (k, v) => { try { navigator.sendBeacon('/b', new Blob([JSON.stringify({ k: k, v: v })], { type: 'text/plain' })); } catch (e) {} };
+
+    document.addEventListener('click', (e) => {
+        const a = e.target.closest ? e.target.closest('a[href]') : null;
+        if (!a) return;
+        const h = a.getAttribute('href') || '';
+        if (!/^(https?:|mailto:)/.test(h)) return;
+        let name = '';
+        const b = a.querySelector('b'), em = a.querySelector('em');
+        if (a.closest('.cuts') && b) name = b.textContent.trim() + (em ? '（' + em.textContent.trim() + '）' : '');
+        else if (h.indexOf('mailto:') === 0) name = 'メール';
+        else { try { name = new URL(h).hostname.replace(/^www\./, ''); } catch (err) { return; } }
+        send('click', name);
+    }, true);
+
+    setTimeout(() => send('theme', document.body.classList.contains('dark-mode') ? 1 : 0), 1500);
+
+    const rain = document.getElementById('x-rain');
+    if (rain && window.MutationObserver) {
+        let last = 0;
+        new MutationObserver(() => {
+            if (rain.childElementCount && Date.now() - last > 8000) { last = Date.now(); send('egg', 'うんこの あめ'); }
+        }).observe(rain, { childList: true });
+    }
+
+    // 見ていた 時間（かくれている あいだは 数えない）と、いちばん 下まで 行った ところ
+    let shown = document.hidden ? 0 : Date.now(), total = 0, deep = 0, sent = false;
+    const reach = () => {
+        const doc = document.documentElement, max = doc.scrollHeight - window.innerHeight;
+        deep = Math.max(deep, max > 0 ? (window.scrollY || 0) / max : 1);
+    };
+    window.addEventListener('scroll', reach, { passive: true });
+    const leave = () => {
+        if (shown) { total += Date.now() - shown; shown = 0; }
+        if (sent || total < 1000) return;
+        sent = true; reach();
+        const s = total / 1000;
+        send('stay', s < 10 ? 0 : s < 30 ? 1 : s < 60 ? 2 : s < 180 ? 3 : s < 600 ? 4 : 5);
+        send('scroll', deep < 0.25 ? 0 : deep < 0.5 ? 1 : deep < 0.75 ? 2 : 3);
+    };
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { if (shown) { total += Date.now() - shown; shown = 0; } } else if (!sent) shown = Date.now(); });
+    window.addEventListener('pagehide', leave);
+})();
