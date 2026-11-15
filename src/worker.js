@@ -71,7 +71,7 @@ const HEAD = {
     'Content-Type': 'text/html; charset=utf-8',
     'Cache-Control': 'no-store',
     'X-Robots-Tag': 'noindex, nofollow, noarchive',
-    'Referrer-Policy': 'no-referrer',
+    'Referrer-Policy': 'same-origin',
     'X-Frame-Options': 'DENY',
     'Content-Security-Policy': "default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; form-action 'self'; base-uri 'none'; frame-ancestors 'none'"
 };
