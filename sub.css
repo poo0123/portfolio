@@ -254,3 +254,6 @@ body.dark-mode .pf { background: #dfe6fa; }
 /* ひらく ボタンは いつも 右（アプリ名と ひとことの となり） */
 .lk-main .acct .sheet.sub, .acct .sheet.sub { grid-template-columns: minmax(0, 1fr) auto; }
 .lk-main .acct .sheet.sub > .sub-center, .acct .sheet.sub > .sub-center { grid-column: 2; grid-row: 1 / span 2; justify-self: end; align-self: center; margin: 0; }
+
+/* とっぷへ もどる */
+.paper-nav .nav-top { color: var(--red); }
