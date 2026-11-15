@@ -34,6 +34,29 @@
         if (tail) li.appendChild(el('small', '', tail));
         return li;
     };
+    // 数字は 見えた ときに 0 から かけあがる
+    const calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const countUp = (b, to) => {
+        if (calm || typeof to !== 'number' || !window.IntersectionObserver) return;
+        b.textContent = '0';
+        const io = new IntersectionObserver((es) => {
+            if (!es[0].isIntersecting) return;
+            io.disconnect();
+            const t0 = performance.now(), dur = 1100;
+            const step = (t) => {
+                const u = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - u, 4);
+                b.textContent = num(Math.round(to * e));
+                if (u < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        }, { threshold: 0.6 });
+        io.observe(b);
+    };
+    // 紙は 見えた ときに 出てくる
+    if (!calm && window.IntersectionObserver) {
+        const rv = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); rv.unobserve(e.target); } }), { threshold: 0.12 });
+        document.querySelectorAll('.acct').forEach((a) => { a.classList.add('rv'); rv.observe(a); });
+    }
     const scope = (name) => {
         const root = document.querySelector('.acct[data-s="' + name + '"]');
         if (!root) return null;
@@ -48,7 +71,7 @@
             nums: (pairs) => {
                 const box = k('nums'); if (!box) return;
                 box.textContent = '';
-                pairs.forEach((p) => { if (p[1] == null) return; const d = el('div'); d.appendChild(el('b', '', num(p[1]))); d.appendChild(el('span', '', p[0])); box.appendChild(d); });
+                pairs.forEach((p) => { if (p[1] == null) return; const d = el('div'); const b = el('b', '', num(p[1])); d.appendChild(b); d.appendChild(el('span', '', p[0])); box.appendChild(d); countUp(b, p[1]); });
                 if (box.childElementCount) { const w = k('data'); if (w) w.hidden = false; }
             }
         };
@@ -61,7 +84,7 @@
     if (sD || sS) jget('https://api.lanyard.rest/v1/users/' + DID).then((j) => {
         const d = j.data || {}, u = d.discord_user || {};
         if (sD) {
-            if (u.avatar) sD.img('ava', 'https://cdn.discordapp.com/avatars/' + DID + '/' + u.avatar + '.webp?size=256');
+            if (u.avatar) sD.img('ava', 'https://cdn.discordapp.com/avatars/' + DID + '/' + u.avatar + '.webp?size=256' + (!calm && u.avatar.indexOf('a_') === 0 ? '&animated=true' : ''));
             const deco = u.avatar_decoration_data;
             if (deco && deco.asset) sD.img('ring', 'https://cdn.discordapp.com/avatar-decoration-presets/' + deco.asset + '.png?size=240&passthrough=true');
             sD.text('name', u.display_name || u.global_name || u.username);
