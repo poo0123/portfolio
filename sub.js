@@ -228,3 +228,18 @@
     }
 })();
 
+
+// Spotify の 背景：おんぷ が ふわっと 流れて、下で イコライザーが ゆれる
+(() => {
+    const b = document.querySelector('.s-spotify .pf-banner');
+    if (!b) return;
+    const w = document.createElement('div'); w.className = 'sp-deco'; w.setAttribute('aria-hidden', 'true');
+    ['♪', '♫', '♪', '♬', '♩', '♪', '♫'].forEach((n, i) => {
+        const s = document.createElement('span'); s.className = 'sp-note'; s.textContent = n;
+        s.style.left = (6 + i * 14) + '%'; s.style.animationDelay = (-i * 1.3) + 's';
+        s.style.fontSize = (14 + (i % 3) * 5) + 'px'; w.appendChild(s);
+    });
+    const eq = document.createElement('div'); eq.className = 'sp-eq';
+    for (let i = 0; i < 40; i++) { const e = document.createElement('i'); e.style.animationDelay = (-Math.random() * 1.2).toFixed(2) + 's'; e.style.animationDuration = (0.8 + Math.random() * 0.8).toFixed(2) + 's'; eq.appendChild(e); }
+    w.appendChild(eq); b.appendChild(w);
+})();

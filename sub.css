@@ -279,3 +279,13 @@ body.dark-mode .pf { background: #dfe6fa; }
 /* Steam：わくに あわせて 四角い アイコン */
 .s-steam .pf-ava .face { border-radius: 4px; border-width: 3px; }
 .s-steam .pf-ava .ring { inset: -11%; width: 122%; height: 122%; }
+
+/* Spotify：おんぷ と イコライザー */
+.s-spotify .pf-banner { position: relative; overflow: hidden; }
+.sp-deco { position: absolute; inset: 0; pointer-events: none; }
+.sp-note { position: absolute; bottom: -24px; color: rgba(255,255,255,0.55); animation: sp-float 9s linear infinite; }
+@keyframes sp-float { 0% { transform: translate(0, 0) rotate(-10deg); opacity: 0; } 15% { opacity: 1; } 50% { transform: translate(14px, -70px) rotate(10deg); } 85% { opacity: 0.8; } 100% { transform: translate(-6px, -150px) rotate(-8deg); opacity: 0; } }
+.sp-eq { position: absolute; left: 0; right: 0; bottom: 0; height: 26px; display: flex; align-items: flex-end; gap: 3px; padding: 0 6px; opacity: 0.35; }
+.sp-eq i { flex: 1; height: 30%; background: #fff; border-radius: 2px 2px 0 0; animation: sp-eq ease-in-out infinite alternate; }
+@keyframes sp-eq { to { height: 100%; } }
+@media (prefers-reduced-motion: reduce) { .sp-note, .sp-eq i { animation: none; } }
