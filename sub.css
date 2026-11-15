@@ -203,3 +203,14 @@ body.dark-mode .pf { background: #dfe6fa; }
 .acct .sub-go { padding: 8px 18px; font-size: 0.88rem; white-space: nowrap; }
 @media (max-width: 480px) { .acct .sub-go { padding: 7px 12px; font-size: 0.78rem; } }
 .pf-banner.has-img { animation: none; background-size: cover; }
+
+/* 広い 画面では 2れつに ならべて、両はしも 使う */
+@media (min-width: 1100px) {
+    .s-links .page { max-width: 1120px; }
+    .s-links .lk-head { max-width: 744px; margin-left: auto; margin-right: auto; }
+    .lk-main { display: grid; grid-template-columns: 1fr 1fr; gap: 0 40px; align-items: start; }
+    .lk-main .acct { margin-bottom: 56px; }
+    .lk-main .acct:nth-of-type(even) { margin-top: 70px; }
+    .lk-main .acct .sheet.sub { grid-template-columns: 1fr; }
+    .lk-main .acct .sheet.sub > .sub-center { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 14px; }
+}

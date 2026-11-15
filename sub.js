@@ -91,7 +91,6 @@
     if (sD) jget('/api/card/discord').then((d) => {
         if (d.banner) sD.banner(calm ? d.banner.replace('.gif', '.png') : d.banner);
         else if (d.color) { const b = sD.k('banner'); if (b) b.style.backgroundColor = d.color; }
-        sD.bio(d.bio);
     }).catch(() => {});
     if (sD || sS) jget('https://api.lanyard.rest/v1/users/' + DID).then((j) => {
         const d = j.data || {}, u = d.discord_user || {};
@@ -101,7 +100,7 @@
             if (deco && deco.asset) sD.img('ring', 'https://cdn.discordapp.com/avatar-decoration-presets/' + deco.asset + '.png?size=160&passthrough=true');
             sD.text('name', u.display_name || u.global_name || u.username);
             const dot = sD.show('dot'); if (dot) dot.className = 'pf-dot ' + (d.discord_status || 'offline');
-            const pg = u.primary_guild, hasTag = pg && pg.identity_enabled && pg.tag;
+            const pg = u.primary_guild, hasTag = false;
             if (hasTag) {
                 sD.text('tag-name', pg.tag);
                 if (pg.badge && pg.identity_guild_id) sD.img('tag-img', 'https://cdn.discordapp.com/guild-tag-badges/' + pg.identity_guild_id + '/' + pg.badge + '.png?size=32');
