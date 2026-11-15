@@ -184,3 +184,12 @@ body.dark-mode .pf { background: #dfe6fa; }
 .acct { border-radius: 14px; }
 .acct .pf-in { border-radius: 10px; }
 .acct .pf-banner { border-radius: 10px 10px 0 0; }
+
+/* 丸い 角の すきまは 紙と おなじ 色 */
+.acct .pf, body.dark-mode .acct .pf { background: transparent; }
+/* テープは カバー画像の 上に */
+.acct .pf .tape { z-index: 5; }
+/* 上の 小さい 見出し */
+.minibar-home { flex: 0 0 auto; font-family: 'Yomogi', cursive; font-size: 0.78rem; color: var(--ink-2); text-decoration: none; border-bottom: 1px dashed var(--rule); margin-left: 6px; }
+.minibar-home:hover { color: var(--red); border-color: var(--red); }
+.acct { scroll-margin-top: 70px; }

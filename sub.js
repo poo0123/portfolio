@@ -22,6 +22,13 @@
         try { localStorage.setItem('poo-theme', dark ? 'dark' : 'light'); } catch (e) {}
     });
 
+    /* ---------- 下へ いったら 上に 小さい 見出し ---------- */
+    const mini = document.getElementById('minibar'), hero = document.querySelector('.lk-hero');
+    if (mini && hero) {
+        const f = () => mini.classList.toggle('show', window.scrollY > hero.offsetTop + hero.offsetHeight - 40);
+        window.addEventListener('scroll', f, { passive: true }); f();
+    }
+
     /* ---------- 部品（アカウントごとの 枠の 中だけを さわる） ---------- */
     const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
     const num = (n) => (typeof n === 'number' ? n.toLocaleString('ja-JP') : String(n));
