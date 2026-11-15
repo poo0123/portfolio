@@ -165,14 +165,14 @@
     /* ---------- X・YouTube・Steam（サイトの サーバーが とってきた もの） ---------- */
     const sX = scope('x');
     if (sX) jget('/api/card/x').then((d) => {
-        sX.img('ava', d.avatar); sX.banner(d.banner); sX.text('name', d.name); sX.bio(d.bio);
+        sX.img('ava', d.avatar); sX.text('name', d.name); sX.bio(d.bio);
         sX.nums([['ポスト', d.posts], ['フォロー', d.following], ['フォロワー', d.followers], ['いいね', d.likes]]);
         if (d.joined && ym(d.joined)) sX.text('note', ym(d.joined) + ' から');
     }).catch(() => {});
 
     const sY = scope('youtube');
     if (sY) jget('/api/card/youtube').then((d) => {
-        sY.img('ava', d.avatar); sY.banner(d.banner); sY.text('name', d.name); sY.bio(d.bio);
+        sY.img('ava', d.avatar); sY.text('name', d.name); sY.bio(d.bio);
         const list = sY.k('list');
         if (list && d.videos && d.videos.length) {
             list.textContent = '';
