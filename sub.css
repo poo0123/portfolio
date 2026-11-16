@@ -335,13 +335,21 @@ body.dark-mode .pf { background: #dfe6fa; }
 @keyframes geo-pin { 0% { translate: 0 -60px; opacity: 0; } 12% { translate: 0 0; opacity: 1; } 16% { translate: 0 -6px; } 20%, 80% { translate: 0 0; opacity: 1; } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .s-geo .pf-banner, .s-geo .pf-banner::before, .s-geo .pf-banner::after { animation: none !important; } }
 
-/* 黒い 帯の 下は 水彩みたいに ふわっと にじんで 下の 紙へ */
-.acct .pf-in::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 50px; z-index: 3; pointer-events: none;
-  background: radial-gradient(60% 120% at 15% 112%, var(--card) 40%, transparent 70%),
-    radial-gradient(50% 120% at 55% 118%, var(--card) 45%, transparent 72%),
-    radial-gradient(55% 120% at 92% 112%, var(--card) 40%, transparent 70%),
-    linear-gradient(to bottom, color-mix(in srgb, var(--card) 0%, transparent) 0%, color-mix(in srgb, var(--card) 4%, transparent) 15%, color-mix(in srgb, var(--card) 14%, transparent) 30%, color-mix(in srgb, var(--card) 30%, transparent) 45%, color-mix(in srgb, var(--card) 52%, transparent) 60%, color-mix(in srgb, var(--card) 74%, transparent) 75%, color-mix(in srgb, var(--card) 91%, transparent) 88%, color-mix(in srgb, var(--card) 100%, transparent) 100%); }
-.acct .pf-in { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+/* 黒い 帯の 下は 水彩みたいに ふわっと にじんで 消える。
+   紙色を 上に かぶせると ふちに 細い 線が のこるので、帯 そのものを すかす */
+.acct .pf-in { border-bottom-left-radius: 0; border-bottom-right-radius: 0;
+  -webkit-mask: linear-gradient(#000, #000),
+    radial-gradient(60% 120% at 15% 112%, #000 40%, transparent 70%) left bottom / 100% 50px no-repeat,
+    radial-gradient(50% 120% at 55% 118%, #000 45%, transparent 72%) left bottom / 100% 50px no-repeat,
+    radial-gradient(55% 120% at 92% 112%, #000 40%, transparent 70%) left bottom / 100% 50px no-repeat,
+    linear-gradient(to bottom, rgba(0,0,0,0.00) 0%, rgba(0,0,0,0.04) 15%, rgba(0,0,0,0.14) 30%, rgba(0,0,0,0.30) 45%, rgba(0,0,0,0.52) 60%, rgba(0,0,0,0.74) 75%, rgba(0,0,0,0.91) 88%, rgba(0,0,0,1.00) 100%) left bottom / 100% 50px no-repeat;
+  -webkit-mask-composite: source-out, source-over, source-over, source-over, source-over;
+  mask: linear-gradient(#000, #000),
+    radial-gradient(60% 120% at 15% 112%, #000 40%, transparent 70%) left bottom / 100% 50px no-repeat,
+    radial-gradient(50% 120% at 55% 118%, #000 45%, transparent 72%) left bottom / 100% 50px no-repeat,
+    radial-gradient(55% 120% at 92% 112%, #000 40%, transparent 70%) left bottom / 100% 50px no-repeat,
+    linear-gradient(to bottom, rgba(0,0,0,0.00) 0%, rgba(0,0,0,0.04) 15%, rgba(0,0,0,0.14) 30%, rgba(0,0,0,0.30) 45%, rgba(0,0,0,0.52) 60%, rgba(0,0,0,0.74) 75%, rgba(0,0,0,0.91) 88%, rgba(0,0,0,1.00) 100%) left bottom / 100% 50px no-repeat;
+  mask-composite: subtract, add, add, add, add; }
 .acct .pf-row { min-height: 0; padding-bottom: 30px; }
 @media (min-width: 641px) { .acct .pf-row { min-height: 64px; } }
 
