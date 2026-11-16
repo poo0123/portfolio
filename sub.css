@@ -343,3 +343,7 @@ body.dark-mode .pf { background: #dfe6fa; }
 .acct .pf-in { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
 .acct .pf-row { min-height: 0; padding-bottom: 22px; }
 @media (min-width: 641px) { .acct .pf-row { min-height: 64px; } }
+
+/* スマホで サービス名が たてに くずれない ように */
+.sub-svc { white-space: nowrap; }
+@media (max-width: 640px) { .acct .sheet.sub { column-gap: 10px; } .acct .sub-go { font-size: 0.78rem; padding: 7px 12px; } }
