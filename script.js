@@ -321,8 +321,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 detail: data.spotify.artist,
                 img: data.spotify.album_art_url,
                 url: data.spotify.track_id ? 'https://open.spotify.com/track/' + data.spotify.track_id : null,
-                start: data.spotify.timestamps.start,
-                end: data.spotify.timestamps.end
+                start: Number((data.spotify.timestamps || {}).start) || null,
+                end: Number((data.spotify.timestamps || {}).end) || null
             });
         }
 
@@ -368,9 +368,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 img: img,
                 // 曲や 動画は details_url を 持っていることがある。
                 // 捨てていたので、いままで ただの 文字に なっていた
-                url: a.details_url || null,
-                start: (a.timestamps && a.timestamps.start) ? a.timestamps.start : null,
-                end:   (a.timestamps && a.timestamps.end)   ? a.timestamps.end   : null
+                url: /^https:\/\//.test(a.details_url || '') ? a.details_url : null,
+                start: (a.timestamps && Number(a.timestamps.start)) || null,
+                end:   (a.timestamps && Number(a.timestamps.end))   || null
             });
         });
 
@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 heartbeat = setInterval(() => socket.send(JSON.stringify({ op: 3 })), msg.d.heartbeat_interval);
             }
             if (msg.t === 'INIT_STATE' || msg.t === 'PRESENCE_UPDATE') {
-                paint(msg.d);
+                try { paint(msg.d); } catch (e) {}   // おかしな データが 来ても 止まらない
                 if (msg.t === 'INIT_STATE') hideLoader();
             }
         };
