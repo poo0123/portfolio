@@ -335,15 +335,16 @@ body.dark-mode .pf { background: #dfe6fa; }
 @keyframes geo-pin { 0% { translate: 0 -60px; opacity: 0; } 12% { translate: 0 0; opacity: 1; } 16% { translate: 0 -6px; } 20%, 80% { translate: 0 0; opacity: 1; } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .s-geo .pf-banner, .s-geo .pf-banner::before, .s-geo .pf-banner::after { animation: none !important; } }
 
-/* 黒い 帯の 下は、ぼかしながら 下の 紙の 色へ なめらかに かわる（ふちは まっすぐ） */
-.acct .pf-in::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 26px; z-index: 3; pointer-events: none;
-  background: linear-gradient(to bottom, transparent, var(--card));
-  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-  -webkit-mask: linear-gradient(to bottom, transparent, #000 70%); mask: linear-gradient(to bottom, transparent, #000 70%); }
+/* 黒い 帯の 下は、下の 紙の 色へ なめらかに かわる（ふちは まっすぐ） */
+.acct .pf-in::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 44px; z-index: 3; pointer-events: none;
+  background: linear-gradient(to bottom,
+    color-mix(in srgb, var(--card) 0%, transparent) 0%, color-mix(in srgb, var(--card) 4%, transparent) 15%,
+    color-mix(in srgb, var(--card) 14%, transparent) 30%, color-mix(in srgb, var(--card) 30%, transparent) 45%,
+    color-mix(in srgb, var(--card) 52%, transparent) 60%, color-mix(in srgb, var(--card) 74%, transparent) 75%,
+    color-mix(in srgb, var(--card) 91%, transparent) 88%, var(--card) 100%); }
 .acct .pf-in { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-.acct .pf-row { min-height: 0; padding-bottom: 22px; }
+.acct .pf-row { min-height: 0; padding-bottom: 30px; }
 @media (min-width: 641px) { .acct .pf-row { min-height: 64px; } }
 
-/* スマホで サービス名が たてに くずれない ように */
-.sub-svc { white-space: nowrap; }
-@media (max-width: 640px) { .acct .sheet.sub { column-gap: 10px; } .acct .sub-go { font-size: 0.78rem; padding: 7px 12px; } }
+/* スマホでは ボタンを みじかく（「ひらく」だけ） */
+@media (max-width: 640px) { .acct .sub-go .go-svc { display: none; } .acct .sheet.sub { column-gap: 10px; } }
