@@ -335,15 +335,11 @@ body.dark-mode .pf { background: #dfe6fa; }
 @keyframes geo-pin { 0% { translate: 0 -60px; opacity: 0; } 12% { translate: 0 0; opacity: 1; } 16% { translate: 0 -6px; } 20%, 80% { translate: 0 0; opacity: 1; } 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .s-geo .pf-banner, .s-geo .pf-banner::before, .s-geo .pf-banner::after { animation: none !important; } }
 
-/* 黒い 帯の 下は、下の 紙の 色へ なめらかに かわる（ふちは まっすぐ） */
-.acct .pf-in::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 44px; z-index: 3; pointer-events: none;
-  background: linear-gradient(to bottom,
-    color-mix(in srgb, var(--card) 0%, transparent) 0%, color-mix(in srgb, var(--card) 4%, transparent) 15%,
-    color-mix(in srgb, var(--card) 14%, transparent) 30%, color-mix(in srgb, var(--card) 30%, transparent) 45%,
-    color-mix(in srgb, var(--card) 52%, transparent) 60%, color-mix(in srgb, var(--card) 74%, transparent) 75%,
-    color-mix(in srgb, var(--card) 91%, transparent) 88%, var(--card) 100%); }
+/* 黒い 帯の 下は もこもこ 雲で 下の 紙へ つなぐ */
+.acct .pf-in::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 18px; z-index: 3; pointer-events: none;
+  background: var(--card); -webkit-mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2260%22%20height%3D%2218%22%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2218%22%20r%3D%2212%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2218%22%20r%3D%2216%22/%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2218%22%20r%3D%2211%22/%3E%3C/svg%3E") repeat-x left bottom; mask: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2260%22%20height%3D%2218%22%3E%3Ccircle%20cx%3D%2210%22%20cy%3D%2218%22%20r%3D%2212%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2218%22%20r%3D%2216%22/%3E%3Ccircle%20cx%3D%2252%22%20cy%3D%2218%22%20r%3D%2211%22/%3E%3C/svg%3E") repeat-x left bottom; }
 .acct .pf-in { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-.acct .pf-row { min-height: 0; padding-bottom: 30px; }
+.acct .pf-row { min-height: 0; padding-bottom: 20px; }
 @media (min-width: 641px) { .acct .pf-row { min-height: 64px; } }
 
 /* スマホでは ボタンを みじかく（「ひらく」だけ） */
