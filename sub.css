@@ -336,20 +336,23 @@ body.dark-mode .pf { background: #dfe6fa; }
 @media (prefers-reduced-motion: reduce) { .s-geo .pf-banner, .s-geo .pf-banner::before, .s-geo .pf-banner::after { animation: none !important; } }
 
 /* 黒い 帯の 下は 水彩みたいに ふわっと にじんで 消える。
-   紙色を 上に かぶせると ふちに 細い 線が のこるので、帯 そのものを すかす */
+   紙色を 上に かぶせると ふちに 細い 線が のこるので、帯 そのものを すかす。
+   どの 層も 全面サイズに して、拡大しても 端に すきまが できない ように */
 .acct .pf-in { border-bottom-left-radius: 0; border-bottom-right-radius: 0;
-  -webkit-mask: linear-gradient(#000, #000),
-    radial-gradient(60% 120% at 15% 112%, #000 40%, transparent 70%) left bottom / 100% 50px no-repeat,
-    radial-gradient(50% 120% at 55% 118%, #000 45%, transparent 72%) left bottom / 100% 50px no-repeat,
-    radial-gradient(55% 120% at 92% 112%, #000 40%, transparent 70%) left bottom / 100% 50px no-repeat,
-    linear-gradient(to bottom, rgba(0,0,0,0.00) 0%, rgba(0,0,0,0.04) 15%, rgba(0,0,0,0.14) 30%, rgba(0,0,0,0.30) 45%, rgba(0,0,0,0.52) 60%, rgba(0,0,0,0.74) 75%, rgba(0,0,0,0.91) 88%, rgba(0,0,0,1.00) 100%) left bottom / 100% 50px no-repeat;
-  -webkit-mask-composite: source-out, source-over, source-over, source-over, source-over;
-  mask: linear-gradient(#000, #000),
-    radial-gradient(60% 120% at 15% 112%, #000 40%, transparent 70%) left bottom / 100% 50px no-repeat,
-    radial-gradient(50% 120% at 55% 118%, #000 45%, transparent 72%) left bottom / 100% 50px no-repeat,
-    radial-gradient(55% 120% at 92% 112%, #000 40%, transparent 70%) left bottom / 100% 50px no-repeat,
-    linear-gradient(to bottom, rgba(0,0,0,0.00) 0%, rgba(0,0,0,0.04) 15%, rgba(0,0,0,0.14) 30%, rgba(0,0,0,0.30) 45%, rgba(0,0,0,0.52) 60%, rgba(0,0,0,0.74) 75%, rgba(0,0,0,0.91) 88%, rgba(0,0,0,1.00) 100%) left bottom / 100% 50px no-repeat;
-  mask-composite: subtract, add, add, add, add; }
+  -webkit-mask-image: linear-gradient(#000, #000),
+    radial-gradient(60% 60px at 15% calc(100% + 6px), #000 40%, transparent 70%),
+    radial-gradient(50% 60px at 55% calc(100% + 9px), #000 45%, transparent 72%),
+    radial-gradient(55% 60px at 92% calc(100% + 6px), #000 40%, transparent 70%),
+    linear-gradient(to bottom, transparent calc(100% - 50px), rgba(0,0,0,0.04) calc(100% - 42.5px), rgba(0,0,0,0.14) calc(100% - 35.0px), rgba(0,0,0,0.30) calc(100% - 27.5px), rgba(0,0,0,0.52) calc(100% - 20.0px), rgba(0,0,0,0.74) calc(100% - 12.5px), rgba(0,0,0,0.91) calc(100% - 6.0px), rgba(0,0,0,1.00) calc(100% - 0.0px)),
+    linear-gradient(to bottom, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  -webkit-mask-composite: source-out, source-over, source-over, source-over, source-over, source-over;
+  mask-image: linear-gradient(#000, #000),
+    radial-gradient(60% 60px at 15% calc(100% + 6px), #000 40%, transparent 70%),
+    radial-gradient(50% 60px at 55% calc(100% + 9px), #000 45%, transparent 72%),
+    radial-gradient(55% 60px at 92% calc(100% + 6px), #000 40%, transparent 70%),
+    linear-gradient(to bottom, transparent calc(100% - 50px), rgba(0,0,0,0.04) calc(100% - 42.5px), rgba(0,0,0,0.14) calc(100% - 35.0px), rgba(0,0,0,0.30) calc(100% - 27.5px), rgba(0,0,0,0.52) calc(100% - 20.0px), rgba(0,0,0,0.74) calc(100% - 12.5px), rgba(0,0,0,0.91) calc(100% - 6.0px), rgba(0,0,0,1.00) calc(100% - 0.0px)),
+    linear-gradient(to bottom, transparent calc(100% - 4px), #000 calc(100% - 4px));
+  mask-composite: subtract, add, add, add, add, add; }
 .acct .pf-row { min-height: 0; padding-bottom: 30px; }
 @media (min-width: 641px) { .acct .pf-row { min-height: 64px; } }
 
