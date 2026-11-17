@@ -718,13 +718,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, 30000);
 
-    /* ---------- タブを離れると さみしがる ---------- */
-
-    const realTitle = document.title;
-    document.addEventListener('visibilitychange', () => {
-        document.title = document.hidden ? 'もどってきて…' : realTitle;
-    });
-
     /* ---------- たまに なにかが 通りすぎる ---------- */
 
     const sky = document.getElementById('sky');
