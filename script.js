@@ -1192,6 +1192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.getElementById(id);
         if (el) el.classList.add(ok ? 'on' : 'off');
     };
+    window.apiMark = mark;
 
     const apiDlg   = document.getElementById('api-dlg');
     const apiOpen  = document.getElementById('api-open');
@@ -1560,6 +1561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if ($('#x-tag-yen')) {
         getJSON('https://api.frankfurter.dev/v1/latest?base=USD&symbols=JPY')
             .then((j) => {
+                if (window.apiMark) window.apiMark('api-dot-fx', true);
                 const yen = j.rates.JPY;
                 // 見えた ときに 0 から かけあがる
                 const yEl = document.getElementById('x-tag-yen');
@@ -1580,7 +1582,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else set('x-tag-yen', yen.toFixed(1));
                 set('x-tag-sub', 'うまい棒 やく ' + Math.floor(yen / 15) + 'ほん ぶん');
             })
-            .catch(() => set('x-tag-sub', 'ねだんが わからない'));
+            .catch(() => { set('x-tag-sub', 'ねだんが わからない'); if (window.apiMark) window.apiMark('api-dot-fx', false); });
     }
 
     /* こうしん きろく（GitHub。日付と 1行目 だけ 使う） */
@@ -1588,6 +1590,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (rows) {
         getJSON('https://api.github.com/repos/poo0123/portfolio/commits?per_page=5')
             .then((list) => {
+                if (window.apiMark) window.apiMark('api-dot-gh', true);
                 rows.textContent = '';
                 list.forEach((c, i) => {
                     const d = jst(new Date(c.commit.committer.date).getTime());
@@ -1602,7 +1605,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     rows.appendChild(li);
                 });
             })
-            .catch(() => { rows.textContent = ''; const li = document.createElement('li'); li.textContent = 'きろくが よめなかった。'; rows.appendChild(li); });
+            .catch(() => { rows.textContent = ''; const li = document.createElement('li'); li.textContent = 'きろくが よめなかった。'; rows.appendChild(li); if (window.apiMark) window.apiMark('api-dot-gh', false); });
     }
 
     /* ことしの えんぴつ */
@@ -1733,7 +1736,9 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/api/kazu', { method: add ? 'POST' : 'GET', cache: 'no-store' })
         .then((r) => r.ok ? r.json() : null)
         .then((d) => {
-            if (!d || !Number.isFinite(d.n)) return;
+            const ok = !!d && Number.isFinite(d.n);
+            if (window.apiMark) window.apiMark('api-dot-kazu', ok);
+            if (!ok) return;
             if (add) { try { localStorage.setItem('kazu-day', today); } catch (e) {} }
             const s = String(d.n).padStart(6, '0');
             num.textContent = '';
@@ -1756,5 +1761,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById('kazu-kiri').hidden = false;
             }
         })
-        .catch(() => {});
+        .catch(() => { if (window.apiMark) window.apiMark('api-dot-kazu', false); });
 })();
