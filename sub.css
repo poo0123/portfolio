@@ -31,7 +31,7 @@ body.dark-mode .pf { background: #dfe6fa; }
 
 /* サービスごとの 色 */
 .s-discord, .s-discord-sub { --ac: #5865f2; }
-.s-x { --ac: #3a3a40; } .s-instagram { --ac: #d6456f; } .s-youtube { --ac: #e04a3f; }
+.s-x { --ac: #3a3a40; } .s-x .pf-banner { background-position: center top; } .s-instagram { --ac: #d6456f; } .s-youtube { --ac: #e04a3f; }
 .s-spotify { --ac: #1db954; } .s-github { --ac: #6e5494; } .s-steam { --ac: #2a475e; } .s-about { --ac: #dc6969; }
 
 /* 本文 */
