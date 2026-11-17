@@ -183,6 +183,27 @@ async function beacon(request, env, url) {
     return done;
 }
 
+/* ---------- あくせす かうんたー：トップに 出す 数 ----------
+   POST で ひとつ ふやして 返す（ボット・よそからは ふやさない）。GET は 見るだけ。 */
+async function kazu(request, env, url) {
+    const head = { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' };
+    const read = async () => { const r = await env.LOG.prepare('SELECT n FROM kazu WHERE id = 1').first(); return r ? r.n : 0; };
+    try {
+        if (request.method === 'POST') {
+            const ua = request.headers.get('User-Agent') || '';
+            let origin = '';
+            try { origin = new URL(request.headers.get('Origin') || '').host; } catch (e) {}
+            if (ua && !BOT.test(ua) && origin === url.host && !(await authed(request, env))) {
+                const r = await env.LOG.prepare('UPDATE kazu SET n = n + 1 WHERE id = 1 RETURNING n').first();
+                if (r) return new Response(JSON.stringify({ n: r.n }), { headers: head });
+            }
+        }
+        return new Response(JSON.stringify({ n: await read() }), { headers: head });
+    } catch (e) {
+        return new Response('{}', { status: 503, headers: head });
+    }
+}
+
 /* ---------- 見る ---------- */
 const HEAD = {
     'Content-Type': 'text/html; charset=utf-8',
@@ -490,6 +511,7 @@ export default {
         }
 
         if (env.LOG && url.pathname === '/b' && request.method === 'POST') return beacon(request, env, url);
+        if (env.LOG && url.pathname === '/api/kazu') return kazu(request, env, url);
         if (url.pathname.startsWith('/api/card/')) return profile(url.pathname.slice(10), request, ctx);
         const moved = MOVED[url.pathname.replace(/\.html$/, '')];
         if (moved) return Response.redirect(url.origin + '/links#' + moved, 301);

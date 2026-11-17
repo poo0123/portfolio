@@ -1720,3 +1720,41 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     p.addEventListener('pointerleave', () => { box.style.setProperty('--tx', '0deg'); box.style.setProperty('--ty', '0deg'); });
 })();
+
+/* ---------- あくせす かうんたー ----------
+   おなじ ブラウザからは 1日 1回だけ ふやす。数字は 下から くるっと まわって 出る。 */
+(function () {
+    const box = document.getElementById('kazu'), num = document.getElementById('kazu-num');
+    if (!box || !num || !window.fetch) return;
+    const today = new Date().toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' });
+    let fresh = true;
+    try { fresh = localStorage.getItem('kazu-day') !== today; } catch (e) {}
+    const add = fresh && !navigator.webdriver;
+    fetch('/api/kazu', { method: add ? 'POST' : 'GET', cache: 'no-store' })
+        .then((r) => r.ok ? r.json() : null)
+        .then((d) => {
+            if (!d || !Number.isFinite(d.n)) return;
+            if (add) { try { localStorage.setItem('kazu-day', today); } catch (e) {} }
+            const s = String(d.n).padStart(6, '0');
+            num.textContent = '';
+            num.setAttribute('aria-label', d.n + ' にんめ');
+            const strips = [];
+            for (const ch of s) {
+                const cell = document.createElement('span'), strip = document.createElement('span');
+                cell.className = 'kazu-d'; cell.setAttribute('aria-hidden', 'true');
+                strip.innerHTML = '0<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9';
+                cell.appendChild(strip); num.appendChild(cell); strips.push([strip, +ch]);
+            }
+            box.hidden = false;
+            const go = () => strips.forEach(([st, v], i) => { st.style.transitionDelay = (i * 0.08) + 's'; st.style.transform = 'translateY(' + (-v * 1.35) + 'em)'; });
+            if ('IntersectionObserver' in window) {
+                const io = new IntersectionObserver((es) => { if (es[0].isIntersecting) { io.disconnect(); requestAnimationFrame(go); } });
+                io.observe(box);
+            } else go();
+            const t = String(d.n);
+            if (add && d.n >= 100 && (/^(\d)\1+$/.test(t) || /^\d0+$/.test(t))) {
+                document.getElementById('kazu-kiri').hidden = false;
+            }
+        })
+        .catch(() => {});
+})();
