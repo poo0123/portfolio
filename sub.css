@@ -229,7 +229,7 @@ body.dark-mode .pf { background: #dfe6fa; }
     .acct .pf-ava { left: 12px; top: -34px; bottom: auto; width: 80px; height: 80px; }
     .acct .pf-name { font-size: 1.15rem; }
     .acct .pf-handle { font-size: 0.95rem; }
-    .acct .pf-logo { top: 50%; translate: 0 -50%; right: 12px; font-size: 1.3rem; }
+    .acct .pf-logo { top: 22px; right: 12px; font-size: 1.3rem; }
 }
 
 /* サブの もよう・Steam の 動く 背景 */
